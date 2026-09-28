@@ -27,7 +27,6 @@ export function MapCanvas() {
       subscribe: (listener) => useStore.subscribe(listener),
       onCellSelect: (cellId) => {
         useStore.getState().selectCell(cellId);
-        console.info("Selected map cell", cellId);
       },
     });
 
