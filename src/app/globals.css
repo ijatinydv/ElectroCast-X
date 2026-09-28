@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+/* Design tokens — see docs/01-design-system.md. Colour carries meaning only. */
+@theme {
+  /* Surfaces: deep storm-slate, blue undertone (radar-room at night) */
+  --color-bg: #070b12;
+  --color-rail: #0b111a;
+  --color-raised: #111a26;
+  --color-line: #1a2534;
+  --color-line-strong: #27354a;
+
+  /* Text */
+  --color-fg: #e9e7e2;
+  --color-fg-2: #98a3b3;
+  --color-fg-3: #5c6879;
+
+  /* Meaning colours — never decorative */
+  --color-observed: #4fd8eb; /* cyan: measured / current */
+  --color-forecast: #9e86ff; /* purple: model output */
+  --color-risk: #ffb020; /* amber: risk, countdown, warnings */
+  --color-alert: #ff5a52; /* red: sensor failure, severe warning only */
+
+  --font-sans: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --ease-instrument: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --duration-quick: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Every number is tabular so values never jitter while animating. */
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 1px solid var(--color-observed);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
