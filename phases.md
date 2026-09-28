@@ -159,7 +159,7 @@ Read docs/05-architecture.md (Playback) and docs/03-motion-and-performance.md (R
 Read docs/03-motion-and-performance.md (Canvas rules) and docs/05-architecture.md (Map engine). Build src/lib/map/engine.ts (create/destroy, ResizeObserver, DPR capped at 2, RAF loop that idles when nothing animates and pauses when hidden, offscreen canvas for static layers, mutable frameState updated from store subscription), src/lib/map/project.ts (d3-geo geoMercator fitted to scenario region, animated refit), a Layer interface `{ id, draw(ctx, state, t) }` with fixed draw order, and hit-testing in screen space. Build src/components/map/MapCanvas.tsx (client) that mounts the canvas into #map-slot, and wire it into mission-control. Draw only a placeholder background for now. No React state per frame.
 ```
 
-### [ ] 2.2 Base layers
+### [x] 2.2 Base layers
 **Does:** Districts, state outline, graticule, place labels, scale bar, coordinate readout.
 **Depends on:** 2.1, 1.2.
 **Verify:**
