@@ -8,6 +8,7 @@ import { lightningLayer } from "./layers/lightning";
 import { corridorsLayer } from "./layers/corridors";
 import { labelsLayer } from "./layers/labels";
 import { motionLayer } from "./layers/motion";
+import { assetsLayer, hitTestAsset, type AssetTooltip } from "./layers/assets";
 import { radarLayer } from "./layers/radar";
 import { prepareSatelliteLayer, satelliteLayer } from "./layers/satellite";
 import { scaleBarLayer } from "./layers/scalebar";
@@ -52,13 +53,14 @@ export interface MapEngineOptions {
 export interface MapEngine {
   destroy: () => void;
   coordinateAt: (point: readonly [number, number]) => readonly [number, number] | null;
+  assetAt: (point: readonly [number, number]) => AssetTooltip | null;
 }
 
 // fixes canvas composition order as later geographic layers are introduced in subsequent chunks
 const staticLayers: readonly Layer[] = [graticuleLayer, baseLayer, scaleBarLayer];
 
 // fixes dynamic composition order so atmospheric fields remain beneath radar and flash density
-const dynamicLayers: readonly Layer[] = [satelliteLayer, radarLayer, heatmapLayer, lightningLayer, corridorsLayer, motionLayer, labelsLayer];
+const dynamicLayers: readonly Layer[] = [satelliteLayer, radarLayer, heatmapLayer, lightningLayer, corridorsLayer, motionLayer, assetsLayer, labelsLayer];
 
 // creates a device-pixel-ratio-aware canvas renderer driven entirely from mutable store state
 export function createMapEngine(options: MapEngineOptions): MapEngine {
@@ -205,6 +207,7 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
       if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
     },
     coordinateAt: (point) => projection.unproject(point),
+    assetAt: (point) => hitTestAsset({ ...frameState, projection, width, height, corridorScale }, point),
   };
 }
 

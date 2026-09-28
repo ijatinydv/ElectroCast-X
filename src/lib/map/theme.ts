@@ -4,6 +4,7 @@ export interface MapTheme {
   foreground: string;
   line: string;
   lineStrong: string;
+  foregroundSecondary: string;
   foregroundTertiary: string;
   observed: string;
   forecast: string;
@@ -20,6 +21,7 @@ export function readMapTheme(element: Element): MapTheme {
     foreground: styles.getPropertyValue("--color-fg").trim(),
     line: styles.getPropertyValue("--color-line").trim(),
     lineStrong: styles.getPropertyValue("--color-line-strong").trim(),
+    foregroundSecondary: styles.getPropertyValue("--color-fg-2").trim(),
     foregroundTertiary: styles.getPropertyValue("--color-fg-3").trim(),
     observed: styles.getPropertyValue("--color-observed").trim(),
     forecast: styles.getPropertyValue("--color-forecast").trim(),

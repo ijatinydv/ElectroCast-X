@@ -211,7 +211,7 @@ Read docs/01-design-system.md (Lightning flash) and docs/03-motion-and-performan
 Read docs/01-design-system.md (Map look: Corridors, Selection) and docs/04-data-contract.md (widthScale, corridorFor). Implement layers/corridors.ts drawing, for the selected cell (and dimmed for others), the 15/30/60 min corridors from corridorFor(cell, horizon, widthScale(mask, health)) using a tweened scale so width changes animate over 400ms. Implement layers/motion.ts (arrow + speed label) and layers/labels.ts (cell IDs, selection ring). Wire pointer click hit-testing to store.selectCell. Expose a temporary dev-only button in the left rail to toggle a sensor so the widening can be seen; it will be replaced in 3.3.
 ```
 
-### [ ] 2.6 Exposure asset layers
+### [x] 2.6 Exposure asset layers
 **Does:** Optional layers for population, schools, hospitals, airports, power lines, mines and outdoor events.
 **Depends on:** 2.5, 1.2.
 **Verify:**

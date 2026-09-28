@@ -31,6 +31,18 @@ export function LeftRail() {
             <LayerToggle label="Radar cells" layerId="radar" checked={layers.radar} onCheckedChange={toggleLayer} />
             <LayerToggle label="Satellite cloud tops" layerId="satellite" checked={layers.satellite} onCheckedChange={toggleLayer} />
             <LayerToggle label="Flash density" layerId="flashDensity" checked={layers.flashDensity} onCheckedChange={toggleLayer} />
+            <div className="border-t border-line pt-3">
+              <p className="mb-2 text-xs text-fg-3">Exposure assets</p>
+              <div className="flex flex-col gap-3">
+                <LayerToggle label="Population density" layerId="population" checked={layers.population} onCheckedChange={toggleLayer} />
+                <LayerToggle label="Schools" layerId="schools" checked={layers.schools} onCheckedChange={toggleLayer} />
+                <LayerToggle label="Hospitals" layerId="hospitals" checked={layers.hospitals} onCheckedChange={toggleLayer} />
+                <LayerToggle label="Airports" layerId="airports" checked={layers.airports} onCheckedChange={toggleLayer} />
+                <LayerToggle label="Power lines" layerId="powerLines" checked={layers.powerLines} onCheckedChange={toggleLayer} />
+                <LayerToggle label="Mines" layerId="mines" checked={layers.mines} onCheckedChange={toggleLayer} />
+                <LayerToggle label="Outdoor events" layerId="outdoorEvents" checked={layers.outdoorEvents} onCheckedChange={toggleLayer} />
+              </div>
+            </div>
           </div>
         </Panel>
         <Panel title="Sensors" defaultOpen={true}>
