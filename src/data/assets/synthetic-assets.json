@@ -1,0 +1,1308 @@
+{
+  "points": [
+    {
+      "id": "village-001",
+      "name": "Banpada",
+      "lonLat": [
+        85.98405,
+        22.17445
+      ],
+      "type": "village",
+      "population": 5250,
+      "synthetic": true
+    },
+    {
+      "id": "village-002",
+      "name": "Kusumsahi",
+      "lonLat": [
+        86.29625,
+        21.67968
+      ],
+      "type": "village",
+      "population": 3900,
+      "synthetic": true
+    },
+    {
+      "id": "village-003",
+      "name": "Mahulpur",
+      "lonLat": [
+        86.10293,
+        22.14401
+      ],
+      "type": "village",
+      "population": 400,
+      "synthetic": true
+    },
+    {
+      "id": "village-004",
+      "name": "Saliagaon",
+      "lonLat": [
+        86.42463,
+        21.48103
+      ],
+      "type": "village",
+      "population": 4700,
+      "synthetic": true
+    },
+    {
+      "id": "village-005",
+      "name": "Kendutola",
+      "lonLat": [
+        85.81281,
+        21.26921
+      ],
+      "type": "village",
+      "population": 1450,
+      "synthetic": true
+    },
+    {
+      "id": "village-006",
+      "name": "Salapjodi",
+      "lonLat": [
+        86.39163,
+        21.49529
+      ],
+      "type": "village",
+      "population": 750,
+      "synthetic": true
+    },
+    {
+      "id": "village-007",
+      "name": "Dhamanpada",
+      "lonLat": [
+        86.32186,
+        21.83075
+      ],
+      "type": "village",
+      "population": 5750,
+      "synthetic": true
+    },
+    {
+      "id": "village-008",
+      "name": "Bhalusahi",
+      "lonLat": [
+        86.21918,
+        22.06702
+      ],
+      "type": "village",
+      "population": 1100,
+      "synthetic": true
+    },
+    {
+      "id": "village-009",
+      "name": "Gorumpur",
+      "lonLat": [
+        86.46156,
+        21.72639
+      ],
+      "type": "village",
+      "population": 3700,
+      "synthetic": true
+    },
+    {
+      "id": "village-010",
+      "name": "Nuagagaon",
+      "lonLat": [
+        86.44848,
+        21.96037
+      ],
+      "type": "village",
+      "population": 3150,
+      "synthetic": true
+    },
+    {
+      "id": "village-011",
+      "name": "Kiajhartola",
+      "lonLat": [
+        86.23564,
+        21.36955
+      ],
+      "type": "village",
+      "population": 7050,
+      "synthetic": true
+    },
+    {
+      "id": "village-012",
+      "name": "Rangamatiajodi",
+      "lonLat": [
+        86.45284,
+        21.43151
+      ],
+      "type": "village",
+      "population": 7600,
+      "synthetic": true
+    },
+    {
+      "id": "village-013",
+      "name": "Talapadapada",
+      "lonLat": [
+        85.94297,
+        21.83127
+      ],
+      "type": "village",
+      "population": 7300,
+      "synthetic": true
+    },
+    {
+      "id": "village-014",
+      "name": "Jharberasahi",
+      "lonLat": [
+        85.90843,
+        21.33724
+      ],
+      "type": "village",
+      "population": 5000,
+      "synthetic": true
+    },
+    {
+      "id": "village-015",
+      "name": "Badakholapur",
+      "lonLat": [
+        86.14504,
+        21.87488
+      ],
+      "type": "village",
+      "population": 4450,
+      "synthetic": true
+    },
+    {
+      "id": "village-016",
+      "name": "Sundarigaon",
+      "lonLat": [
+        86.10364,
+        21.46846
+      ],
+      "type": "village",
+      "population": 5850,
+      "synthetic": true
+    },
+    {
+      "id": "village-017",
+      "name": "Kantilotola",
+      "lonLat": [
+        86.1902,
+        21.77442
+      ],
+      "type": "village",
+      "population": 950,
+      "synthetic": true
+    },
+    {
+      "id": "village-018",
+      "name": "Dharuajodi",
+      "lonLat": [
+        86.24214,
+        21.20194
+      ],
+      "type": "village",
+      "population": 3250,
+      "synthetic": true
+    },
+    {
+      "id": "village-019",
+      "name": "Banshulipada",
+      "lonLat": [
+        86.27131,
+        21.84992
+      ],
+      "type": "village",
+      "population": 4500,
+      "synthetic": true
+    },
+    {
+      "id": "village-020",
+      "name": "Chandiasahi",
+      "lonLat": [
+        85.76549,
+        22.0819
+      ],
+      "type": "village",
+      "population": 2900,
+      "synthetic": true
+    },
+    {
+      "id": "village-021",
+      "name": "Bhalusahi",
+      "lonLat": [
+        87.06252,
+        21.19127
+      ],
+      "type": "village",
+      "population": 700,
+      "synthetic": true
+    },
+    {
+      "id": "village-022",
+      "name": "Gorumpur",
+      "lonLat": [
+        87.13947,
+        21.07315
+      ],
+      "type": "village",
+      "population": 1450,
+      "synthetic": true
+    },
+    {
+      "id": "village-023",
+      "name": "Nuagagaon",
+      "lonLat": [
+        86.54706,
+        21.38068
+      ],
+      "type": "village",
+      "population": 3100,
+      "synthetic": true
+    },
+    {
+      "id": "village-024",
+      "name": "Kiajhartola",
+      "lonLat": [
+        87.26143,
+        21.4783
+      ],
+      "type": "village",
+      "population": 1400,
+      "synthetic": true
+    },
+    {
+      "id": "village-025",
+      "name": "Rangamatiajodi",
+      "lonLat": [
+        86.75383,
+        21.7467
+      ],
+      "type": "village",
+      "population": 3450,
+      "synthetic": true
+    },
+    {
+      "id": "village-026",
+      "name": "Talapadapada",
+      "lonLat": [
+        86.94878,
+        21.64875
+      ],
+      "type": "village",
+      "population": 3200,
+      "synthetic": true
+    },
+    {
+      "id": "village-027",
+      "name": "Jharberasahi",
+      "lonLat": [
+        87.11698,
+        21.3519
+      ],
+      "type": "village",
+      "population": 6650,
+      "synthetic": true
+    },
+    {
+      "id": "village-028",
+      "name": "Badakholapur",
+      "lonLat": [
+        87.29129,
+        20.92493
+      ],
+      "type": "village",
+      "population": 1000,
+      "synthetic": true
+    },
+    {
+      "id": "village-029",
+      "name": "Sundarigaon",
+      "lonLat": [
+        87.03813,
+        21.35082
+      ],
+      "type": "village",
+      "population": 5000,
+      "synthetic": true
+    },
+    {
+      "id": "village-030",
+      "name": "Kantilotola",
+      "lonLat": [
+        86.42481,
+        21.06189
+      ],
+      "type": "village",
+      "population": 2450,
+      "synthetic": true
+    },
+    {
+      "id": "village-031",
+      "name": "Dharuajodi",
+      "lonLat": [
+        86.39534,
+        20.93425
+      ],
+      "type": "village",
+      "population": 6000,
+      "synthetic": true
+    },
+    {
+      "id": "village-032",
+      "name": "Banshulipada",
+      "lonLat": [
+        86.20967,
+        21.12448
+      ],
+      "type": "village",
+      "population": 4200,
+      "synthetic": true
+    },
+    {
+      "id": "village-033",
+      "name": "Chandiasahi",
+      "lonLat": [
+        86.73744,
+        21.18568
+      ],
+      "type": "village",
+      "population": 7450,
+      "synthetic": true
+    },
+    {
+      "id": "village-034",
+      "name": "Banpur",
+      "lonLat": [
+        86.7131,
+        21.56442
+      ],
+      "type": "village",
+      "population": 7400,
+      "synthetic": true
+    },
+    {
+      "id": "village-035",
+      "name": "Kusumgaon",
+      "lonLat": [
+        86.68544,
+        21.72423
+      ],
+      "type": "village",
+      "population": 1600,
+      "synthetic": true
+    },
+    {
+      "id": "village-036",
+      "name": "Mahultola",
+      "lonLat": [
+        87.1466,
+        21.17874
+      ],
+      "type": "village",
+      "population": 3050,
+      "synthetic": true
+    },
+    {
+      "id": "village-037",
+      "name": "Saliajodi",
+      "lonLat": [
+        86.57125,
+        20.98959
+      ],
+      "type": "village",
+      "population": 4950,
+      "synthetic": true
+    },
+    {
+      "id": "village-038",
+      "name": "Kendupada",
+      "lonLat": [
+        86.96446,
+        21.25559
+      ],
+      "type": "village",
+      "population": 6400,
+      "synthetic": true
+    },
+    {
+      "id": "village-039",
+      "name": "Salapsahi",
+      "lonLat": [
+        86.46971,
+        21.57711
+      ],
+      "type": "village",
+      "population": 550,
+      "synthetic": true
+    },
+    {
+      "id": "village-040",
+      "name": "Dhamanpur",
+      "lonLat": [
+        86.22004,
+        21.35295
+      ],
+      "type": "village",
+      "population": 5400,
+      "synthetic": true
+    },
+    {
+      "id": "village-041",
+      "name": "Badakholapur",
+      "lonLat": [
+        85.80363,
+        20.05014
+      ],
+      "type": "village",
+      "population": 7100,
+      "synthetic": true
+    },
+    {
+      "id": "village-042",
+      "name": "Sundarigaon",
+      "lonLat": [
+        85.87809,
+        20.68957
+      ],
+      "type": "village",
+      "population": 3500,
+      "synthetic": true
+    },
+    {
+      "id": "village-043",
+      "name": "Kantilotola",
+      "lonLat": [
+        85.47175,
+        20.06465
+      ],
+      "type": "village",
+      "population": 2550,
+      "synthetic": true
+    },
+    {
+      "id": "village-044",
+      "name": "Dharuajodi",
+      "lonLat": [
+        85.43831,
+        19.88739
+      ],
+      "type": "village",
+      "population": 4350,
+      "synthetic": true
+    },
+    {
+      "id": "village-045",
+      "name": "Banshulipada",
+      "lonLat": [
+        85.63218,
+        20.32871
+      ],
+      "type": "village",
+      "population": 7350,
+      "synthetic": true
+    },
+    {
+      "id": "village-046",
+      "name": "Chandiasahi",
+      "lonLat": [
+        85.84071,
+        20.04289
+      ],
+      "type": "village",
+      "population": 1800,
+      "synthetic": true
+    },
+    {
+      "id": "village-047",
+      "name": "Banpur",
+      "lonLat": [
+        85.6481,
+        19.97915
+      ],
+      "type": "village",
+      "population": 3850,
+      "synthetic": true
+    },
+    {
+      "id": "village-048",
+      "name": "Kusumgaon",
+      "lonLat": [
+        85.50068,
+        20.56219
+      ],
+      "type": "village",
+      "population": 2200,
+      "synthetic": true
+    },
+    {
+      "id": "village-049",
+      "name": "Mahultola",
+      "lonLat": [
+        85.88412,
+        20.0787
+      ],
+      "type": "village",
+      "population": 7550,
+      "synthetic": true
+    },
+    {
+      "id": "village-050",
+      "name": "Saliajodi",
+      "lonLat": [
+        86.12209,
+        19.89701
+      ],
+      "type": "village",
+      "population": 4000,
+      "synthetic": true
+    },
+    {
+      "id": "village-051",
+      "name": "Kendupada",
+      "lonLat": [
+        86.13407,
+        20.40643
+      ],
+      "type": "village",
+      "population": 7350,
+      "synthetic": true
+    },
+    {
+      "id": "village-052",
+      "name": "Salapsahi",
+      "lonLat": [
+        85.33979,
+        19.90966
+      ],
+      "type": "village",
+      "population": 1350,
+      "synthetic": true
+    },
+    {
+      "id": "village-053",
+      "name": "Dhamanpur",
+      "lonLat": [
+        85.65341,
+        20.62809
+      ],
+      "type": "village",
+      "population": 5100,
+      "synthetic": true
+    },
+    {
+      "id": "village-054",
+      "name": "Bhalugaon",
+      "lonLat": [
+        85.69647,
+        20.53294
+      ],
+      "type": "village",
+      "population": 4050,
+      "synthetic": true
+    },
+    {
+      "id": "village-055",
+      "name": "Gorumtola",
+      "lonLat": [
+        85.25526,
+        20.27734
+      ],
+      "type": "village",
+      "population": 4700,
+      "synthetic": true
+    },
+    {
+      "id": "village-056",
+      "name": "Nuagajodi",
+      "lonLat": [
+        85.95429,
+        20.27415
+      ],
+      "type": "village",
+      "population": 2650,
+      "synthetic": true
+    },
+    {
+      "id": "village-057",
+      "name": "Kiajharpada",
+      "lonLat": [
+        86.34401,
+        19.90981
+      ],
+      "type": "village",
+      "population": 7550,
+      "synthetic": true
+    },
+    {
+      "id": "village-058",
+      "name": "Rangamatiasahi",
+      "lonLat": [
+        85.79151,
+        20.1908
+      ],
+      "type": "village",
+      "population": 6350,
+      "synthetic": true
+    },
+    {
+      "id": "village-059",
+      "name": "Talapadapur",
+      "lonLat": [
+        85.32665,
+        20.0232
+      ],
+      "type": "village",
+      "population": 1500,
+      "synthetic": true
+    },
+    {
+      "id": "village-060",
+      "name": "Jharberagaon",
+      "lonLat": [
+        85.97805,
+        20.51636
+      ],
+      "type": "village",
+      "population": 5250,
+      "synthetic": true
+    },
+    {
+      "id": "school-061",
+      "name": "Demo school site 01 near Mayurbhanj–Keonjhar",
+      "lonLat": [
+        85.96889,
+        21.33314
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-062",
+      "name": "Demo school site 02 near Mayurbhanj–Keonjhar",
+      "lonLat": [
+        86.28202,
+        22.12178
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-063",
+      "name": "Demo school site 03 near Mayurbhanj–Keonjhar",
+      "lonLat": [
+        86.32617,
+        21.43345
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-064",
+      "name": "Demo school site 04 near Mayurbhanj–Keonjhar",
+      "lonLat": [
+        86.18989,
+        22.16326
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-065",
+      "name": "Demo school site 05 near Mayurbhanj–Keonjhar",
+      "lonLat": [
+        86.17421,
+        21.51685
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-066",
+      "name": "Demo school site 06 near Mayurbhanj–Keonjhar",
+      "lonLat": [
+        86.39467,
+        21.64696
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-067",
+      "name": "Demo school site 07 near Mayurbhanj–Keonjhar",
+      "lonLat": [
+        86.14393,
+        22.02588
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-068",
+      "name": "Demo school site 08 near Mayurbhanj–Keonjhar",
+      "lonLat": [
+        86.18449,
+        21.28986
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-069",
+      "name": "Demo school site 01 near Keonjhar–Balasore",
+      "lonLat": [
+        86.51667,
+        21.01163
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-070",
+      "name": "Demo school site 02 near Keonjhar–Balasore",
+      "lonLat": [
+        86.54673,
+        21.78031
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-071",
+      "name": "Demo school site 03 near Keonjhar–Balasore",
+      "lonLat": [
+        86.745,
+        21.49824
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-072",
+      "name": "Demo school site 04 near Keonjhar–Balasore",
+      "lonLat": [
+        86.43182,
+        21.67163
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-073",
+      "name": "Demo school site 05 near Keonjhar–Balasore",
+      "lonLat": [
+        87.28271,
+        21.57048
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-074",
+      "name": "Demo school site 06 near Keonjhar–Balasore",
+      "lonLat": [
+        87.13324,
+        21.67274
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-075",
+      "name": "Demo school site 07 near Keonjhar–Balasore",
+      "lonLat": [
+        86.54511,
+        21.1936
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-076",
+      "name": "Demo school site 08 near Keonjhar–Balasore",
+      "lonLat": [
+        86.93118,
+        21.46075
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-077",
+      "name": "Demo school site 01 near Cuttack–Khordha",
+      "lonLat": [
+        85.68889,
+        20.57715
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-078",
+      "name": "Demo school site 02 near Cuttack–Khordha",
+      "lonLat": [
+        86.22498,
+        20.43259
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-079",
+      "name": "Demo school site 03 near Cuttack–Khordha",
+      "lonLat": [
+        85.29053,
+        20.0618
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-080",
+      "name": "Demo school site 04 near Cuttack–Khordha",
+      "lonLat": [
+        86.16452,
+        19.94565
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-081",
+      "name": "Demo school site 05 near Cuttack–Khordha",
+      "lonLat": [
+        85.79728,
+        20.15958
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-082",
+      "name": "Demo school site 06 near Cuttack–Khordha",
+      "lonLat": [
+        86.28909,
+        20.39177
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-083",
+      "name": "Demo school site 07 near Cuttack–Khordha",
+      "lonLat": [
+        86.20361,
+        20.56735
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-084",
+      "name": "Demo school site 08 near Cuttack–Khordha",
+      "lonLat": [
+        85.32761,
+        20.1216
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "school-085",
+      "name": "Demo school site 09 near Cuttack–Khordha",
+      "lonLat": [
+        85.59422,
+        20.60356
+      ],
+      "type": "school",
+      "synthetic": true
+    },
+    {
+      "id": "hospital-086",
+      "name": "Demo health facility 01 near Mayurbhanj–Keonjhar",
+      "lonLat": [
+        85.72085,
+        21.92235
+      ],
+      "type": "hospital",
+      "synthetic": true
+    },
+    {
+      "id": "hospital-087",
+      "name": "Demo health facility 02 near Mayurbhanj–Keonjhar",
+      "lonLat": [
+        86.22481,
+        21.77378
+      ],
+      "type": "hospital",
+      "synthetic": true
+    },
+    {
+      "id": "hospital-088",
+      "name": "Demo health facility 03 near Mayurbhanj–Keonjhar",
+      "lonLat": [
+        86.42742,
+        21.52691
+      ],
+      "type": "hospital",
+      "synthetic": true
+    },
+    {
+      "id": "hospital-089",
+      "name": "Demo health facility 04 near Mayurbhanj–Keonjhar",
+      "lonLat": [
+        85.84511,
+        21.80224
+      ],
+      "type": "hospital",
+      "synthetic": true
+    },
+    {
+      "id": "hospital-090",
+      "name": "Demo health facility 01 near Keonjhar–Balasore",
+      "lonLat": [
+        87.15342,
+        21.76169
+      ],
+      "type": "hospital",
+      "synthetic": true
+    },
+    {
+      "id": "hospital-091",
+      "name": "Demo health facility 02 near Keonjhar–Balasore",
+      "lonLat": [
+        86.5704,
+        21.12107
+      ],
+      "type": "hospital",
+      "synthetic": true
+    },
+    {
+      "id": "hospital-092",
+      "name": "Demo health facility 03 near Keonjhar–Balasore",
+      "lonLat": [
+        86.67679,
+        21.57287
+      ],
+      "type": "hospital",
+      "synthetic": true
+    },
+    {
+      "id": "hospital-093",
+      "name": "Demo health facility 04 near Keonjhar–Balasore",
+      "lonLat": [
+        86.53795,
+        21.23711
+      ],
+      "type": "hospital",
+      "synthetic": true
+    },
+    {
+      "id": "hospital-094",
+      "name": "Demo health facility 01 near Cuttack–Khordha",
+      "lonLat": [
+        85.4003,
+        20.37894
+      ],
+      "type": "hospital",
+      "synthetic": true
+    },
+    {
+      "id": "hospital-095",
+      "name": "Demo health facility 02 near Cuttack–Khordha",
+      "lonLat": [
+        85.46726,
+        19.89426
+      ],
+      "type": "hospital",
+      "synthetic": true
+    },
+    {
+      "id": "hospital-096",
+      "name": "Demo health facility 03 near Cuttack–Khordha",
+      "lonLat": [
+        85.47043,
+        20.4673
+      ],
+      "type": "hospital",
+      "synthetic": true
+    },
+    {
+      "id": "hospital-097",
+      "name": "Demo health facility 04 near Cuttack–Khordha",
+      "lonLat": [
+        85.8056,
+        20.14657
+      ],
+      "type": "hospital",
+      "synthetic": true
+    },
+    {
+      "id": "event-098",
+      "name": "Demo outdoor event site 01 near Mayurbhanj–Keonjhar",
+      "lonLat": [
+        86.46032,
+        21.39739
+      ],
+      "type": "event",
+      "synthetic": true
+    },
+    {
+      "id": "event-099",
+      "name": "Demo outdoor event site 02 near Mayurbhanj–Keonjhar",
+      "lonLat": [
+        86.45215,
+        21.29019
+      ],
+      "type": "event",
+      "synthetic": true
+    },
+    {
+      "id": "event-100",
+      "name": "Demo outdoor event site 01 near Keonjhar–Balasore",
+      "lonLat": [
+        87.09707,
+        21.75835
+      ],
+      "type": "event",
+      "synthetic": true
+    },
+    {
+      "id": "event-101",
+      "name": "Demo outdoor event site 02 near Keonjhar–Balasore",
+      "lonLat": [
+        86.52209,
+        21.5301
+      ],
+      "type": "event",
+      "synthetic": true
+    },
+    {
+      "id": "event-102",
+      "name": "Demo outdoor event site 03 near Keonjhar–Balasore",
+      "lonLat": [
+        86.47978,
+        21.70504
+      ],
+      "type": "event",
+      "synthetic": true
+    },
+    {
+      "id": "event-103",
+      "name": "Demo outdoor event site 01 near Cuttack–Khordha",
+      "lonLat": [
+        85.998,
+        20.59519
+      ],
+      "type": "event",
+      "synthetic": true
+    },
+    {
+      "id": "event-104",
+      "name": "Demo outdoor event site 02 near Cuttack–Khordha",
+      "lonLat": [
+        85.36339,
+        20.04406
+      ],
+      "type": "event",
+      "synthetic": true
+    },
+    {
+      "id": "event-105",
+      "name": "Demo outdoor event site 03 near Cuttack–Khordha",
+      "lonLat": [
+        86.04753,
+        20.63688
+      ],
+      "type": "event",
+      "synthetic": true
+    },
+    {
+      "id": "airport-bhubaneswar",
+      "name": "Biju Patnaik International Airport (synthetic demo marker)",
+      "lonLat": [
+        85.8178,
+        20.2446
+      ],
+      "type": "airport",
+      "synthetic": true
+    },
+    {
+      "id": "airport-jharsuguda",
+      "name": "Jharsuguda Airport (synthetic demo marker)",
+      "lonLat": [
+        84.0509,
+        21.9132
+      ],
+      "type": "airport",
+      "synthetic": true
+    },
+    {
+      "id": "mine-keonjhar",
+      "name": "Demo mine site near Keonjhar",
+      "lonLat": [
+        85.62,
+        21.62
+      ],
+      "type": "mine",
+      "synthetic": true
+    },
+    {
+      "id": "mine-keonjhar-east",
+      "name": "Demo mine site east of Keonjhar",
+      "lonLat": [
+        85.91,
+        21.55
+      ],
+      "type": "mine",
+      "synthetic": true
+    },
+    {
+      "id": "mine-keonjhar-south",
+      "name": "Demo mine site south of Keonjhar",
+      "lonLat": [
+        85.72,
+        21.31
+      ],
+      "type": "mine",
+      "synthetic": true
+    },
+    {
+      "id": "mine-sundargarh",
+      "name": "Demo mine site near Sundargarh",
+      "lonLat": [
+        84.85,
+        22.05
+      ],
+      "type": "mine",
+      "synthetic": true
+    },
+    {
+      "id": "mine-sundargarh-east",
+      "name": "Demo mine site east of Sundargarh",
+      "lonLat": [
+        85.14,
+        22.12
+      ],
+      "type": "mine",
+      "synthetic": true
+    },
+    {
+      "id": "mine-sundargarh-south",
+      "name": "Demo mine site south of Sundargarh",
+      "lonLat": [
+        84.92,
+        21.82
+      ],
+      "type": "mine",
+      "synthetic": true
+    }
+  ],
+  "polylines": [
+    {
+      "id": "transmission-1",
+      "name": "Demo transmission corridor 1",
+      "path": [
+        [
+          86.11909,
+          21.30192
+        ],
+        [
+          86.16559,
+          21.36148
+        ],
+        [
+          86.2121,
+          21.42104
+        ],
+        [
+          86.2586,
+          21.48061
+        ],
+        [
+          86.3051,
+          21.54017
+        ]
+      ],
+      "type": "transmission",
+      "synthetic": true
+    },
+    {
+      "id": "transmission-2",
+      "name": "Demo transmission corridor 2",
+      "path": [
+        [
+          86.26619,
+          21.01598
+        ],
+        [
+          86.2761,
+          21.02772
+        ],
+        [
+          86.286,
+          21.03946
+        ],
+        [
+          86.29591,
+          21.05119
+        ],
+        [
+          86.30582,
+          21.06293
+        ]
+      ],
+      "type": "transmission",
+      "synthetic": true
+    },
+    {
+      "id": "transmission-3",
+      "name": "Demo transmission corridor 3",
+      "path": [
+        [
+          85.39687,
+          20.31724
+        ],
+        [
+          85.62313,
+          20.34396
+        ],
+        [
+          85.84939,
+          20.37068
+        ],
+        [
+          86.07564,
+          20.3974
+        ],
+        [
+          86.3019,
+          20.42412
+        ]
+      ],
+      "type": "transmission",
+      "synthetic": true
+    },
+    {
+      "id": "transmission-4",
+      "name": "Demo northern transmission corridor",
+      "path": [
+        [
+          85.82002,
+          21.45243
+        ],
+        [
+          85.96236,
+          21.58529
+        ],
+        [
+          86.10469,
+          21.71816
+        ],
+        [
+          86.24703,
+          21.85102
+        ],
+        [
+          86.38937,
+          21.98389
+        ]
+      ],
+      "type": "transmission",
+      "synthetic": true
+    }
+  ]
+}

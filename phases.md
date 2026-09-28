@@ -76,7 +76,7 @@ Read docs/02-ui-spec.md (layout, top bar, rails, dock) and docs/01-design-system
 
 # Phase 1 — Data and state spine
 
-### [ ] 1.1 Types, validator and invariant tests
+### [x] 1.1 Types, validator and invariant tests
 **Does:** Defines all TypeScript types from the data contract and the validator that enforces the ten invariants. Tests written first, data comes in 1.3.
 **Depends on:** 0.1.
 **Verify:**
@@ -88,7 +88,7 @@ Read docs/02-ui-spec.md (layout, top bar, rails, dock) and docs/01-design-system
 Read docs/04-data-contract.md fully. Create src/types/scenario.ts (all types in the contract), src/types/assets.ts, src/types/store.ts. Implement scripts/validate-scenarios.ts exporting validate(scenario): string[] and a CLI entry that loads every JSON in src/data/scenarios and exits 1 on any error (exit 0 with a note if the folder is empty for now). Cover all ten invariants including the 16-mask monotonicity and corridor nesting. Write tests/data-invariants.test.ts using small in-memory fixtures: a valid one passes, and for each invariant a broken variant fails with a specific message. No scenario data yet.
 ```
 
-### [ ] 1.2 Odisha geo and synthetic assets
+### [x] 1.2 Odisha geo and synthetic assets
 **Does:** Adds simplified Odisha state and district GeoJSON and a synthetic assets file, plus a typed loader.
 **Depends on:** 1.1.
 **Verify:**
