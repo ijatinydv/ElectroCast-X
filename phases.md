@@ -101,7 +101,7 @@ Read docs/04-data-contract.md fully. Create src/types/scenario.ts (all types in 
 Read docs/04-data-contract.md (Geo and assets). Obtain Odisha district boundaries from the open repository udit-001/india-maps-data (Odisha GeoJSON), check its licence and record it in docs/09-decisions.md. Simplify with mapshaper (or a small script using topology-aware simplification) so src/data/geo/odisha-districts.json is under 150 KB with all 30 districts, and derive odisha-state.json (outer outline). Write scripts/build-assets.ts that generates src/data/assets/synthetic-assets.json deterministically (seeded): about 60 invented villages with plausible Odia-region names and populations, 25 schools, 12 hospitals, real major airports may be used (Bhubaneswar, Jharsuguda), 4 transmission polylines, 6 mines in Keonjhar/Sundargarh, 8 outdoor-event sites. Cluster assets around Mayurbhanj–Keonjhar, Keonjhar–Balasore and Cuttack–Khordha so all three scenarios have exposure. Every record carries "synthetic": true. Add src/lib/geo/load.ts and tests.
 ```
 
-### [ ] 1.3 Scenario generator and three scenarios
+### [x] 1.3 Scenario generator and three scenarios
 **Does:** Generates the three 12-frame scenario JSON files from a seeded script, with the canonical numbers, 16-mask sensor tables and outcomes.
 **Depends on:** 1.1, 1.2.
 **Verify:**
