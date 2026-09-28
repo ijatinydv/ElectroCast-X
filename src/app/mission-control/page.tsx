@@ -3,6 +3,7 @@ import * as React from "react";
 import { m } from "motion/react";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { TopBar, LeftRail, RightRail, BottomDock } from "@/components/shell";
+import { MapCanvas } from "@/components/map/MapCanvas";
 
 export default function MissionControlPage() {
   const [leftOpen, setLeftOpen] = React.useState(true);
@@ -55,9 +56,8 @@ export default function MissionControlPage() {
           </Sheet>
         )}
 
-        {/* Map Slot */}
-        <div id="map-slot" className="flex-1 bg-bg relative overflow-hidden h-full">
-          {/* placeholder for canvas map */}
+        <div className="flex-1 min-w-0 overflow-hidden h-full">
+          <MapCanvas />
         </div>
 
         {isDesktop ? (
