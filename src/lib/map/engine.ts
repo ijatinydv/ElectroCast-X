@@ -1,9 +1,13 @@
 import type { Frame, Scenario } from "@/types/scenario";
 import type { AppState } from "@/types/store";
+import { widthScale } from "@/lib/derive";
 import { baseLayer } from "./layers/base";
 import { graticuleLayer } from "./layers/graticule";
 import { heatmapLayer, prepareHeatmapLayer } from "./layers/heatmap";
 import { lightningLayer } from "./layers/lightning";
+import { corridorsLayer } from "./layers/corridors";
+import { labelsLayer } from "./layers/labels";
+import { motionLayer } from "./layers/motion";
 import { radarLayer } from "./layers/radar";
 import { prepareSatelliteLayer, satelliteLayer } from "./layers/satellite";
 import { scaleBarLayer } from "./layers/scalebar";
@@ -26,6 +30,7 @@ export interface MapFrameState {
   projection: MapProjection;
   width: number;
   height: number;
+  corridorScale: number;
 }
 
 // establishes the pure draw contract all future map layers follow in fixed order
@@ -40,7 +45,7 @@ export interface MapEngineOptions {
   scenarios: Record<Scenario["id"], Scenario>;
   initialState: AppState;
   subscribe: (listener: (state: AppState) => void) => () => void;
-  onCellSelect: (cellId: string) => void;
+  onCellSelect: (cellId: string | null) => void;
 }
 
 // exposes the lifecycle cleanup required when the React wrapper unmounts the canvas
@@ -53,7 +58,7 @@ export interface MapEngine {
 const staticLayers: readonly Layer[] = [graticuleLayer, baseLayer, scaleBarLayer];
 
 // fixes dynamic composition order so atmospheric fields remain beneath radar and flash density
-const dynamicLayers: readonly Layer[] = [satelliteLayer, radarLayer, heatmapLayer, lightningLayer];
+const dynamicLayers: readonly Layer[] = [satelliteLayer, radarLayer, heatmapLayer, lightningLayer, corridorsLayer, motionLayer, labelsLayer];
 
 // creates a device-pixel-ratio-aware canvas renderer driven entirely from mutable store state
 export function createMapEngine(options: MapEngineOptions): MapEngine {
@@ -79,6 +84,10 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
   let height = 1;
   let dpr = 1;
   let measuredStormFrames = 0;
+  let corridorScale = frameState.corridorScale;
+  let corridorScaleFrom = corridorScale;
+  let corridorScaleTo = corridorScale;
+  let corridorScaleStartedAt: number | null = null;
 
   // renders a static layer once per resize rather than repeating its work in the animation loop
   const redrawStatic = () => {
@@ -103,17 +112,23 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
       projection = result.projection;
       if (result.complete) projectionTween = null;
     }
+    if (corridorScaleStartedAt !== null) {
+      const progress = Math.min(1, Math.max(0, (now - corridorScaleStartedAt) / 400));
+      const eased = 1 - Math.pow(1 - progress, 3);
+      corridorScale = corridorScaleFrom + (corridorScaleTo - corridorScaleFrom) * eased;
+      if (progress === 1) corridorScaleStartedAt = null;
+    }
 
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
     context.clearRect(0, 0, width, height);
     context.drawImage(staticCanvas, 0, 0, width, height);
     const drawStartedAt = performance.now();
-    dynamicLayers.forEach((layer) => layer.draw(context, { ...frameState, projection, width, height }, now));
+    dynamicLayers.forEach((layer) => layer.draw(context, { ...frameState, projection, width, height, corridorScale }, now));
     const drawDuration = performance.now() - drawStartedAt;
     if (measuredStormFrames >= 2 && drawDuration > 4) console.warn(`Map storm-layer draw exceeded 4 ms: ${drawDuration.toFixed(2)} ms`);
     measuredStormFrames += 1;
 
-    if (projectionTween || hasStormAnimation(frameState)) requestFrame();
+    if (projectionTween || corridorScaleStartedAt !== null || hasStormAnimation(frameState)) requestFrame();
   };
 
   // keeps the backing store sharp while CSS owns the responsive centre-panel dimensions
@@ -152,7 +167,7 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
       [event.clientX - bounds.left, event.clientY - bounds.top],
     );
 
-    if (cellId) options.onCellSelect(cellId);
+    options.onCellSelect(cellId);
   };
 
   // updates the RAF-owned snapshot without subscribing React to high-frequency playback state
@@ -160,6 +175,11 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
     const nextState = toFrameState(state, options.scenarios, backgroundColor, theme, projection, width, height);
     const scenarioChanged = nextState.scenario.id !== frameState.scenario.id;
     const staticLayerChanged = nextState.layers.districts !== frameState.layers.districts;
+    if (nextState.corridorScale !== corridorScaleTo) {
+      corridorScaleFrom = corridorScale;
+      corridorScaleTo = nextState.corridorScale;
+      corridorScaleStartedAt = performance.now();
+    }
     frameState = nextState;
 
     if (scenarioChanged) {
@@ -190,10 +210,12 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
 
 // extracts only the globally-owned values the canvas needs for its mutable per-frame snapshot
 function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenario>, backgroundColor: string, theme: MapTheme, projection: MapProjection, width: number, height: number): MapFrameState {
+  const scenario = scenarios[state.scenarioId];
+  const frame = frameAt(scenario, state.timeMin);
   return {
-    scenario: scenarios[state.scenarioId],
+    scenario,
     timeMin: state.timeMin,
-    frame: frameAt(scenarios[state.scenarioId], state.timeMin),
+    frame,
     selectedCellId: state.selectedCellId,
     mapMode: state.mapMode,
     compareOn: state.compare.on,
@@ -203,6 +225,7 @@ function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenari
     projection,
     width,
     height,
+    corridorScale: widthScale(state.sensorOff, frame.sensorHealth),
   };
 }
 
