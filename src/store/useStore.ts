@@ -9,6 +9,11 @@ function scenarioReset(scenarioId: ScenarioId): Pick<AppState, "scenarioId" | "t
   return { scenarioId, timeMin: 0, selectedCellId: null, sensorOff: { ...initialSensorOff }, issuedWarnings: [] };
 }
 
+// makes the selected atmospheric source visible while keeping radar and satellite mutually exclusive
+function layersForMapMode(layers: AppState["layers"], mapMode: AppState["mapMode"]): AppState["layers"] {
+  return { ...layers, radar: mapMode === "radar", satellite: mapMode === "satellite" };
+}
+
 // holds the small named controls that coordinate all mission-control surfaces
 export const useStore = create<AppState>()((set) => ({
   ...scenarioReset("A"),
@@ -26,7 +31,7 @@ export const useStore = create<AppState>()((set) => ({
   setSpeed: (speed) => set({ speed }),
   toggleSensor: (sensorId) => set((state) => ({ sensorOff: { ...state.sensorOff, [sensorId]: !state.sensorOff[sensorId] } })),
   selectCell: (selectedCellId) => set({ selectedCellId }),
-  setMapMode: (mapMode) => set({ mapMode }),
+  setMapMode: (mapMode) => set((state) => ({ mapMode, layers: layersForMapMode(state.layers, mapMode) })),
   toggleLayer: (layerId) => set((state) => ({ layers: { ...state.layers, [layerId]: !state.layers[layerId] } })),
   setDecomposition: (decomposition) => set({ decomposition }),
   setCompare: (compare) => set((state) => ({ compare: { ...state.compare, ...compare } })),
