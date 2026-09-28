@@ -129,9 +129,22 @@ export function buildAssets(): SyntheticAssets {
     }
   }
 
+  // anchors the documented severe-storm exposure example inside its 30-minute inner corridor
+  const severeStormVillages: [number, number][] = [[86.731, 21.312], [86.747, 21.321], [86.763, 21.332]];
+  for (const [index, lonLat] of severeStormVillages.entries()) {
+    points[20 + index] = makePoint(`village-${String(21 + index).padStart(3, "0")}`, `Corridor village ${String(index + 1).padStart(2, "0")}`, "village", lonLat, 1200 + index * 350);
+  }
+
   addRegionalPoints(points, random, "school", [8, 8, 9], "Demo school site");
   addRegionalPoints(points, random, "hospital", [4, 4, 4], "Demo health facility");
   addRegionalPoints(points, random, "event", [2, 3, 3], "Demo outdoor event site");
+
+  // anchors the documented school exposure example beside the severe-storm villages
+  const severeStormSchools: [number, number][] = [[86.738, 21.315], [86.757, 21.329]];
+  const schoolOffset = 60;
+  for (const [index, lonLat] of severeStormSchools.entries()) {
+    points[schoolOffset + index] = makePoint(`school-${String(schoolOffset + index + 1).padStart(3, "0")}`, `Demo corridor school ${String(index + 1).padStart(2, "0")}`, "school", lonLat);
+  }
 
   points.push(
     makePoint("airport-bhubaneswar", "Biju Patnaik International Airport (synthetic demo marker)", "airport", [85.8178, 20.2446]),
@@ -152,6 +165,13 @@ export function buildAssets(): SyntheticAssets {
     makePolyline(`transmission-${index + 1}`, `Demo transmission corridor ${index + 1}`, region, random),
   );
   polylines.push(makePolyline("transmission-4", "Demo northern transmission corridor", REGIONS[0]!, random));
+  polylines[1] = {
+    id: "transmission-2",
+    name: "Demo transmission corridor 2",
+    path: [[86.72, 21.305], [86.735, 21.313], [86.75, 21.322], [86.765, 21.331], [86.78, 21.34]],
+    type: "transmission",
+    synthetic: true,
+  };
 
   return { points, polylines };
 }

@@ -41,7 +41,7 @@
           "flashRate": 6,
           "motion": {
             "dirDeg": 78,
-            "speedKmh": 42
+            "speedKmh": 31
           },
           "corridors": {
             "15": {
@@ -512,7 +512,7 @@
           "flashRate": 7,
           "motion": {
             "dirDeg": 78,
-            "speedKmh": 42
+            "speedKmh": 31
           },
           "corridors": {
             "15": {
@@ -991,7 +991,7 @@
           "flashRate": 8,
           "motion": {
             "dirDeg": 78,
-            "speedKmh": 42
+            "speedKmh": 31
           },
           "corridors": {
             "15": {
@@ -1470,7 +1470,7 @@
           "flashRate": 9,
           "motion": {
             "dirDeg": 78,
-            "speedKmh": 42
+            "speedKmh": 31
           },
           "corridors": {
             "15": {
@@ -1957,7 +1957,7 @@
           "flashRate": 10,
           "motion": {
             "dirDeg": 78,
-            "speedKmh": 42
+            "speedKmh": 31
           },
           "corridors": {
             "15": {
@@ -2444,7 +2444,7 @@
           "flashRate": 11,
           "motion": {
             "dirDeg": 78,
-            "speedKmh": 42
+            "speedKmh": 31
           },
           "corridors": {
             "15": {
@@ -2939,7 +2939,7 @@
           "flashRate": 13,
           "motion": {
             "dirDeg": 78,
-            "speedKmh": 42
+            "speedKmh": 31
           },
           "corridors": {
             "15": {
@@ -3434,7 +3434,7 @@
           "flashRate": 14,
           "motion": {
             "dirDeg": 78,
-            "speedKmh": 42
+            "speedKmh": 31
           },
           "corridors": {
             "15": {
@@ -3937,7 +3937,7 @@
           "flashRate": 15,
           "motion": {
             "dirDeg": 78,
-            "speedKmh": 42
+            "speedKmh": 31
           },
           "corridors": {
             "15": {
@@ -4440,7 +4440,7 @@
           "flashRate": 16,
           "motion": {
             "dirDeg": 78,
-            "speedKmh": 42
+            "speedKmh": 31
           },
           "corridors": {
             "15": {
@@ -4951,7 +4951,7 @@
           "flashRate": 17,
           "motion": {
             "dirDeg": 78,
-            "speedKmh": 42
+            "speedKmh": 31
           },
           "corridors": {
             "15": {
@@ -5470,7 +5470,7 @@
           "flashRate": 19,
           "motion": {
             "dirDeg": 78,
-            "speedKmh": 42
+            "speedKmh": 31
           },
           "corridors": {
             "15": {
