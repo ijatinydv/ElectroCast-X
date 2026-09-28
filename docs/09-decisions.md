@@ -11,6 +11,7 @@ Add a row whenever you make a choice that another person might question.
 | D5 | Sensor table precomputed for all 16 masks per cell | Any combination of switches is consistent | Runtime formula only |
 | D6 | X-ray volume is procedural from cell fields | Smaller repo, sync with frame and mask | Hand-typed voxel grid |
 | D21 | Low-resolution satellite and flash fields use offscreen 96×64 canvases | One smoothed composite preserves the intended field appearance while bounding per-frame work below the map budget | Full-resolution per-pixel fields and external imagery |
+| D22 | Lightning samples are deduplicated by prepared event position and minute; bursts beyond three pops per second merge into the newest pop | Preserves prepared flash counts while keeping the display within the photosensitivity limit | Replaying samples on scrub; showing every simultaneous pop |
 | D7 | Fonts: Instrument Sans + IBM Plex Mono via Fontsource | Distinct but calm; offline; mono only for numbers | Inter/Geist (default look) |
 | D8 | Palette base is blue-tinted slate, not neutral black | Radar-room feel; avoids the near-black + single accent default | `#0b0d10` graphite |
 | D9 | Sentence-case labels; no ALL-CAPS eyebrows | Avoids template chrome | Tracked uppercase labels |

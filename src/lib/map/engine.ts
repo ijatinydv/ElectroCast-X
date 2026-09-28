@@ -3,6 +3,7 @@ import type { AppState } from "@/types/store";
 import { baseLayer } from "./layers/base";
 import { graticuleLayer } from "./layers/graticule";
 import { heatmapLayer, prepareHeatmapLayer } from "./layers/heatmap";
+import { lightningIsAnimating, lightningLayer } from "./layers/lightning";
 import { radarLayer } from "./layers/radar";
 import { prepareSatelliteLayer, satelliteLayer } from "./layers/satellite";
 import { scaleBarLayer } from "./layers/scalebar";
@@ -24,6 +25,7 @@ export interface MapFrameState {
   projection: MapProjection;
   width: number;
   height: number;
+  reducedMotion: boolean;
 }
 
 // establishes the pure draw contract all future map layers follow in fixed order
@@ -51,7 +53,7 @@ export interface MapEngine {
 const staticLayers: readonly Layer[] = [graticuleLayer, baseLayer, scaleBarLayer];
 
 // fixes dynamic composition order so atmospheric fields remain beneath radar and flash density
-const dynamicLayers: readonly Layer[] = [satelliteLayer, radarLayer, heatmapLayer];
+const dynamicLayers: readonly Layer[] = [satelliteLayer, radarLayer, heatmapLayer, lightningLayer];
 
 // creates a device-pixel-ratio-aware canvas renderer driven entirely from mutable store state
 export function createMapEngine(options: MapEngineOptions): MapEngine {
@@ -69,7 +71,9 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
   prepareHeatmapLayer();
   const backgroundColor = theme.background;
   let projection = fitProjection(options.scenarios[options.initialState.scenarioId].region, 1, 1);
-  let frameState = toFrameState(options.initialState, options.scenarios, backgroundColor, theme, projection, 1, 1);
+  const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let reducedMotion = reducedMotionQuery.matches;
+  let frameState = toFrameState(options.initialState, options.scenarios, backgroundColor, theme, projection, 1, 1, reducedMotion);
   let projectionTween: ProjectionTween | null = null;
   let animationFrame: number | null = null;
   let visible = document.visibilityState === "visible";
@@ -111,7 +115,7 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
     if (measuredStormFrames >= 2 && drawDuration > 4) console.warn(`Map storm-layer draw exceeded 4 ms: ${drawDuration.toFixed(2)} ms`);
     measuredStormFrames += 1;
 
-    if (projectionTween || hasStormAnimation(frameState)) requestFrame();
+    if (projectionTween || hasStormAnimation(frameState, now)) requestFrame();
   };
 
   // keeps the backing store sharp while CSS owns the responsive centre-panel dimensions
@@ -141,6 +145,12 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
     if (visible) requestFrame();
   };
 
+  const onReducedMotionChange = (event: MediaQueryListEvent) => {
+    reducedMotion = event.matches;
+    frameState = { ...frameState, reducedMotion };
+    requestFrame();
+  };
+
   // resolves a click in CSS pixels against the current frame's projected cell centres
   const onClick = (event: MouseEvent) => {
     const bounds = options.canvas.getBoundingClientRect();
@@ -155,7 +165,7 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
 
   // updates the RAF-owned snapshot without subscribing React to high-frequency playback state
   const unsubscribe = options.subscribe((state) => {
-    const nextState = toFrameState(state, options.scenarios, backgroundColor, theme, projection, width, height);
+    const nextState = toFrameState(state, options.scenarios, backgroundColor, theme, projection, width, height, reducedMotion);
     const scenarioChanged = nextState.scenario.id !== frameState.scenario.id;
     const staticLayerChanged = nextState.layers.districts !== frameState.layers.districts;
     frameState = nextState;
@@ -172,6 +182,7 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
   const observer = new ResizeObserver(resize);
   observer.observe(options.canvas);
   document.addEventListener("visibilitychange", onVisibilityChange);
+  reducedMotionQuery.addEventListener("change", onReducedMotionChange);
   options.canvas.addEventListener("click", onClick);
 
   return {
@@ -179,6 +190,7 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
       unsubscribe();
       observer.disconnect();
       document.removeEventListener("visibilitychange", onVisibilityChange);
+      reducedMotionQuery.removeEventListener("change", onReducedMotionChange);
       options.canvas.removeEventListener("click", onClick);
       if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
     },
@@ -187,7 +199,7 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
 }
 
 // extracts only the globally-owned values the canvas needs for its mutable per-frame snapshot
-function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenario>, backgroundColor: string, theme: MapTheme, projection: MapProjection, width: number, height: number): MapFrameState {
+function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenario>, backgroundColor: string, theme: MapTheme, projection: MapProjection, width: number, height: number, reducedMotion = false): MapFrameState {
   return {
     scenario: scenarios[state.scenarioId],
     timeMin: state.timeMin,
@@ -200,10 +212,11 @@ function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenari
     projection,
     width,
     height,
+    reducedMotion,
   };
 }
 
 // keeps the canvas RAF active only while a visible storm layer has ambient motion to render
-function hasStormAnimation(state: MapFrameState): boolean {
-  return (state.mapMode === "radar" && state.layers.radar) || (state.mapMode === "satellite" && state.layers.satellite);
+function hasStormAnimation(state: MapFrameState, now: number): boolean {
+  return (state.mapMode === "radar" && state.layers.radar) || (state.mapMode === "satellite" && state.layers.satellite) || lightningIsAnimating(now, state.reducedMotion);
 }

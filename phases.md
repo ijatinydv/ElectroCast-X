@@ -185,7 +185,7 @@ Read docs/01-design-system.md (Map look). Implement layers in src/lib/map/layers
 Read docs/01-design-system.md (Map look) and docs/03-motion-and-performance.md (Canvas rules). Implement src/lib/map/sprites.ts (pre-rendered radial gradient sprites per intensity band) and layers radar.ts, satellite.ts, heatmap.ts. Radar: for each cell in frameAt(...), draw a few overlapping sprites (offsets seeded from cell id) sized by radiusKm and opacity by reflectivityDbz; cyan for t ≤ 0, purple for t > 0, with a slow sinusoidal breathe (±4%) driven by time only. Satellite: a low-res offscreen field where each cell contributes a cold-top gaussian, tinted cyan, upscaled with smoothing. Heatmap: accumulate frame.flashDensity (or live flashes) into a 96×64 offscreen grid, draw upscaled in amber with alpha ramp. Wire layer toggles and the radar/satellite segmented control in the store. Measure draw time and log if over 4 ms.
 ```
 
-### [ ] 2.4 Lightning flash animation
+### [x] 2.4 Lightning flash animation
 **Does:** Live-style flash pops at observed and predicted flash points during playback.
 **Depends on:** 2.3.
 **Verify:**
