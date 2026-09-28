@@ -172,7 +172,7 @@ Read docs/03-motion-and-performance.md (Canvas rules) and docs/05-architecture.m
 Read docs/01-design-system.md (Map look). Implement layers in src/lib/map/layers: base.ts (state outline + district strokes + district labels, drawn to the offscreen canvas), graticule.ts (0.5° faint lines), scalebar.ts, and a coordinate readout overlay in MapCanvas that updates from pointer position without React re-rendering the map. Use tokens via a small src/lib/map/theme.ts that reads CSS variables once. Label placement: use district centroid, skip labels that collide (simple AABB check, larger districts first).
 ```
 
-### [ ] 2.3 Storm layers: radar, satellite, flash density
+### [x] 2.3 Storm layers: radar, satellite, flash density
 **Does:** Procedural radar cells, satellite cloud-top mode and the flash-density heatmap.
 **Depends on:** 2.2.
 **Verify:**
