@@ -1,11 +1,10 @@
 import type { Scenario } from "@/types/scenario";
 import type { AppState } from "@/types/store";
-import { baseFeatures, baseLayer, stateOutline } from "./layers/base";
+import { baseLayer } from "./layers/base";
 import { graticuleLayer } from "./layers/graticule";
 import { scaleBarLayer } from "./layers/scalebar";
 import { fitProjection, frameCellsAt, hitTestCells, projectTweenAt, startProjectionTween, type MapProjection, type ProjectionTween } from "./project";
-import type { MapTheme } from "./theme";
-import { readMapTheme } from "./theme";
+import { readMapTheme, type MapTheme } from "./theme";
 
 // contains the globally-owned values the imperative renderer reads for each map frame
 export interface MapFrameState {
@@ -14,12 +13,10 @@ export interface MapFrameState {
   selectedCellId: string | null;
   layers: AppState["layers"];
   backgroundColor: string;
-  projection: MapProjection;
   theme: MapTheme;
+  projection: MapProjection;
   width: number;
   height: number;
-  features: typeof baseFeatures;
-  outline: typeof stateOutline;
 }
 
 // establishes the pure draw contract all future map layers follow in fixed order
@@ -35,25 +32,16 @@ export interface MapEngineOptions {
   initialState: AppState;
   subscribe: (listener: (state: AppState) => void) => () => void;
   onCellSelect: (cellId: string) => void;
-  onCoordinateChange?: (coordinate: readonly [number, number] | null) => void;
 }
 
 // exposes the lifecycle cleanup required when the React wrapper unmounts the canvas
 export interface MapEngine {
   destroy: () => void;
+  coordinateAt: (point: readonly [number, number]) => readonly [number, number] | null;
 }
 
-// gives the initial canvas phase a static operational surface without pre-empting future map layers
-const placeholderBackground: Layer = {
-  id: "placeholder-background",
-  draw: (ctx, state) => {
-    ctx.fillStyle = state.backgroundColor;
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  },
-};
-
 // fixes canvas composition order as later geographic layers are introduced in subsequent chunks
-const staticLayers: readonly Layer[] = [placeholderBackground, graticuleLayer, baseLayer, scaleBarLayer];
+const staticLayers: readonly Layer[] = [graticuleLayer, baseLayer, scaleBarLayer];
 
 // creates a device-pixel-ratio-aware canvas renderer driven entirely from mutable store state
 export function createMapEngine(options: MapEngineOptions): MapEngine {
@@ -66,9 +54,9 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
 
   // captures the current theme surface once for use by the detached static canvas
   const theme = readMapTheme(options.canvas);
-  const backgroundColor = theme.bg;
-  let frameState = toFrameState(options.initialState, options.scenarios, backgroundColor, fitProjection(options.scenarios[options.initialState.scenarioId].region, 1, 1), theme, 1, 1);
-  let projection = fitProjection(frameState.scenario.region, 1, 1);
+  const backgroundColor = theme.background;
+  let projection = fitProjection(options.scenarios[options.initialState.scenarioId].region, 1, 1);
+  let frameState = toFrameState(options.initialState, options.scenarios, backgroundColor, theme, projection, 1, 1);
   let projectionTween: ProjectionTween | null = null;
   let animationFrame: number | null = null;
   let visible = document.visibilityState === "visible";
@@ -80,7 +68,8 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
   const redrawStatic = () => {
     staticContext.setTransform(dpr, 0, 0, dpr, 0, 0);
     staticContext.clearRect(0, 0, width, height);
-    staticLayers.forEach((layer) => layer.draw(staticContext, frameState, 0));
+    const staticState = { ...frameState, projection, width, height };
+    staticLayers.forEach((layer) => layer.draw(staticContext, staticState, 0));
   };
 
   // schedules work only when a resize, store update, or active projection tween requires a frame
@@ -97,8 +86,6 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
       const result = projectTweenAt(projectionTween, now);
       projection = result.projection;
       if (result.complete) projectionTween = null;
-      frameState = { ...frameState, projection };
-      redrawStatic();
     }
 
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -120,7 +107,6 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
     staticCanvas.width = options.canvas.width;
     staticCanvas.height = options.canvas.height;
     projection = fitProjection(frameState.scenario.region, width, height);
-    frameState = { ...frameState, projection, width, height };
     projectionTween = null;
     redrawStatic();
     requestFrame();
@@ -148,27 +134,19 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
     if (cellId) options.onCellSelect(cellId);
   };
 
-  // updates a DOM-only readout, avoiding React work for high-frequency pointer movement
-  const onPointerMove = (event: PointerEvent) => {
-    const bounds = options.canvas.getBoundingClientRect();
-    options.onCoordinateChange?.(projection.invert([event.clientX - bounds.left, event.clientY - bounds.top]));
-  };
-
-  const onPointerLeave = () => options.onCoordinateChange?.(null);
-
   // updates the RAF-owned snapshot without subscribing React to high-frequency playback state
   const unsubscribe = options.subscribe((state) => {
-    const nextState = toFrameState(state, options.scenarios, backgroundColor, projection, theme, width, height);
+    const nextState = toFrameState(state, options.scenarios, backgroundColor, theme, projection, width, height);
     const scenarioChanged = nextState.scenario.id !== frameState.scenario.id;
-    const districtsChanged = nextState.layers.districts !== frameState.layers.districts;
+    const staticLayerChanged = nextState.layers.districts !== frameState.layers.districts;
     frameState = nextState;
 
     if (scenarioChanged) {
       const target = fitProjection(frameState.scenario.region, width, height);
       projectionTween = startProjectionTween(projection, target, performance.now());
-    } else if (districtsChanged) {
       redrawStatic();
     }
+    if (staticLayerChanged) redrawStatic();
 
     requestFrame();
   });
@@ -176,8 +154,6 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
   observer.observe(options.canvas);
   document.addEventListener("visibilitychange", onVisibilityChange);
   options.canvas.addEventListener("click", onClick);
-  options.canvas.addEventListener("pointermove", onPointerMove);
-  options.canvas.addEventListener("pointerleave", onPointerLeave);
 
   return {
     destroy: () => {
@@ -185,34 +161,23 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
       observer.disconnect();
       document.removeEventListener("visibilitychange", onVisibilityChange);
       options.canvas.removeEventListener("click", onClick);
-      options.canvas.removeEventListener("pointermove", onPointerMove);
-      options.canvas.removeEventListener("pointerleave", onPointerLeave);
       if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
     },
+    coordinateAt: (point) => projection.unproject(point),
   };
 }
 
 // extracts only the globally-owned values the canvas needs for its mutable per-frame snapshot
-function toFrameState(
-  state: AppState,
-  scenarios: Record<Scenario["id"], Scenario>,
-  backgroundColor: string,
-  projection: MapProjection,
-  theme: MapTheme,
-  width: number,
-  height: number,
-): MapFrameState {
+function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenario>, backgroundColor: string, theme: MapTheme, projection: MapProjection, width: number, height: number): MapFrameState {
   return {
     scenario: scenarios[state.scenarioId],
     timeMin: state.timeMin,
     selectedCellId: state.selectedCellId,
     layers: state.layers,
     backgroundColor,
-    projection,
     theme,
+    projection,
     width,
     height,
-    features: baseFeatures,
-    outline: stateOutline,
   };
 }

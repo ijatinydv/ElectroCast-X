@@ -7,7 +7,7 @@ export type ScreenPoint = readonly [number, number];
 // represents a stable immutable snapshot of d3 projection parameters for canvas drawing
 export interface MapProjection {
   project: (lonLat: ScreenPoint) => ScreenPoint;
-  invert: (point: ScreenPoint) => ScreenPoint | null;
+  unproject: (point: ScreenPoint) => ScreenPoint | null;
   scale: number;
   translate: ScreenPoint;
 }
@@ -32,9 +32,11 @@ function toMapProjection(projection: GeoProjection): MapProjection {
       const point = projection([lonLat[0], lonLat[1]]);
       return point ? [point[0], point[1]] : [0, 0];
     },
-    invert: (point) => {
-      const lonLat = projection.invert?.([point[0], point[1]]);
-      return lonLat ? [lonLat[0], lonLat[1]] : null;
+    unproject: (point) => {
+      const invert = projection.invert;
+      if (!invert) return null;
+      const coordinate = invert([point[0], point[1]]);
+      return coordinate ? [coordinate[0], coordinate[1]] : null;
     },
   };
 }
@@ -45,21 +47,16 @@ export function fitProjection(region: Scenario["region"], width: number, height:
   const safeHeight = Math.max(height, 1);
   const inset = Math.min(32, safeWidth * 0.08, safeHeight * 0.08);
   const [west, south, east, north] = region.bbox;
-  // Fit the d3 Mercator projection from its raw corner positions. This avoids constructing
-  // a GeoJSON object at runtime while producing the same bounded fit as fitExtent.
-  const rawProjection = geoMercator().scale(1).translate([0, 0]);
-  const northWest = rawProjection([west, north]);
-  const southEast = rawProjection([east, south]);
-  if (!northWest || !southEast) throw new Error("Scenario region cannot be projected");
+  const reference = geoMercator().scale(1).translate([0, 0]);
+  const northWest = reference([west, north]) ?? [0, 0];
+  const southEast = reference([east, south]) ?? [1, 1];
   const scale = Math.min(
     (safeWidth - inset * 2) / Math.abs(southEast[0] - northWest[0]),
     (safeHeight - inset * 2) / Math.abs(southEast[1] - northWest[1]),
   );
-  const rawCenterX = (northWest[0] + southEast[0]) / 2;
-  const rawCenterY = (northWest[1] + southEast[1]) / 2;
-  const projection = geoMercator()
-    .scale(scale)
-    .translate([safeWidth / 2 - rawCenterX * scale, safeHeight / 2 - rawCenterY * scale]);
+  const centreX = (northWest[0] + southEast[0]) / 2;
+  const centreY = (northWest[1] + southEast[1]) / 2;
+  const projection = geoMercator().scale(scale).translate([safeWidth / 2 - centreX * scale, safeHeight / 2 - centreY * scale]);
 
   return toMapProjection(projection);
 }
@@ -88,7 +85,7 @@ export function projectTweenAt(tween: ProjectionTween, now: number): { projectio
         const target = tween.to.project(lonLat);
         return [translate[0] + (target[0] - tween.to.translate[0]) * ratio, translate[1] + (target[1] - tween.to.translate[1]) * ratio];
       },
-      invert: (point) => tween.to.invert([
+      unproject: (point) => tween.to.unproject([
         tween.to.translate[0] + (point[0] - translate[0]) / ratio,
         tween.to.translate[1] + (point[1] - translate[1]) / ratio,
       ]),

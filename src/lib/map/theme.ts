@@ -1,18 +1,20 @@
-// captures the canvas palette once at engine creation so layers never query styles while drawing
+// captures canvas styling once from the shared css token system
 export interface MapTheme {
-  bg: string;
+  background: string;
   line: string;
   lineStrong: string;
-  fg3: string;
+  foregroundTertiary: string;
+  fontSans: string;
 }
 
-// reads the existing design tokens without duplicating colour values in imperative map code
+// reads the design tokens used by imperative map drawing
 export function readMapTheme(element: Element): MapTheme {
   const styles = getComputedStyle(element);
   return {
-    bg: styles.getPropertyValue("--color-bg").trim(),
+    background: styles.getPropertyValue("--color-bg").trim(),
     line: styles.getPropertyValue("--color-line").trim(),
     lineStrong: styles.getPropertyValue("--color-line-strong").trim(),
-    fg3: styles.getPropertyValue("--color-fg-3").trim(),
+    foregroundTertiary: styles.getPropertyValue("--color-fg-3").trim(),
+    fontSans: styles.getPropertyValue("--font-sans").trim(),
   };
 }

@@ -1,35 +1,37 @@
-import type { Layer } from "../engine";
+import type { Layer, MapFrameState } from "../engine";
 
-// draws the specified half-degree geographic reference grid into the cached map background
+// draws the faint half-degree geographic reference grid beneath the boundaries
 export const graticuleLayer: Layer = {
   id: "graticule",
   draw: (ctx, state) => {
-    if (!state.layers.districts) return;
     const [west, south, east, north] = state.scenario.region.bbox;
-    const startLon = Math.floor(west * 2) / 2;
-    const startLat = Math.floor(south * 2) / 2;
-    ctx.save();
+    ctx.beginPath();
     ctx.strokeStyle = state.theme.line;
     ctx.lineWidth = 1;
-    ctx.globalAlpha = 0.7;
-    for (let lon = startLon; lon <= east; lon += 0.5) {
-      ctx.beginPath();
-      for (let lat = south; lat <= north; lat += 0.05) {
-        const [x, y] = state.projection.project([lon, lat]);
-        if (lat === south) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-    }
-    for (let lat = startLat; lat <= north; lat += 0.5) {
-      ctx.beginPath();
-      for (let lon = west; lon <= east; lon += 0.05) {
-        const [x, y] = state.projection.project([lon, lat]);
-        if (lon === west) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-    }
-    ctx.restore();
+    for (let longitude = gridStart(west); longitude <= east; longitude += 0.5) drawLongitude(ctx, state, longitude, south, north);
+    for (let latitude = gridStart(south); latitude <= north; latitude += 0.5) drawLatitude(ctx, state, latitude, west, east);
+    ctx.stroke();
   },
 };
+
+// aligns a grid start to a half-degree coordinate
+function gridStart(value: number): number { return Math.ceil(value * 2) / 2; }
+
+// traces one longitude through the current mercator projection
+function drawLongitude(ctx: CanvasRenderingContext2D, state: MapFrameState, longitude: number, south: number, north: number): void {
+  drawSegmentedLine(ctx, state, 12, (step, steps) => [longitude, south + ((north - south) * step) / steps]);
+}
+
+// traces one latitude through the current mercator projection
+function drawLatitude(ctx: CanvasRenderingContext2D, state: MapFrameState, latitude: number, west: number, east: number): void {
+  drawSegmentedLine(ctx, state, 12, (step, steps) => [west + ((east - west) * step) / steps, latitude]);
+}
+
+// draws a projected geographic line from a small sequence of coordinate samples
+function drawSegmentedLine(ctx: CanvasRenderingContext2D, state: MapFrameState, steps: number, coordinateAt: (step: number, steps: number) => readonly [number, number]): void {
+  for (let step = 0; step <= steps; step += 1) {
+    const [x, y] = state.projection.project(coordinateAt(step, steps));
+    if (step === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+}
