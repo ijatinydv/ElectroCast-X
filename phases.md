@@ -242,7 +242,7 @@ Read docs/02-ui-spec.md (Left rail: View) and docs/04-data-contract.md (decompos
 
 # Phase 3 — Core panels
 
-### [ ] 3.1 Storm Time Machine dock
+### [x] 3.1 Storm Time Machine dock
 **Does:** Scrubber, playback controls, event markers.
 **Depends on:** 2.1, 1.5.
 **Verify:**
