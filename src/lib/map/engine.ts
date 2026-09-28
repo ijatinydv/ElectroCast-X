@@ -3,6 +3,7 @@ import type { AppState } from "@/types/store";
 import { baseLayer } from "./layers/base";
 import { graticuleLayer } from "./layers/graticule";
 import { heatmapLayer, prepareHeatmapLayer } from "./layers/heatmap";
+import { lightningLayer } from "./layers/lightning";
 import { radarLayer } from "./layers/radar";
 import { prepareSatelliteLayer, satelliteLayer } from "./layers/satellite";
 import { scaleBarLayer } from "./layers/scalebar";
@@ -18,6 +19,7 @@ export interface MapFrameState {
   frame: Frame;
   selectedCellId: string | null;
   mapMode: AppState["mapMode"];
+  compareOn: boolean;
   layers: AppState["layers"];
   backgroundColor: string;
   theme: MapTheme;
@@ -51,7 +53,7 @@ export interface MapEngine {
 const staticLayers: readonly Layer[] = [graticuleLayer, baseLayer, scaleBarLayer];
 
 // fixes dynamic composition order so atmospheric fields remain beneath radar and flash density
-const dynamicLayers: readonly Layer[] = [satelliteLayer, radarLayer, heatmapLayer];
+const dynamicLayers: readonly Layer[] = [satelliteLayer, radarLayer, heatmapLayer, lightningLayer];
 
 // creates a device-pixel-ratio-aware canvas renderer driven entirely from mutable store state
 export function createMapEngine(options: MapEngineOptions): MapEngine {
@@ -194,6 +196,7 @@ function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenari
     frame: frameAt(scenarios[state.scenarioId], state.timeMin),
     selectedCellId: state.selectedCellId,
     mapMode: state.mapMode,
+    compareOn: state.compare.on,
     layers: state.layers,
     backgroundColor,
     theme,
