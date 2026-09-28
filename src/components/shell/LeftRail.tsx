@@ -12,6 +12,8 @@ export function LeftRail() {
   const layers = useStore((state) => state.layers);
   const setMapMode = useStore((state) => state.setMapMode);
   const toggleLayer = useStore((state) => state.toggleLayer);
+  const sensorOff = useStore((state) => state.sensorOff);
+  const toggleSensor = useStore((state) => state.toggleSensor);
 
   return (
     <ScrollArea className="h-full bg-rail border-r border-line">
@@ -31,7 +33,11 @@ export function LeftRail() {
           </div>
         </Panel>
         <Panel title="Sensors" defaultOpen={true}>
-          <div className="text-sm text-fg-2">Placeholder sensor lab</div>
+          {process.env.NODE_ENV === "development" ? (
+            <button type="button" onClick={() => toggleSensor("radar")} className="w-full rounded border border-line px-2 py-1 text-left text-sm text-fg-2 hover:text-fg">
+              {sensorOff.radar ? "Restore radar sensor" : "Disable radar sensor"}
+            </button>
+          ) : <div className="text-sm text-fg-2">Sensor controls arrive in the sensor lab.</div>}
         </Panel>
         <Panel title="View" defaultOpen={true}>
           <div className="text-sm text-fg-2">Placeholder view options</div>

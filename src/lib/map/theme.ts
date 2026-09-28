@@ -3,11 +3,14 @@ export interface MapTheme {
   background: string;
   line: string;
   lineStrong: string;
+  foreground: string;
+  foregroundSecondary: string;
   foregroundTertiary: string;
   observed: string;
   forecast: string;
   risk: string;
   fontSans: string;
+  fontMono: string;
 }
 
 // reads the design tokens used by imperative map drawing
@@ -17,10 +20,13 @@ export function readMapTheme(element: Element): MapTheme {
     background: styles.getPropertyValue("--color-bg").trim(),
     line: styles.getPropertyValue("--color-line").trim(),
     lineStrong: styles.getPropertyValue("--color-line-strong").trim(),
+    foreground: styles.getPropertyValue("--color-fg").trim(),
+    foregroundSecondary: styles.getPropertyValue("--color-fg-2").trim(),
     foregroundTertiary: styles.getPropertyValue("--color-fg-3").trim(),
     observed: styles.getPropertyValue("--color-observed").trim(),
     forecast: styles.getPropertyValue("--color-forecast").trim(),
     risk: styles.getPropertyValue("--color-risk").trim(),
     fontSans: styles.getPropertyValue("--font-sans").trim(),
+    fontMono: styles.getPropertyValue("--font-mono").trim(),
   };
 }

@@ -1,4 +1,4 @@
-import type { SensorId } from "@/types/scenario";
+import type { Frame, SensorId } from "@/types/scenario";
 
 // represents explicit sensor disablement before conversion to a table bit mask
 export type SensorMask = Record<SensorId, boolean>;
@@ -13,4 +13,19 @@ export function maskBits(mask: Partial<SensorMask>): number {
 // creates an explicit all-sensors-on mask for callers that need a stable baseline
 export function enabledSensors(): SensorMask {
   return { radar: false, insat: false, lightning: false, nwp: false };
+}
+
+// converts sensor loss and the stalest still-enabled source into corridor uncertainty
+export function widthScale(mask: SensorMask, sensorHealth: Frame["sensorHealth"]): number {
+  const sensorPenalty = (mask.radar ? 0.35 : 0)
+    + (mask.insat ? 0.15 : 0)
+    + (mask.nwp ? 0.1 : 0)
+    + (mask.lightning ? 0.2 : 0);
+  const worstDataAgeMin = (Object.keys(mask) as SensorId[]).reduce<number>((worst, sensor) => {
+    const age = mask[sensor] ? null : sensorHealth[sensor].dataAgeMin;
+    return age === null ? worst : Math.max(worst, age);
+  }, 0);
+  const stale = Math.min(0.25, Math.max(0, (worstDataAgeMin - 10) / 60));
+
+  return 1 + sensorPenalty + stale;
 }
