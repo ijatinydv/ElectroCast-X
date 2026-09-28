@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import { m } from "motion/react";
+import { MapCanvas } from "@/components/map/MapCanvas";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { TopBar, LeftRail, RightRail, BottomDock } from "@/components/shell";
 
@@ -55,9 +56,8 @@ export default function MissionControlPage() {
           </Sheet>
         )}
 
-        {/* Map Slot */}
         <div id="map-slot" className="flex-1 bg-bg relative overflow-hidden h-full">
-          {/* placeholder for canvas map */}
+          <MapCanvas />
         </div>
 
         {isDesktop ? (
