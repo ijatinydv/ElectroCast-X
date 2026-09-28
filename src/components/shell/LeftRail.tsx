@@ -15,6 +15,8 @@ export function LeftRail() {
   const toggleLayer = useStore((state) => state.toggleLayer);
   const radarOff = useStore((state) => state.sensorOff.radar);
   const toggleSensor = useStore((state) => state.toggleSensor);
+  const decomposition = useStore((state) => state.decomposition);
+  const setDecomposition = useStore((state) => state.setDecomposition);
 
   return (
     <ScrollArea className="h-full bg-rail border-r border-line">
@@ -49,7 +51,13 @@ export function LeftRail() {
           {process.env.NODE_ENV === "development" ? <SensorToggle sensorId="radar" off={radarOff} onToggle={toggleSensor} /> : <div className="text-sm text-fg-2">Placeholder sensor lab</div>}
         </Panel>
         <Panel title="View" defaultOpen={true}>
-          <div className="text-sm text-fg-2">Placeholder view options</div>
+          <div className="flex flex-col gap-3 text-sm text-fg-2">
+            <label className="flex items-center justify-between gap-3">
+              <span>Forecast decomposition</span>
+              <Switch size="sm" checked={decomposition} onCheckedChange={setDecomposition} aria-label="Toggle forecast decomposition" />
+            </label>
+            <DecompositionLegend />
+          </div>
         </Panel>
       </div>
     </ScrollArea>
@@ -64,4 +72,15 @@ function LayerToggle({ label, layerId, checked, onCheckedChange }: { label: stri
 // exposes the temporary development control needed to demonstrate corridor uncertainty
 function SensorToggle({ sensorId, off, onToggle }: { sensorId: SensorId; off: boolean; onToggle: (sensorId: SensorId) => void }) {
   return <button type="button" onClick={() => onToggle(sensorId)} aria-pressed={off} className="w-full border border-line px-3 py-2 text-left text-sm text-fg-2 hover:bg-raised focus-visible:outline-none">{off ? "Restore radar" : "Disable radar"}</button>;
+}
+
+// makes the decomposition colour meanings available before an operator turns the map layer on
+function DecompositionLegend() {
+  return (
+    <ul className="grid gap-1.5 text-xs" aria-label="Forecast decomposition legend">
+      <li className="flex items-center gap-2"><span className="size-2 rounded-full bg-forecast" aria-hidden="true" />Motion</li>
+      <li className="flex items-center gap-2"><span className="size-2 rounded-full bg-risk" aria-hidden="true" />Growth or decay</li>
+      <li className="flex items-center gap-2"><span className="size-2 rounded-full bg-observed" aria-hidden="true" />New initiation</li>
+    </ul>
+  );
 }

@@ -1,14 +1,16 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import A from "@/data/scenarios/a-first-flash.json";
 import B from "@/data/scenarios/b-severe-storm.json";
+import C from "@/data/scenarios/c-sensor-loss.json";
 import { getSyntheticAssets } from "@/lib/geo/load";
-import { countdownFor, corridorFor, exposureFor, maskBits, riskFor, widthScale } from "@/lib/derive";
+import { countdownFor, corridorFor, effectiveSensorMask, exposureFor, maskBits, riskFor, widthScale } from "@/lib/derive";
 import { useStore } from "@/store/useStore";
 import { frameAt } from "@/lib/map/interpolate";
 import type { Scenario, SensorId } from "@/types/scenario";
 
 const firstFlash = A as unknown as Scenario;
 const severeStorm = B as unknown as Scenario;
+const sensorLoss = C as unknown as Scenario;
 const allSensors: SensorId[] = ["radar", "insat", "lightning", "nwp"];
 
 // retrieves the contract's T0 cell so derive tests share one source of fixture truth
@@ -91,6 +93,15 @@ describe("derive functions", () => {
     const { sensorHealth } = t0Frame;
     expect(widthScale({ radar: true, insat: false, lightning: false, nwp: false }, sensorHealth)).toBeGreaterThanOrEqual(1.35);
     expect(widthScale({ radar: false, insat: false, lightning: false, nwp: false }, { ...sensorHealth, radar: { ...sensorHealth.radar, dataAgeMin: 40 } })).toBe(1.25);
+  });
+
+  // ensures the prepared sensor-loss narrative widens forecast uncertainty without an operator action
+  it("includes offline prepared sensors in the effective uncertainty mask", () => {
+    const forecastFrame = sensorLoss.frames.find((frame) => frame.t === 30);
+    if (!forecastFrame) throw new Error("Scenario C requires a +30 minute frame");
+    const mask = effectiveSensorMask({ radar: false, insat: false, lightning: false, nwp: false }, forecastFrame.sensorHealth);
+    expect(mask.radar).toBe(true);
+    expect(widthScale(mask, forecastFrame.sensorHealth)).toBeGreaterThan(1.35);
   });
 
   it("returns the documented severe-storm synthetic exposure and arrival", () => {
