@@ -198,7 +198,7 @@ Read docs/01-design-system.md (Map look) and docs/03-motion-and-performance.md (
 Read docs/01-design-system.md (Lightning flash) and docs/03-motion-and-performance.md (Accessibility of motion). Implement src/lib/map/layers/lightning.ts with a ring buffer of ≤ 200 flashes. Spawn flashes from frame.lightning as timeMin crosses each flash's tMin (and sample at up to 2×–4× speed without spawning duplicates when scrubbing backwards). Render a radial bloom sprite: 60ms full, 400ms decay, white-cyan. Predicted flashes (t > 0) are hollow purple rings (no flash). Implement burst throttling (max 3 visible pops per second; merge extras into one brighter pop). Reduced motion: replace with a static dot for 1s. Add unit tests for the spawn/dedupe logic.
 ```
 
-### [ ] 2.5 Risk corridors, path, motion vector, cell selection
+### [x] 2.5 Risk corridors, path, motion vector, cell selection
 **Does:** 15/30/60 min corridors with centre path, inner high-confidence corridor and outer uncertainty boundary; storm direction and speed; cell IDs and selection.
 **Depends on:** 2.4, 1.4.
 **Verify:**

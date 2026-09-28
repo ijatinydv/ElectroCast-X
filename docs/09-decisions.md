@@ -25,6 +25,5 @@ Add a row whenever you make a choice that another person might question.
 | D17 | Generated multi-sensor risk is capped by each immediate predecessor mask | The documented 0.85 interaction formula can otherwise increase risk when a second sensor is disabled, which conflicts with the mandatory monotonicity invariant; the cap preserves canonical single-sensor values and guarantees the invariant | Emitting a non-monotonic table; weakening the validator |
 | D18 | Severe-storm exposure fixtures are anchored in the generated 30-minute inner corridor | The published data contract requires the t=0 synthetic counts and 24-minute arrival to be reproducible from point-in-polygon geometry | Hand-editing generated JSON or returning presentation-only exposure counts |
 | D19 | The initial map engine caches the required placeholder background in an offscreen canvas | Establishes the final static-layer render path before geographic visual layers arrive in their dedicated chunks | Repainting static content in every RAF frame; adding a temporary DOM map |
-# Phase 3.1
-
-- The Storm Time Machine rounds pointer positions to whole scenario minutes while step controls use prepared keyframes, so scrubbing stays continuous and stepping remains data-aligned.
+| D23 | Corridors are rendered for all cells, with nonselected cells dimmed | Preserves storm context while letting the selected cell remain the operational focus | Hiding all unselected forecast paths |
+| D24 | Storm Time Machine pointer positions round to whole scenario minutes while step controls use prepared keyframes | Scrubbing remains continuously responsive while stepping remains data-aligned | Snapping pointer input to keyframes; allowing arbitrary step values |

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import A from "@/data/scenarios/a-first-flash.json";
 import B from "@/data/scenarios/b-severe-storm.json";
 import { getSyntheticAssets } from "@/lib/geo/load";
-import { countdownFor, corridorFor, exposureFor, maskBits, riskFor } from "@/lib/derive";
+import { countdownFor, corridorFor, exposureFor, maskBits, riskFor, widthScale } from "@/lib/derive";
 import { useStore } from "@/store/useStore";
 import type { Scenario, SensorId } from "@/types/scenario";
 
@@ -73,6 +73,14 @@ describe("derive functions", () => {
     expect(area(standard.inner)).toBeLessThan(area(standard.outer));
     expect(area(degraded.inner)).toBeGreaterThan(area(standard.inner));
     expect(area(degraded.outer)).toBeGreaterThan(area(standard.outer));
+  });
+
+  it("maps sensor disablement and stale observations to the documented corridor scale", () => {
+    const t0Frame = firstFlash.frames.find((frame) => frame.t === 0);
+    if (!t0Frame) throw new Error("Scenario A requires a t=0 frame");
+    const { sensorHealth } = t0Frame;
+    expect(widthScale({ radar: true, insat: false, lightning: false, nwp: false }, sensorHealth)).toBeGreaterThanOrEqual(1.35);
+    expect(widthScale({ radar: false, insat: false, lightning: false, nwp: false }, { ...sensorHealth, radar: { ...sensorHealth.radar, dataAgeMin: 40 } })).toBe(1.25);
   });
 
   it("returns the documented severe-storm synthetic exposure and arrival", () => {
