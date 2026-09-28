@@ -129,7 +129,7 @@ Read docs/04-data-contract.md fully. Implement scripts/generate-scenarios.ts: a 
 Read docs/04-data-contract.md (Derived functions) and docs/05-architecture.md (Store shape). Implement src/store/useStore.ts exactly per the shape (Zustand, narrow selectors, small named actions; selectScenario resets time, selection, sensor mask and issued warnings). Implement src/lib/derive/{mask,risk,corridor,countdown,exposure,evidence,index}.ts as pure functions. countdownFor rescales p15/p30/p60 consistently when the mask lowers the 30-min risk (preserve ordering, keep p60 ≥ p30). exposureFor uses point-in-polygon on the 30-min inner corridor and the synthetic assets; arrival = distance along path / speed. Write thorough Vitest tests (the numbers in the Verify list are the assertions). No UI.
 ```
 
-### [ ] 1.5 Frame interpolation and playback
+### [x] 1.5 Frame interpolation and playback
 **Does:** Continuous-time interpolation across keyframes and a playback hook.
 **Depends on:** 1.4.
 **Verify:**
