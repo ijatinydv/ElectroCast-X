@@ -7,6 +7,7 @@ export type ScreenPoint = readonly [number, number];
 // represents a stable immutable snapshot of d3 projection parameters for canvas drawing
 export interface MapProjection {
   project: (lonLat: ScreenPoint) => ScreenPoint;
+  unproject: (point: ScreenPoint) => ScreenPoint | null;
   scale: number;
   translate: ScreenPoint;
 }
@@ -17,15 +18,6 @@ export interface ProjectionTween {
   to: MapProjection;
   startedAt: number;
   duration: number;
-}
-
-// converts a scenario bounding box into geometry d3 can fit to the map viewport
-function regionGeometry(region: Scenario["region"]): GeoJSON.Polygon {
-  const [west, south, east, north] = region.bbox;
-  return {
-    type: "Polygon",
-    coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]],
-  };
 }
 
 // captures d3's mutable projection values in a stable canvas-friendly representation
@@ -40,6 +32,12 @@ function toMapProjection(projection: GeoProjection): MapProjection {
       const point = projection([lonLat[0], lonLat[1]]);
       return point ? [point[0], point[1]] : [0, 0];
     },
+    unproject: (point) => {
+      const invert = projection.invert;
+      if (!invert) return null;
+      const coordinate = invert([point[0], point[1]]);
+      return coordinate ? [coordinate[0], coordinate[1]] : null;
+    },
   };
 }
 
@@ -48,10 +46,17 @@ export function fitProjection(region: Scenario["region"], width: number, height:
   const safeWidth = Math.max(width, 1);
   const safeHeight = Math.max(height, 1);
   const inset = Math.min(32, safeWidth * 0.08, safeHeight * 0.08);
-  const projection = geoMercator().fitExtent(
-    [[inset, inset], [safeWidth - inset, safeHeight - inset]],
-    regionGeometry(region),
+  const [west, south, east, north] = region.bbox;
+  const reference = geoMercator().scale(1).translate([0, 0]);
+  const northWest = reference([west, north]) ?? [0, 0];
+  const southEast = reference([east, south]) ?? [1, 1];
+  const scale = Math.min(
+    (safeWidth - inset * 2) / Math.abs(southEast[0] - northWest[0]),
+    (safeHeight - inset * 2) / Math.abs(southEast[1] - northWest[1]),
   );
+  const centreX = (northWest[0] + southEast[0]) / 2;
+  const centreY = (northWest[1] + southEast[1]) / 2;
+  const projection = geoMercator().scale(scale).translate([safeWidth / 2 - centreX * scale, safeHeight / 2 - centreY * scale]);
 
   return toMapProjection(projection);
 }
@@ -80,6 +85,10 @@ export function projectTweenAt(tween: ProjectionTween, now: number): { projectio
         const target = tween.to.project(lonLat);
         return [translate[0] + (target[0] - tween.to.translate[0]) * ratio, translate[1] + (target[1] - tween.to.translate[1]) * ratio];
       },
+      unproject: (point) => tween.to.unproject([
+        tween.to.translate[0] + (point[0] - translate[0]) / ratio,
+        tween.to.translate[1] + (point[1] - translate[1]) / ratio,
+      ]),
     },
     complete: rawProgress === 1,
   };
