@@ -27,6 +27,32 @@
   --duration-quick: 150ms;
   --duration-base: 250ms;
   --duration-slow: 400ms;
+
+  /* shadcn/ui mapping */
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-fg);
+  --color-card: var(--color-rail);
+  --color-card-foreground: var(--color-fg);
+  --color-popover: var(--color-rail);
+  --color-popover-foreground: var(--color-fg);
+  --color-primary: var(--color-observed);
+  --color-primary-foreground: var(--color-bg);
+  --color-secondary: var(--color-raised);
+  --color-secondary-foreground: var(--color-fg);
+  --color-muted: var(--color-raised);
+  --color-muted-foreground: var(--color-fg-2);
+  --color-accent: var(--color-raised);
+  --color-accent-foreground: var(--color-fg);
+  --color-destructive: var(--color-alert);
+  --color-destructive-foreground: var(--color-fg);
+  --color-border: var(--color-line);
+  --color-input: var(--color-line);
+  --color-ring: var(--color-line-strong);
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
 }
 
 html,

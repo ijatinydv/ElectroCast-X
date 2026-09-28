@@ -18,3 +18,4 @@ Add a row whenever you make a choice that another person might question.
 | D12 | CAP `status` is `Exercise` | Never imply an operational warning | `Actual` |
 | D13 | `motion/react` with LazyMotion | ~4.6 KB vs ~34 KB | Full `motion` |
 | D14 | Static export, no server features | Runs offline at the venue | Node server |
+| D15 | shadcn/ui mapped to our globals.css design tokens | Keeps one source of truth, avoids standard theme overwrite | shadcn CSS variables |
