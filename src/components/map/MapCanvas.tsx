@@ -14,6 +14,7 @@ const scenarios = { A: scenarioA, B: scenarioB, C: scenarioC } as unknown as Rec
 // mounts the imperative map engine once so canvas frames never cause React component renders
 export function MapCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const coordinateRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -28,10 +29,21 @@ export function MapCanvas() {
         useStore.getState().selectCell(cellId);
         console.info("Selected map cell", cellId);
       },
+      onCoordinateChange: (coordinate) => {
+        if (!coordinateRef.current) return;
+        coordinateRef.current.textContent = coordinate
+          ? `${coordinate[0].toFixed(2)}°E  ${coordinate[1].toFixed(2)}°N`
+          : "";
+      },
     });
 
     return () => engine.destroy();
   }, []);
 
-  return <canvas ref={canvasRef} className="block h-full w-full" aria-label="Scenario map" />;
+  return (
+    <>
+      <canvas ref={canvasRef} className="block h-full w-full" aria-label="Scenario map" />
+      <div ref={coordinateRef} aria-live="off" className="pointer-events-none absolute bottom-3 left-4 min-h-4 font-mono text-[11px] leading-4 text-fg-3" />
+    </>
+  );
 }

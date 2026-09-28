@@ -40,6 +40,16 @@ describe("map projection", () => {
     expect(southEast[1]).toBeLessThanOrEqual(500);
   });
 
+  // guards the Mercator inverse used by the DOM-free coordinate readout
+  it("inverts a fitted screen point back into the active scenario region", () => {
+    const projection = fitProjection(region, 800, 500);
+    const inverted = projection.invert(projection.project([86, 21]));
+
+    expect(inverted).not.toBeNull();
+    expect(inverted?.[0]).toBeCloseTo(86, 5);
+    expect(inverted?.[1]).toBeCloseTo(21, 5);
+  });
+
   // verifies the 400ms transition resolves at the target projection rather than snapping early
   it("completes a projection refit at 400ms", () => {
     const from = fitProjection(region, 800, 500);
