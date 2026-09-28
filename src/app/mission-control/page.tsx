@@ -3,16 +3,11 @@ import * as React from "react";
 import { m } from "motion/react";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { TopBar, LeftRail, RightRail, BottomDock } from "@/components/shell";
+import { MapCanvas } from "@/components/map/MapCanvas";
 
 export default function MissionControlPage() {
   const [leftOpen, setLeftOpen] = React.useState(true);
   const [rightOpen, setRightOpen] = React.useState(true);
-  const [isMounted, setIsMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   // Use a standard matching media query logic, handling SSR by waiting for mount
   const [isDesktop, setIsDesktop] = React.useState(true);
   React.useEffect(() => {
@@ -22,8 +17,6 @@ export default function MissionControlPage() {
     mediaQuery.addEventListener("change", handler);
     return () => mediaQuery.removeEventListener("change", handler);
   }, []);
-
-  if (!isMounted) return null;
 
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col bg-bg text-fg">
@@ -57,7 +50,7 @@ export default function MissionControlPage() {
 
         {/* Map Slot */}
         <div id="map-slot" className="flex-1 bg-bg relative overflow-hidden h-full">
-          {/* placeholder for canvas map */}
+          <MapCanvas />
         </div>
 
         {isDesktop ? (
