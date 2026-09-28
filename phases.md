@@ -114,7 +114,7 @@ Read docs/04-data-contract.md (Geo and assets). Obtain Odisha district boundarie
 Read docs/04-data-contract.md fully. Implement scripts/generate-scenarios.ts: a seeded PRNG (mulberry32), parametric storm-cell trajectories per scenario (A: developing cell near Mayurbhanj–Keonjhar; B: electrified storm Keonjhar → Balasore, flash rate 6 → 19/min; C: Cuttack–Khordha cell with radar failing at frame index 5), 12 keyframes each at t = −60,−50,−40,−30,−20,−10,0,10,20,30,45,60. Produce corridors (center, inner, outer for 15/30/60), decomposition weights and initiation sites, evidence rows with sparklines from the allowed variable list, lightning points, low-res flashDensity grids, sensorHealth per frame, events, outcome, and the precomputed 16-mask sensorTable using the exact formula in the contract. Hit the canonical numbers exactly at t = 0. Write the three JSON files to src/data/scenarios. Run the validator; fix generator, never the validator.
 ```
 
-### [ ] 1.4 Store and derive functions
+### [x] 1.4 Store and derive functions
 **Does:** Implements the Zustand store and all pure derive functions with unit tests.
 **Depends on:** 1.3.
 **Verify:**

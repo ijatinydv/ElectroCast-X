@@ -204,7 +204,7 @@ function cellFor(definition: ScenarioDefinition, timeMin: number, random: () => 
     cape: Math.round(1050 + progress * 1050),
     freezingLevelKm: round(4.4 + progress * 0.2, 1),
     flashRate: definition.id === "B" ? (timeMin === 60 ? 19 : Math.round(6 + progress * 13)) : 0,
-    motion: { dirDeg: definition.id === "B" ? 78 : definition.id === "C" ? 42 : 54, speedKmh: definition.id === "B" ? 42 : 28 },
+    motion: { dirDeg: definition.id === "B" ? 78 : definition.id === "C" ? 42 : 54, speedKmh: definition.id === "B" ? 31 : 28 },
     corridors: corridorsFor(definition, centroid),
     decomposition: {
       motion: definition.id === "B" ? 0.48 : 0.34,

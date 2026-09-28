@@ -222,35 +222,35 @@
     },
     {
       "id": "village-021",
-      "name": "Bhalusahi",
+      "name": "Corridor village 01",
       "lonLat": [
-        87.06252,
-        21.19127
+        86.731,
+        21.312
       ],
       "type": "village",
-      "population": 700,
+      "population": 1200,
       "synthetic": true
     },
     {
       "id": "village-022",
-      "name": "Gorumpur",
+      "name": "Corridor village 02",
       "lonLat": [
-        87.13947,
-        21.07315
+        86.747,
+        21.321
       ],
       "type": "village",
-      "population": 1450,
+      "population": 1550,
       "synthetic": true
     },
     {
       "id": "village-023",
-      "name": "Nuagagaon",
+      "name": "Corridor village 03",
       "lonLat": [
-        86.54706,
-        21.38068
+        86.763,
+        21.332
       ],
       "type": "village",
-      "population": 3100,
+      "population": 1900,
       "synthetic": true
     },
     {
@@ -662,20 +662,20 @@
     },
     {
       "id": "school-061",
-      "name": "Demo school site 01 near Mayurbhanj–Keonjhar",
+      "name": "Demo corridor school 01",
       "lonLat": [
-        85.96889,
-        21.33314
+        86.738,
+        21.315
       ],
       "type": "school",
       "synthetic": true
     },
     {
       "id": "school-062",
-      "name": "Demo school site 02 near Mayurbhanj–Keonjhar",
+      "name": "Demo corridor school 02",
       "lonLat": [
-        86.28202,
-        22.12178
+        86.757,
+        21.329
       ],
       "type": "school",
       "synthetic": true
@@ -1225,24 +1225,24 @@
       "name": "Demo transmission corridor 2",
       "path": [
         [
-          86.26619,
-          21.01598
+          86.72,
+          21.305
         ],
         [
-          86.2761,
-          21.02772
+          86.735,
+          21.313
         ],
         [
-          86.286,
-          21.03946
+          86.75,
+          21.322
         ],
         [
-          86.29591,
-          21.05119
+          86.765,
+          21.331
         ],
         [
-          86.30582,
-          21.06293
+          86.78,
+          21.34
         ]
       ],
       "type": "transmission",
