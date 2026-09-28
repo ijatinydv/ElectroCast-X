@@ -145,7 +145,7 @@ Read docs/05-architecture.md (Playback) and docs/03-motion-and-performance.md (R
 
 # Phase 2 — Mission Control map
 
-### [ ] 2.1 Canvas engine
+### [x] 2.1 Canvas engine
 **Does:** One canvas, one loop, projection, DPR handling, offscreen static layer, layer interface, hit-testing.
 **Depends on:** 0.3, 1.5.
 **Verify:**

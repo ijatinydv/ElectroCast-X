@@ -48,7 +48,6 @@ export default function MissionControlPage() {
           </Sheet>
         )}
 
-        {/* Map Slot */}
         <div id="map-slot" className="flex-1 bg-bg relative overflow-hidden h-full">
           <MapCanvas />
         </div>

@@ -1,8 +1,173 @@
-import first from "@/data/scenarios/a-first-flash.json"; import severe from "@/data/scenarios/b-severe-storm.json"; import loss from "@/data/scenarios/c-sensor-loss.json";
-import { useStore } from "@/store/useStore"; import type { Scenario } from "@/types/scenario"; import { frameAt } from "./interpolate"; import { MapProjection } from "./project"; import type { Layer, MapState, Theme } from "./layers";
-const scenarios = { A: first, B: severe, C: loss } as unknown as Record<"A" | "B" | "C", Scenario>;
-export class MapEngine { private ctx; private staticCanvas = document.createElement("canvas"); private staticCtx = this.staticCanvas.getContext("2d")!; private state: MapState; private observer; private raf = 0; private dirty = true; private unsubscribe: () => void;
-  constructor(private canvas: HTMLCanvasElement, private host: HTMLElement, private layers: Layer[]) { this.ctx = canvas.getContext("2d")!; const snapshot = useStore.getState(); const scenario = scenarios[snapshot.scenarioId]; const css = getComputedStyle(host); const get = (key: string) => css.getPropertyValue(key).trim(); const theme: Theme = { bg: get("--color-bg"), line: get("--color-line"), lineStrong: get("--color-line-strong"), fg: get("--color-fg"), fg2: get("--color-fg-2"), fg3: get("--color-fg-3"), observed: get("--color-observed"), forecast: get("--color-forecast"), risk: get("--color-risk") }; this.state = { scenario, frame: frameAt(scenario, snapshot.timeMin), time: snapshot.timeMin, selected: snapshot.selectedCellId, layers: snapshot.layers, mode: snapshot.mapMode, decomposition: snapshot.decomposition, sensorOff: snapshot.sensorOff, projection: new MapProjection(scenario, 1, 1), width: 1, height: 1, theme, reduced: matchMedia("(prefers-reduced-motion: reduce)").matches }; this.observer = new ResizeObserver(() => this.resize()); this.observer.observe(host); this.unsubscribe = useStore.subscribe((next, previous) => { const selected = scenarios[next.scenarioId]; if (selected !== this.state.scenario) { this.state.projection.refit(selected, performance.now()); this.dirty = true; } this.state = { ...this.state, scenario: selected, frame: frameAt(selected, next.timeMin), time: next.timeMin, selected: next.selectedCellId, layers: next.layers, mode: next.mapMode, decomposition: next.decomposition, sensorOff: next.sensorOff }; if (next.layers.districts !== previous.layers.districts) this.dirty = true; this.request(); }); document.addEventListener("visibilitychange", this.visibility); this.resize(); }
-  private visibility = () => { if (document.hidden) { cancelAnimationFrame(this.raf); this.raf = 0; } else this.request(); }; private resize() { const rect = this.host.getBoundingClientRect(), dpr = Math.min(devicePixelRatio, 2); this.state.width = Math.max(1, rect.width); this.state.height = Math.max(1, rect.height); [this.canvas, this.staticCanvas].forEach((c) => { c.width = this.state.width * dpr; c.height = this.state.height * dpr; }); this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); this.staticCtx.setTransform(dpr, 0, 0, dpr, 0, 0); this.state.projection = new MapProjection(this.state.scenario, this.state.width, this.state.height); this.dirty = true; this.request(); }
-  private request() { if (!this.raf && !document.hidden) this.raf = requestAnimationFrame(this.draw); } private draw = (now: number) => { this.raf = 0; if (this.dirty) { this.staticCtx.clearRect(0, 0, this.state.width, this.state.height); this.layers.filter((l) => l.static).forEach((l) => l.draw(this.staticCtx, this.state, now)); this.dirty = false; } this.ctx.clearRect(0, 0, this.state.width, this.state.height); this.ctx.fillStyle = this.state.theme.bg; this.ctx.fillRect(0, 0, this.state.width, this.state.height); this.ctx.drawImage(this.staticCanvas, 0, 0, this.state.width, this.state.height); const start = performance.now(); this.layers.filter((l) => !l.static).forEach((l) => l.draw(this.ctx, this.state, now)); if (performance.now() - start > 4) console.debug("[map] draw exceeded 4 ms"); if (this.state.layers.radar || this.state.layers.lightning || this.state.decomposition || this.state.projection.tweening) this.request(); };
-  hit(x: number, y: number) { const hits = this.state.frame.cells.map((cell) => { const p = this.state.projection.project(cell.centroid, performance.now()), d = Math.hypot(x - p[0], y - p[1]); return d <= Math.max(10, cell.radiusKm * 1.5) + 8 ? { id: cell.id, d } : null; }).filter((hit): hit is { id: string; d: number } => hit !== null).sort((a, b) => a.d - b.d); return hits[0]?.id ?? null; } getState() { return this.state; } destroy() { cancelAnimationFrame(this.raf); this.unsubscribe(); this.observer.disconnect(); document.removeEventListener("visibilitychange", this.visibility); } }
+import type { Scenario } from "@/types/scenario";
+import type { AppState } from "@/types/store";
+import { fitProjection, frameCellsAt, hitTestCells, projectTweenAt, startProjectionTween, type MapProjection, type ProjectionTween } from "./project";
+
+// contains the globally-owned values the imperative renderer reads for each map frame
+export interface MapFrameState {
+  scenario: Scenario;
+  timeMin: number;
+  selectedCellId: string | null;
+  layers: AppState["layers"];
+  backgroundColor: string;
+}
+
+// establishes the pure draw contract all future map layers follow in fixed order
+export interface Layer {
+  id: string;
+  draw: (ctx: CanvasRenderingContext2D, state: MapFrameState, time: number) => void;
+}
+
+// groups the DOM, store, scenario, and selection dependencies required to mount a map engine
+export interface MapEngineOptions {
+  canvas: HTMLCanvasElement;
+  scenarios: Record<Scenario["id"], Scenario>;
+  initialState: AppState;
+  subscribe: (listener: (state: AppState) => void) => () => void;
+  onCellSelect: (cellId: string) => void;
+}
+
+// exposes the lifecycle cleanup required when the React wrapper unmounts the canvas
+export interface MapEngine {
+  destroy: () => void;
+}
+
+// gives the initial canvas phase a static operational surface without pre-empting future map layers
+const placeholderBackground: Layer = {
+  id: "placeholder-background",
+  draw: (ctx, state) => {
+    ctx.fillStyle = state.backgroundColor;
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  },
+};
+
+// fixes canvas composition order as later geographic layers are introduced in subsequent chunks
+const staticLayers: readonly Layer[] = [placeholderBackground];
+
+// creates a device-pixel-ratio-aware canvas renderer driven entirely from mutable store state
+export function createMapEngine(options: MapEngineOptions): MapEngine {
+  const context = options.canvas.getContext("2d");
+  if (!context) throw new Error("Canvas 2D context is unavailable");
+
+  const staticCanvas = document.createElement("canvas");
+  const staticContext = staticCanvas.getContext("2d");
+  if (!staticContext) throw new Error("Static canvas 2D context is unavailable");
+
+  // captures the current theme surface once for use by the detached static canvas
+  const backgroundColor = getComputedStyle(options.canvas).getPropertyValue("--color-bg").trim();
+  let frameState = toFrameState(options.initialState, options.scenarios, backgroundColor);
+  let projection = fitProjection(frameState.scenario.region, 1, 1);
+  let projectionTween: ProjectionTween | null = null;
+  let animationFrame: number | null = null;
+  let visible = document.visibilityState === "visible";
+  let width = 1;
+  let height = 1;
+  let dpr = 1;
+
+  // renders a static layer once per resize rather than repeating its work in the animation loop
+  const redrawStatic = () => {
+    staticContext.setTransform(dpr, 0, 0, dpr, 0, 0);
+    staticLayers.forEach((layer) => layer.draw(staticContext, frameState, 0));
+  };
+
+  // schedules work only when a resize, store update, or active projection tween requires a frame
+  const requestFrame = () => {
+    if (visible && animationFrame === null) animationFrame = window.requestAnimationFrame(render);
+  };
+
+  // composites cached static content and keeps the loop alive only during map-owned animation
+  const render = (now: number) => {
+    animationFrame = null;
+    if (!visible) return;
+
+    if (projectionTween) {
+      const result = projectTweenAt(projectionTween, now);
+      projection = result.projection;
+      if (result.complete) projectionTween = null;
+    }
+
+    context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    context.clearRect(0, 0, width, height);
+    context.drawImage(staticCanvas, 0, 0, width, height);
+
+    if (projectionTween) requestFrame();
+  };
+
+  // keeps the backing store sharp while CSS owns the responsive centre-panel dimensions
+  const resize = (entries: readonly ResizeObserverEntry[]) => {
+    const entry = entries[0];
+    if (!entry) return;
+    width = Math.max(1, Math.round(entry.contentRect.width));
+    height = Math.max(1, Math.round(entry.contentRect.height));
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    options.canvas.width = Math.round(width * dpr);
+    options.canvas.height = Math.round(height * dpr);
+    staticCanvas.width = options.canvas.width;
+    staticCanvas.height = options.canvas.height;
+    projection = fitProjection(frameState.scenario.region, width, height);
+    projectionTween = null;
+    redrawStatic();
+    requestFrame();
+  };
+
+  // pauses all canvas work when the document is no longer visible and resumes only when needed
+  const onVisibilityChange = () => {
+    visible = document.visibilityState === "visible";
+    if (!visible && animationFrame !== null) {
+      window.cancelAnimationFrame(animationFrame);
+      animationFrame = null;
+    }
+    if (visible) requestFrame();
+  };
+
+  // resolves a click in CSS pixels against the current frame's projected cell centres
+  const onClick = (event: MouseEvent) => {
+    const bounds = options.canvas.getBoundingClientRect();
+    const cellId = hitTestCells(
+      frameCellsAt(frameState.scenario, frameState.timeMin),
+      projection,
+      [event.clientX - bounds.left, event.clientY - bounds.top],
+    );
+
+    if (cellId) options.onCellSelect(cellId);
+  };
+
+  // updates the RAF-owned snapshot without subscribing React to high-frequency playback state
+  const unsubscribe = options.subscribe((state) => {
+    const nextState = toFrameState(state, options.scenarios, backgroundColor);
+    const scenarioChanged = nextState.scenario.id !== frameState.scenario.id;
+    frameState = nextState;
+
+    if (scenarioChanged) {
+      const target = fitProjection(frameState.scenario.region, width, height);
+      projectionTween = startProjectionTween(projection, target, performance.now());
+      redrawStatic();
+    }
+
+    requestFrame();
+  });
+  const observer = new ResizeObserver(resize);
+  observer.observe(options.canvas);
+  document.addEventListener("visibilitychange", onVisibilityChange);
+  options.canvas.addEventListener("click", onClick);
+
+  return {
+    destroy: () => {
+      unsubscribe();
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      options.canvas.removeEventListener("click", onClick);
+      if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
+    },
+  };
+}
+
+// extracts only the globally-owned values the canvas needs for its mutable per-frame snapshot
+function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenario>, backgroundColor: string): MapFrameState {
+  return {
+    scenario: scenarios[state.scenarioId],
+    timeMin: state.timeMin,
+    selectedCellId: state.selectedCellId,
+    layers: state.layers,
+    backgroundColor,
+  };
+}
