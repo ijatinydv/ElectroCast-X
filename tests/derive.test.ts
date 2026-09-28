@@ -4,6 +4,7 @@ import B from "@/data/scenarios/b-severe-storm.json";
 import { getSyntheticAssets } from "@/lib/geo/load";
 import { countdownFor, corridorFor, exposureFor, maskBits, riskFor, widthScale } from "@/lib/derive";
 import { useStore } from "@/store/useStore";
+import { frameAt } from "@/lib/map/interpolate";
 import type { Scenario, SensorId } from "@/types/scenario";
 
 const firstFlash = A as unknown as Scenario;
@@ -63,6 +64,15 @@ describe("derive functions", () => {
       expect(countdown.p30).toBeLessThanOrEqual(countdown.p60);
       expect(countdown.p30).toBe(riskFor(firstFlash, cell.id, sensors));
     }
+  });
+
+  it("keeps the selected Scenario A cell aligned with the canonical countdown at t=0", () => {
+    const cell = frameAt(firstFlash, 0).cells.find((candidate) => candidate.id === "C-A07");
+    if (!cell) throw new Error("Scenario A requires C-A07 at t=0");
+    const countdown = countdownFor(firstFlash, cell.id, {});
+    expect([countdown.p15, countdown.p30, countdown.p60]).toEqual([42, 71, 89]);
+    expect(countdown.windowMin).toEqual([18, 27]);
+    expect(countdown.confidence).toBe("Moderate");
   });
 
   it("widens nested corridors according to sensor uncertainty", () => {
