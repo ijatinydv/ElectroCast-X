@@ -26,7 +26,10 @@ export const useStore = create<AppState>()((set) => ({
   setSpeed: (speed) => set({ speed }),
   toggleSensor: (sensorId) => set((state) => ({ sensorOff: { ...state.sensorOff, [sensorId]: !state.sensorOff[sensorId] } })),
   selectCell: (selectedCellId) => set({ selectedCellId }),
-  setMapMode: (mapMode) => set({ mapMode }),
+  setMapMode: (mapMode) => set((state) => ({
+    mapMode,
+    layers: { ...state.layers, radar: mapMode === "radar", satellite: mapMode === "satellite" },
+  })),
   toggleLayer: (layerId) => set((state) => ({ layers: { ...state.layers, [layerId]: !state.layers[layerId] } })),
   setDecomposition: (decomposition) => set({ decomposition }),
   setCompare: (compare) => set((state) => ({ compare: { ...state.compare, ...compare } })),
