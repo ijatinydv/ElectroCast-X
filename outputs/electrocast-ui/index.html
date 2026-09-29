@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070a14" />
+  <title>ElectroCast-X — Lightning Mission Control</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="noise"></div>
+  <div id="app">
+    <header class="topbar">
+      <button class="brand" data-action="tab" data-tab="mission" aria-label="Open Mission Control">
+        <span class="brand-mark"><span>ϟ</span></span>
+        <span><b>ElectroCast</b><i>-X</i><small>LIGHTNING INTELLIGENCE</small></span>
+      </button>
+      <nav class="topnav" aria-label="Primary navigation">
+        <button class="nav-item active" data-action="tab" data-tab="mission"><span class="nav-icon">⌾</span>Mission Control</button>
+        <button class="nav-item" data-action="tab" data-tab="xray"><span class="nav-icon">◫</span>Storm X-Ray</button>
+        <button class="nav-item" data-action="tab" data-tab="evidence"><span class="nav-icon">⌁</span>Evidence Lab</button>
+        <button class="nav-item" data-action="tab" data-tab="alerts"><span class="nav-icon">◈</span>Alert Centre</button>
+        <button class="nav-item" data-action="tab" data-tab="replay"><span class="nav-icon">↺</span>Replay</button>
+      </nav>
+      <div class="header-status">
+        <span class="sim-badge"><span class="pulse-dot"></span><b>SIM</b><small>DEMO MODE</small></span>
+        <button class="icon-btn" id="soundToggle" title="Toggle ambience">♫</button>
+        <div class="clock dual-clock">
+          <span><b id="clock">16:08:32</b><small>IST</small></span>
+          <span><b id="utcClock">10:38:32</b><small>UTC</small></span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="view active" id="missionView">
+        <div class="mission-grid">
+          <aside class="scenario-rail panel">
+            <div class="panel-title"><span>DEMO SCENARIOS</span><span class="count">03</span></div>
+            <button class="scenario active" data-scenario="initiation">
+              <span class="scenario-index">SCN-A</span><span><b>First Lightning</b><small>Developing cell · C-07</small></span><span class="status-tag amber">FORECAST</span>
+            </button>
+            <button class="scenario" data-scenario="severe">
+              <span class="scenario-index">SCN-B</span><span><b>Active Severe Storm</b><small>Escalating flash density</small></span><span class="status-tag red">OBSERVED</span>
+            </button>
+            <button class="scenario" data-scenario="failure">
+              <span class="scenario-index">SCN-C</span><span><b>Sensor Failure</b><small>Radar outage · degraded mode</small></span><span class="status-tag purple">DEGRADED</span>
+            </button>
+
+            <div class="sensor-stack">
+              <div class="subhead"><span>SENSOR NETWORK</span><button data-action="tab" data-tab="evidence">TEST</button></div>
+              <div class="sensor-row" data-sensor-row="radar"><span class="sensor-icon cyan">R</span><span><b>Doppler Radar</b><small>Paradip DWR · 2 min</small></span><i class="sensor-led"></i></div>
+              <div class="sensor-row" data-sensor-row="satellite"><span class="sensor-icon blue">S</span><span><b>INSAT-3DR</b><small>Rapid scan · 7 min</small></span><i class="sensor-led"></i></div>
+              <div class="sensor-row" data-sensor-row="lightning"><span class="sensor-icon violet">L</span><span><b>Lightning Network</b><small>LLN feed · 18 sec</small></span><i class="sensor-led"></i></div>
+              <div class="sensor-row" data-sensor-row="nwp"><span class="sensor-icon green">N</span><span><b>BharatFS NWP</b><small>Cycle 12Z · 3 hr</small></span><i class="sensor-led"></i></div>
+            </div>
+
+            <div class="system-score">
+              <div class="ring small-ring" style="--score:94"><span>94<small>%</small></span></div>
+              <div><b>System readiness</b><small>4 modalities aligned<br/>Grid 1 km · Δt 5 min</small></div>
+            </div>
+          </aside>
+
+          <section class="map-panel panel">
+            <div class="map-toolbar">
+              <div>
+                <span class="eyebrow cell-designation"><i class="cell-pulse"></i>ODISHA OPS · CELL C-07</span>
+                <h1><span>C-07</span> Lightning Mission Control</h1>
+              </div>
+              <div class="toolbar-actions">
+                <div class="segmented lead-buttons">
+                  <button class="active" data-lead="15">+15m</button><button data-lead="30">+30m</button><button data-lead="60">+60m</button>
+                </div>
+                <button class="square-btn" id="fullscreenBtn" title="Fullscreen">⛶</button>
+              </div>
+            </div>
+
+            <div class="map-stage" id="mapStage">
+              <div class="satellite-tiles" id="satelliteTiles" aria-label="ESRI World Imagery satellite basemap">
+                <img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/54/93" alt=""/><img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/54/94" alt=""/><img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/54/95" alt=""/>
+                <img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/55/93" alt=""/><img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/55/94" alt=""/><img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/55/95" alt=""/>
+                <img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/56/93" alt=""/><img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/56/94" alt=""/><img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/56/95" alt=""/>
+                <img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/57/93" alt=""/><img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/57/94" alt=""/><img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/57/95" alt=""/>
+                <img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/58/93" alt=""/><img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/58/94" alt=""/><img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/58/95" alt=""/>
+              </div>
+              <svg class="odisha-boundary" viewBox="0 0 100 160" preserveAspectRatio="none" aria-hidden="true"><path d="M47 4 61 11 68 22 66 34 76 45 72 58 81 69 77 82 86 96 80 110 72 119 69 137 58 154 46 148 38 136 27 130 20 115 22 102 14 90 19 75 14 61 24 49 27 34 37 24 39 11Z"/></svg>
+              <div class="sat-label l-bbsr">BHUBANESWAR</div><div class="sat-label l-ctc">CUTTACK</div><div class="sat-label l-puri">PURI</div><div class="sat-label l-khordha">KHORDHA</div>
+              <canvas id="weatherCanvas"></canvas>
+              <div class="radar-echo echo-a"></div><div class="radar-echo echo-b"></div><div class="radar-echo echo-c"></div>
+              <div class="map-grid-label north">N</div>
+              <div class="map-legend">
+                <span><i class="legend-dot low"></i>Low</span><span><i class="legend-dot med"></i>Moderate</span><span><i class="legend-dot high"></i>High</span><span><i class="legend-dot extreme"></i>Extreme</span>
+              </div>
+              <div class="map-layers">
+                <button class="active" data-layer="radar">RADAR</button>
+                <button class="active" data-layer="risk">RISK</button>
+                <button class="active" data-layer="lightning">FLASHES</button>
+                <button data-layer="assets">ASSETS</button>
+              </div>
+              <button class="storm-label" id="stormLabel"><span>C-07</span><b>DEVELOPING</b><small>Click to inspect</small></button>
+              <div class="data-time"><span class="live-dot"></span>DATA TIME <b id="dataTime">16:08</b> · FRAME <b id="frameNumber">07/13</b></div>
+              <div class="scale">0&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;10 km</div>
+              <div class="map-attribution">Tiles © Esri · World Imagery</div>
+              <div class="map-tooltip" id="mapTooltip"></div>
+            </div>
+
+            <div class="timeline-wrap">
+              <div class="dock-live"><i></i><span>LIVE</span></div>
+              <div class="timeline-controls">
+                <button class="play-btn" id="playBtn">Ⅱ</button>
+                <span id="timelineLabel">OBSERVED · 16:08</span>
+                <button class="speed-btn" id="speedBtn">1×</button>
+              </div>
+              <div class="timeline">
+                <div class="timeline-track"><div class="timeline-progress" id="timelineProgress"></div><div class="timeline-now"></div></div>
+                <input id="timelineInput" type="range" min="0" max="12" value="6" step="1" />
+                <div class="timeline-labels"><span>−60m</span><span>−30m</span><span>NOW</span><span>+30m</span><span>+60m</span></div>
+              </div>
+              <button class="compare-button" data-action="tab" data-tab="replay"><span>↔</span> COMPARE</button>
+            </div>
+          </section>
+
+          <aside class="nowcast-rail">
+            <section class="panel nowcast-card">
+              <div class="panel-title"><span>SELECTED STORM</span><button class="tiny-button" data-action="tab" data-tab="xray">X-RAY ↗</button></div>
+              <div class="storm-heading"><div><span class="storm-id">C-07</span><h2 id="stormStatus">Electrifying</h2><small id="stormMotion">NE at 21 km/h</small></div><span class="risk-badge" id="riskBadge">HIGH</span></div>
+              <div class="eta-block">
+                <div class="countdown-ring" id="etaRing"><span><b id="etaValue">23</b><small>MIN</small></span></div>
+                <div><span class="eyebrow">FIRST-FLASH WINDOW</span><h3 id="etaWindow">18–27 minutes</h3><p id="etaCopy">Probability rising with mixed-phase growth.</p></div>
+              </div>
+              <div class="prob-grid">
+                <div><span>15 MIN</span><b id="p15">44%</b><i style="--p:44"></i></div>
+                <div><span>30 MIN</span><b id="p30">76%</b><i style="--p:76"></i></div>
+                <div><span>60 MIN</span><b id="p60">91%</b><i style="--p:91"></i></div>
+              </div>
+              <div class="confidence-row"><span>CALIBRATED CONFIDENCE</span><b id="confidenceText">82% · HIGH</b></div>
+              <div class="confidence-bar"><i id="confidenceBar" style="width:82%"></i></div>
+            </section>
+
+            <section class="panel evidence-mini">
+              <div class="panel-title"><span>WHY RISK INCREASED</span><button class="tiny-button" data-action="tab" data-tab="evidence">DETAILS ↗</button></div>
+              <div class="evidence-row"><span class="trend up">↑</span><div><b>Cloud-top cooling</b><small>−8.6°C / 15 min</small></div><strong>+17%</strong></div>
+              <div class="evidence-row"><span class="trend up">↑</span><div><b>ZDR column</b><small>Reached −10°C level</small></div><strong>+24%</strong></div>
+              <div class="evidence-row"><span class="trend up">↑</span><div><b>KDP core</b><small>Strengthening rapidly</small></div><strong>+13%</strong></div>
+              <div class="evidence-row"><span class="trend steady">→</span><div><b>CAPE</b><small>Supportive · 1840 J/kg</small></div><strong>+9%</strong></div>
+            </section>
+
+            <section class="panel exposure-panel">
+              <div class="panel-title"><span>EXPOSURE IN CORRIDOR</span><span class="observed-tag">LIVE</span></div>
+              <div class="exposure-cards"><div><b>03</b><small>VILLAGES</small></div><div><b>02</b><small>SCHOOLS</small></div><div><b>01</b><small>GRID ASSET</small></div></div>
+              <div class="arrival-strip"><span>EARLIEST RISK ARRIVAL</span><b>23 MIN</b></div>
+            </section>
+
+            <button class="primary-action" data-action="tab" data-tab="alerts"><span>◈</span><span><b>Create location warning</b><small>Verified fields only</small></span><i>→</i></button>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="xrayView">
+        <div class="page-head"><div><span class="eyebrow">CELL C-07 · PHYSICS VIEW</span><h1>Storm X-Ray</h1><p>Temperature-coordinate view of the mixed-phase electrification zone.</p></div><div class="page-actions"><button class="secondary" data-action="tab" data-tab="mission">← Back to map</button><button class="primary" id="autoRotateBtn">Pause rotation</button></div></div>
+        <div class="xray-grid">
+          <section class="panel xray-stage">
+            <div class="xray-scene" id="xrayScene">
+              <div class="temp-plane p20"><span>−20°C</span></div>
+              <div class="temp-plane p10"><span>−10°C · CHARGE ZONE</span></div>
+              <div class="temp-plane p0"><span>0°C · FREEZING LEVEL</span></div>
+              <div class="storm-volume" id="stormVolume">
+                <i class="voxel v1"></i><i class="voxel v2"></i><i class="voxel v3"></i><i class="voxel v4"></i><i class="voxel v5"></i><i class="voxel v6"></i>
+                <span class="updraft-column"></span><span class="ice-core"></span><span class="zdr-column"></span>
+                <b class="flash f1">ϟ</b><b class="flash f2">ϟ</b><b class="flash f3">ϟ</b>
+              </div>
+              <div class="xray-label label-zdr">ZDR COLUMN<b>3.4 dB</b></div>
+              <div class="xray-label label-kdp">KDP CORE<b>2.1°/km</b></div>
+              <div class="xray-label label-updraft">UPDRAFT<b>18 m/s</b></div>
+              <div class="xray-axis"><span>12 km</span><span>8 km</span><span>4 km</span><span>0 km</span></div>
+            </div>
+            <div class="xray-controls">
+              <label>Temperature slice <input id="tempSlice" type="range" min="0" max="2" value="1" step="1"/><span id="tempLabel">−10°C</span></label>
+              <div class="segmented"><button class="active" data-xray="reflectivity">Reflectivity</button><button data-xray="zdr">ZDR</button><button data-xray="kdp">KDP</button><button data-xray="ice">Mixed phase</button></div>
+            </div>
+          </section>
+          <aside class="xray-side">
+            <section class="panel phase-card"><div class="panel-title"><span>ELECTRIFICATION STAGE</span><span class="status-tag amber">RAPID GROWTH</span></div><h2>Mixed-phase charge separation</h2><p>Strong updrafts are co-locating graupel, ice crystals and supercooled water around the −10°C level.</p><div class="phase-meter"><i></i><span>Developing</span><span>Electrifying</span><span>Active</span></div></section>
+            <section class="panel metric-list"><div class="panel-title"><span>PHYSICAL INDICATORS</span><span>Δ 15 MIN</span></div><div><span>Echo top</span><b>13.2 km</b><em>+2.1 km</em></div><div><span>ZDR column height</span><b>6.8 km</b><em>+1.4 km</em></div><div><span>KDP core</span><b>2.1°/km</b><em>+0.7</em></div><div><span>Cloud-top temp.</span><b>−63°C</b><em>−8.6°C</em></div><div><span>Graupel proxy</span><b>Strong</b><em>↑</em></div></section>
+            <section class="panel science-note"><span class="science-icon">✦</span><div><b>Scientific interpretation</b><p>The strongest evidence lies inside the mixed-phase layer, where non-inductive charging is physically plausible. The interface reports risk, not an exact strike coordinate.</p></div></section>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="evidenceView">
+        <div class="page-head"><div><span class="eyebrow">MODEL TRANSPARENCY · WHAT-IF LAB</span><h1>Evidence & Resilience Lab</h1><p>Remove sensors, inspect contributions and watch the calibrated corridor respond.</p></div><div class="page-actions"><button class="secondary" id="resetSensors">Reset sensors</button><button class="primary" data-action="tab" data-tab="mission">View map</button></div></div>
+        <div class="evidence-grid">
+          <section class="panel sensor-lab">
+            <div class="panel-title"><span>COUNTERFACTUAL SENSOR TEST</span><span class="demo-chip">INTERACTIVE</span></div>
+            <p class="section-copy">Toggle a modality to recompute deterministic demonstration outputs.</p>
+            <div class="sensor-toggle-list">
+              <label><span class="sensor-icon cyan">R</span><span><b>Doppler Radar</b><small>Polarimetric volume · primary evidence</small></span><input type="checkbox" checked data-sensor="radar" aria-label="Include Doppler Radar"/><i></i></label>
+              <label><span class="sensor-icon blue">S</span><span><b>INSAT Satellite</b><small>Cloud-top cooling and water vapour</small></span><input type="checkbox" checked data-sensor="satellite" aria-label="Include INSAT Satellite"/><i></i></label>
+              <label><span class="sensor-icon violet">L</span><span><b>Lightning Network</b><small>Excluded inside cell before first flash</small></span><input type="checkbox" checked data-sensor="lightning" aria-label="Include Lightning Network"/><i></i></label>
+              <label><span class="sensor-icon green">N</span><span><b>BharatFS NWP</b><small>Instability and environmental profile</small></span><input type="checkbox" checked data-sensor="nwp" aria-label="Include BharatFS NWP"/><i></i></label>
+            </div>
+            <div class="degradation-message" id="degradationMessage"><span>✓</span><div><b>All modalities available</b><small>Forecast operating at nominal confidence.</small></div></div>
+          </section>
+
+          <section class="panel confidence-lab">
+            <div class="panel-title"><span>UNCERTAINTY RESPONSE</span><span id="labConfidenceLabel">82% CONFIDENCE</span></div>
+            <div class="corridor-demo" id="corridorDemo"><div class="corridor outer"></div><div class="corridor inner"></div><div class="path-line"></div><span class="storm-dot">ϟ</span><span class="target-dot">◎</span><small>FORECAST CORRIDOR</small></div>
+            <div class="compare-stats"><div><span>Confidence</span><b id="labConfidence">82%</b><small id="confidenceDelta">Nominal</small></div><div><span>Corridor width</span><b id="corridorWidth">11 km</b><small id="widthDelta">Calibrated</small></div><div><span>30m probability</span><b id="labProbability">76%</b><small>First flash</small></div></div>
+          </section>
+
+          <section class="panel contribution-card">
+            <div class="panel-title"><span>SENSOR CONTRIBUTION</span><span>Δ RISK</span></div>
+            <div class="contribution-row" data-contribution="radar"><span>Radar</span><div><i style="--w:92%"></i></div><b>+24%</b></div>
+            <div class="contribution-row" data-contribution="satellite"><span>INSAT</span><div><i style="--w:67%"></i></div><b>+17%</b></div>
+            <div class="contribution-row" data-contribution="nwp"><span>NWP</span><div><i style="--w:38%"></i></div><b>+9%</b></div>
+            <div class="contribution-row muted" data-contribution="lightning"><span>Lightning</span><div><i style="--w:0%"></i></div><b>MASKED</b></div>
+            <div class="explain-box"><span>WHY?</span><p id="explainText">Radar contributes most because the ZDR column and KDP core strengthened near the −10°C level.</p></div>
+          </section>
+
+          <section class="panel decomposition-card">
+            <div class="panel-title"><span>FORECAST DECOMPOSITION</span><button class="tiny-button" id="decompPlay">PLAY</button></div>
+            <div class="decomp-grid">
+              <div class="decomp-panel motion"><span>MOTION</span><div class="mini-storm"></div><i class="vector">→</i><small>Existing storm transport</small></div>
+              <div class="decomp-panel growth"><span>GROWTH / DECAY</span><div class="mini-storm"></div><i class="halo"></i><small>Convective intensity change</small></div>
+              <div class="decomp-panel initiation"><span>NEW INITIATION</span><div class="new-cell"></div><i class="spark">✦</i><small>Emerging cell likelihood</small></div>
+              <div class="decomp-panel final"><span>COMBINED NOWCAST</span><div class="mini-storm"></div><i class="risk-cone"></i><small>30-minute lightning risk</small></div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="alertsView">
+        <div class="page-head"><div><span class="eyebrow">STRUCTURED, VERIFIED, MULTILINGUAL</span><h1>Alert Centre</h1><p>Every number comes from the selected demonstration scenario.</p></div><div class="page-actions"><button class="secondary" data-action="tab" data-tab="mission">Review forecast</button><button class="primary" id="sendAlertTop">Send simulated alert</button></div></div>
+        <div class="alert-grid">
+          <section class="panel alert-form">
+            <div class="panel-title"><span>VERIFIED FORECAST FIELDS</span><span class="verified">✓ LOCKED</span></div>
+            <div class="field-grid"><label>Region<input value="Demo District North" readonly/></label><label>Risk level<input value="High" readonly/></label><label>Valid from<input value="16:20 IST" readonly/></label><label>Valid until<input value="16:50 IST" readonly/></label><label>First-flash ETA<input value="18–27 minutes" readonly/></label><label>Confidence<input value="Moderate–High (82%)" readonly/></label></div>
+            <div class="affected-summary"><span class="exposure-icon">⌖</span><div><b>Forecast corridor intersects</b><p><strong>3</strong> villages · <strong>2</strong> schools · <strong>1</strong> transmission corridor</p><small>Synthetic demonstration exposure data</small></div><button id="toggleAssets">Show on map</button></div>
+            <div class="language-tabs"><button class="active" data-lang="en">English</button><button data-lang="hi">हिन्दी</button><button data-lang="pa">ਪੰਜਾਬੀ</button></div>
+            <div class="message-editor" id="messageEditor" contenteditable="true">High lightning risk is expected in Demo District North between 4:20 PM and 4:50 PM. Avoid open fields, rooftops, isolated trees and metal structures. Move indoors immediately.</div>
+            <div class="message-meta"><span>248 characters</span><span>Source fields protected</span></div>
+          </section>
+
+          <section class="panel phone-preview">
+            <div class="panel-title"><span>MOBILE PREVIEW</span><span>ANDROID</span></div>
+            <div class="phone">
+              <div class="phone-top"><span>16:12</span><span>◔ 5G ▰</span></div>
+              <div class="phone-wallpaper"><span class="wall-flash">ϟ</span><div class="notification"><div class="notification-head"><span class="app-icon">ϟ</span><b>ElectroCast-X Alert</b><small>now</small></div><p id="phoneMessage">High lightning risk is expected in Demo District North between 4:20 PM and 4:50 PM. Move indoors immediately.</p><div><button>View risk map</button><button>Safety steps</button></div></div></div>
+            </div>
+          </section>
+
+          <section class="panel channels-card">
+            <div class="panel-title"><span>DISTRIBUTION CHANNELS</span><span>SIMULATED</span></div>
+            <label><span class="channel-icon">▣</span><span><b>District control room</b><small>Dashboard incident feed</small></span><input type="checkbox" checked/><i></i></label>
+            <label><span class="channel-icon">◉</span><span><b>Mobile push</b><small>Geofenced delivery</small></span><input type="checkbox" checked/><i></i></label>
+            <label><span class="channel-icon">SMS</span><span><b>SMS gateway</b><small>160-character fallback</small></span><input type="checkbox" checked/><i></i></label>
+            <label><span class="channel-icon">{ }</span><span><b>CAP feed</b><small>Common Alerting Protocol</small></span><input type="checkbox" checked/><i></i></label>
+            <button class="send-button" id="sendAlert"><span>Send simulated warning</span><i>→</i></button>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="replayView">
+        <div class="page-head"><div><span class="eyebrow">RETROSPECTIVE DEMONSTRATION</span><h1>Replay & Validation</h1><p>Compare the saved forecast with the synthetic observed outcome.</p></div><div class="page-actions"><button class="secondary" id="replayReset">Reset replay</button><button class="primary" id="replayPlay">Play event</button></div></div>
+        <div class="replay-grid">
+          <section class="panel comparison-panel"><div class="comparison-head"><div><span>PREDICTED</span><b>Issued 16:08</b></div><div><span>OBSERVED</span><b>Verified 16:34</b></div></div><div class="split-map"><canvas id="predictionCanvas"></canvas><canvas id="observationCanvas"></canvas><div class="split-handle"><span>↔</span></div></div><div class="replay-timeline"><input id="replayInput" type="range" min="0" max="100" value="52"/><div><span>16:08 Forecast issued</span><b id="replayTime">16:34 First flash</b><span>17:08 End</span></div></div></section>
+          <aside class="validation-side">
+            <section class="panel outcome-card"><div class="panel-title"><span>EVENT OUTCOME</span><span class="verified">✓ CAPTURED</span></div><div class="outcome-row"><span>Predicted first-flash window</span><b>16:26–16:35</b></div><div class="outcome-row"><span>Observed first flash</span><b>16:34</b></div><div class="outcome-row"><span>Timing error</span><b class="good">+3 min</b></div><div class="outcome-row"><span>Inside risk corridor</span><b class="good">YES</b></div></section>
+            <section class="panel metrics-card"><div class="panel-title"><span>VALIDATION METRICS</span><span>SYNTHETIC DEMO</span></div><div class="metric-grid"><div><span>POD</span><b>0.84</b><small>Detection</small></div><div><span>FAR</span><b>0.19</b><small>False alarm</small></div><div><span>CSI</span><b>0.71</b><small>Skill</small></div><div><span>BRIER</span><b>0.12</b><small>Calibration</small></div></div><p>Illustrative values for UI demonstration only. Replace with held-out test results before claiming performance.</p></section>
+            <section class="panel reliability-card"><div class="panel-title"><span>RELIABILITY</span><span>IDEAL ↗</span></div><svg viewBox="0 0 300 170" role="img" aria-label="Reliability curve"><path d="M35 140 L270 20" class="ideal"/><path d="M35 140 C80 125,95 107,128 96 S180 65,210 55 S245 36,270 30" class="curve"/><g class="dots"><circle cx="74" cy="120" r="5"/><circle cx="120" cy="98" r="5"/><circle cx="170" cy="72" r="5"/><circle cx="220" cy="51" r="5"/><circle cx="265" cy="31" r="5"/></g></svg></section>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast-stack" id="toastStack"></div>
+    <div class="modal-backdrop" id="successModal">
+      <div class="success-modal"><div class="success-check">✓</div><h2>Simulated warning dispatched</h2><p>Four delivery channels acknowledged the demonstration alert.</p><div class="delivery-list"><span>✓ District control room</span><span>✓ Mobile push</span><span>✓ SMS gateway</span><span>✓ CAP feed</span></div><button id="closeModal">Return to Mission Control</button></div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
