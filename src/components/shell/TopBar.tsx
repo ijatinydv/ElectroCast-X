@@ -38,7 +38,7 @@ export function TopBar({ onToggleLeft, onToggleRight, onGuidedDemo, leftOpen, ri
   return (
     <header className="h-12 bg-rail border-b border-line flex items-center justify-between px-4 z-20 relative">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="xl:hidden h-8 w-8" onClick={onToggleLeft}>
+        <Button aria-expanded={leftOpen} aria-label={`${leftOpen ? "Close" : "Open"} mission controls`} variant="ghost" size="icon" className="xl:hidden h-8 w-8" onClick={onToggleLeft}>
           <Menu size={16} />
         </Button>
         <div className="font-semibold text-fg tracking-wide">ElectroCast-X</div>
@@ -91,7 +91,7 @@ export function TopBar({ onToggleLeft, onToggleRight, onGuidedDemo, leftOpen, ri
 
         <PipelineSheet activeStageId={leftOpen ? "masks" : undefined} />
 
-        <Button variant="ghost" size="icon" className="xl:hidden h-8 w-8" onClick={onToggleRight}>
+        <Button aria-expanded={rightOpen} aria-label={`${rightOpen ? "Close" : "Open"} storm details`} variant="ghost" size="icon" className="xl:hidden h-8 w-8" onClick={onToggleRight}>
           <PanelRightClose size={16} />
         </Button>
       </div>
