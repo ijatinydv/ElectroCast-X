@@ -1,4 +1,5 @@
 import type { Cell } from "@/types/scenario";
+import { geoDistance } from "d3-geo";
 
 // constrains corridor lookups to the forecast horizons generated in scenario data
 export type CorridorHorizon = "15" | "30" | "60";
@@ -24,4 +25,12 @@ export function corridorFor(cell: Cell, horizon: CorridorHorizon | 15 | 30 | 60,
     inner: scalePolygon(base.inner, cell.centroid, innerScale),
     outer: scalePolygon(base.outer, cell.centroid, scale),
   };
+}
+
+// measures the narrow cross-corridor edge after sensor uncertainty has been applied
+export function corridorWidthKm(cell: Cell, scale: number): number {
+  const boundary = corridorFor(cell, 30, scale).outer;
+  if (boundary.length < 2) return 0;
+  const edgeLengths = boundary.map((point, index) => geoDistance(point, boundary[(index + 1) % boundary.length]!) * 6371);
+  return Math.min(...edgeLengths);
 }
