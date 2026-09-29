@@ -7,6 +7,7 @@ import { CellHeader } from "@/components/panels/CellHeader";
 import { CountdownPanel } from "@/components/panels/CountdownPanel";
 import { EvidencePanel } from "@/components/panels/EvidencePanel";
 import { ExposurePanel } from "@/components/panels/ExposurePanel";
+import { AlertComposer } from "@/components/alerts/AlertComposer";
 import { effectiveSensorMask } from "@/lib/derive";
 import { frameAt } from "@/lib/map/interpolate";
 import { useStore } from "@/store/useStore";
@@ -50,11 +51,12 @@ export function RightRail() {
         </Panel>
         <Panel title="Actions" defaultOpen={true} collapsible={false}>
           <div className="flex flex-col gap-3">
-            <Button variant="default" className="w-full">Create warning</Button>
+            <Button disabled={!cell} onClick={() => setPanel("alert", true)} variant="default" className="w-full">Create warning</Button>
             <Button className="w-full" data-xray-trigger disabled={!cell} onClick={() => setPanel("xray", true)} variant="outline">Open storm X-ray</Button>
           </div>
         </Panel>
       </div>
+      <AlertComposer />
     </ScrollArea>
   );
 }

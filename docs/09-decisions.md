@@ -30,6 +30,12 @@ Add a row whenever you make a choice that another person might question.
 
 # Phase 2.6 — Exposure asset rendering
 
+# Phase 4.1 — Alert composer
+
+| Decision | Choice | Why | Rejected |
+|---|---|---|---|
+| D34 | Bundle Noto Sans Devanagari and Noto Sans Oriya and dynamically import their regular font CSS when the alert composer first opens | Hindi and Odia glyphs render correctly without adding either font to the initial Mission Control payload or relying on a network font | System-font fallback; loading fonts globally; a remote font CDN |
+
 - Exposure assets are split into seven independent layer switches. Village records feed a cached low-resolution density field rather than map markers; all point and transmission asset hover tooltips retain the required `synthetic` label.
 
 | D25 | Prepared offline sensors are included in the effective corridor uncertainty mask | Scenario C's radar outage must visibly widen its forecast motion uncertainty without requiring a separate operator action | Rendering its uncertainty as if the unavailable radar feed were still active |

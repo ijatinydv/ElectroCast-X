@@ -61,6 +61,17 @@ function drawCellCorridors(context: CanvasRenderingContext2D, state: MapFrameSta
   context.globalAlpha = 1;
 }
 
+// outlines the operator-selected inner corridor while the warning composer is open
+function drawAlertCorridor(context: CanvasRenderingContext2D, state: MapFrameState, cell: Cell): void {
+  const corridor = corridorFor(cell, state.alertHorizon, state.corridorScale);
+  context.beginPath();
+  tracePolygon(context, state, corridor.inner);
+  context.strokeStyle = state.theme.risk;
+  context.lineWidth = 2;
+  context.globalAlpha = 1;
+  context.stroke();
+}
+
 // draws selected-cell corridors at full strength while retaining contextual storm paths
 export const corridorsLayer: Layer = {
   id: "corridors",
@@ -68,6 +79,7 @@ export const corridorsLayer: Layer = {
     if (!state.layers.corridors) return;
     for (const cell of state.frame.cells) {
       drawCellCorridors(context, state, cell, cell.id === state.selectedCellId ? 1 : 0.38);
+      if (state.alertOpen && cell.id === state.selectedCellId) drawAlertCorridor(context, state, cell);
     }
   },
 };

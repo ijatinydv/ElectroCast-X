@@ -326,7 +326,7 @@ Read docs/02-ui-spec.md (Left rail: Scenarios). Build src/components/panels/Scen
 
 # Phase 4 — Alerts
 
-### [ ] 4.1 Alert composer sheet and multilingual text
+### [x] 4.1 Alert composer sheet and multilingual text
 **Does:** The Create warning flow: polygon/horizon choice, editable place and time window, EN / HI / OD tabs.
 **Depends on:** 3.2, 3.6.
 **Verify:**
