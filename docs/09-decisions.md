@@ -39,9 +39,9 @@ Add a row whenever you make a choice that another person might question.
 | D29 | Slice readout samples the generated reflectivity field and smooth cell-derived ZDR/KDP vertical profiles | Keeps X-ray slice values physically responsive while preserving the single prepared cell record as their source | Independent display-only values or a second volume data source |
 | D30 | X-ray physical layers are local display toggles over the shared current frame | Operators can isolate prepared volume signals without duplicating forecast values in component state | Global layer state or separate feature datasets |
 | D31 | Validation charts dynamically import only their ECharts core modules from client components | Keeps ECharts isolated to the dedicated validation route and out of the landing and Mission Control bundles | Static chart imports in a shared route dependency |
-
 # Phase 6.2 — How it works pipeline
 
 | Decision | Choice | Why | Rejected |
 |---|---|---|---|
 | D32 | A single requestAnimationFrame moves the pipeline beam along an SVG route every six seconds | Keeps the adapted animated beam coordinated, token-based and idle while the document is hidden | Independent CSS animations for each connection; continuous animation while hidden |
+| D33 | Scenario selection resets to −60 minutes and cross-fades map layers for 300ms while the projection refits over 400ms | Preserves each prepared observed-to-forecast narrative and makes the −10-minute sensor-loss boundary directly inspectable | Retaining active playback state; snapping the map or beginning at t0 |

@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { useStore } from "@/store/useStore";
 import { SensorLab } from "@/components/panels/SensorLab";
+import { ScenarioList } from "@/components/panels/ScenarioList";
 import { frameAt } from "@/lib/map/interpolate";
 import type { Scenario } from "@/types/scenario";
 import type { LayerId } from "@/types/store";
@@ -21,6 +22,7 @@ export function LeftRail() {
   const setMapMode = useStore((state) => state.setMapMode);
   const toggleLayer = useStore((state) => state.toggleLayer);
   const scenarioId = useStore((state) => state.scenarioId);
+  const selectScenario = useStore((state) => state.selectScenario);
   const timeMin = useStore((state) => state.timeMin);
   const selectedCellId = useStore((state) => state.selectedCellId);
   const sensorOff = useStore((state) => state.sensorOff);
@@ -35,7 +37,7 @@ export function LeftRail() {
     <ScrollArea className="h-full bg-rail border-r border-line">
       <div className="flex flex-col">
         <Panel title="Scenarios" defaultOpen={true}>
-          <div className="text-sm text-fg-2">Placeholder scenarios list</div>
+          <ScenarioList scenarios={scenarios} activeScenarioId={scenarioId} onSelect={selectScenario} />
         </Panel>
         <Panel title="Layers" defaultOpen={true}>
           <div className="flex flex-col gap-3 text-sm text-fg-2">

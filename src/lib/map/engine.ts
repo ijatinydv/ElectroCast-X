@@ -85,6 +85,8 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
   let projection = fitProjection(options.scenarios[options.initialState.scenarioId].region, 1, 1);
   let frameState = toFrameState(options.initialState, options.scenarios, backgroundColor, theme, projection, 1, 1);
   let projectionTween: ProjectionTween | null = null;
+  // retains the previous scenario render inputs until the layer cross-fade completes
+  let scenarioFade: { frameState: MapFrameState; projection: MapProjection; staticCanvas: HTMLCanvasElement; startedAt: number } | null = null;
   let highlightPulse: { point: [number, number]; startedAt: number } | null = null;
   let animationFrame: number | null = null;
   let visible = document.visibilityState === "visible";
@@ -140,16 +142,37 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
 
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
     context.clearRect(0, 0, width, height);
+    const fadingScenario = scenarioFade;
+    const fadeProgress = fadingScenario ? Math.min(1, Math.max(0, (now - fadingScenario.startedAt) / 300)) : 1;
+    if (fadingScenario) {
+      context.save();
+      context.globalAlpha = 1 - fadeProgress;
+      context.drawImage(fadingScenario.staticCanvas, 0, 0, width, height);
+      context.restore();
+    }
+    context.save();
+    context.globalAlpha = fadeProgress;
     context.drawImage(staticCanvas, 0, 0, width, height);
+    context.restore();
     const drawStartedAt = performance.now();
+    if (fadingScenario) {
+      context.save();
+      context.globalAlpha = 1 - fadeProgress;
+      dynamicLayers.forEach((layer) => layer.draw(context, { ...fadingScenario.frameState, projection: fadingScenario.projection, width, height }, now));
+      context.restore();
+    }
+    context.save();
+    context.globalAlpha = fadeProgress;
     dynamicLayers.forEach((layer) => layer.draw(context, { ...frameState, projection, width, height, corridorScale, decompositionOpacity }, now));
+    context.restore();
     if (highlightPulse && now - highlightPulse.startedAt < 800) drawHighlightPulse(context, projection.project(highlightPulse.point), now - highlightPulse.startedAt);
     else highlightPulse = null;
     const drawDuration = performance.now() - drawStartedAt;
     if (measuredStormFrames >= 2 && drawDuration > 4) console.warn(`Map storm-layer draw exceeded 4 ms: ${drawDuration.toFixed(2)} ms`);
     measuredStormFrames += 1;
 
-    if (projectionTween || highlightPulse || corridorScaleStartedAt !== null || decompositionStartedAt !== null || hasStormAnimation(frameState)) requestFrame();
+    if (fadeProgress === 1) scenarioFade = null;
+    if (projectionTween || scenarioFade || highlightPulse || corridorScaleStartedAt !== null || decompositionStartedAt !== null || hasStormAnimation(frameState)) requestFrame();
   };
 
   // keeps the backing store sharp while CSS owns the responsive centre-panel dimensions
@@ -193,6 +216,7 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
 
   // updates the RAF-owned snapshot without subscribing React to high-frequency playback state
   const unsubscribe = options.subscribe((state) => {
+    const previousFrameState = frameState;
     const nextState = toFrameState(state, options.scenarios, backgroundColor, theme, projection, width, height);
     const scenarioChanged = nextState.scenario.id !== frameState.scenario.id;
     const staticLayerChanged = nextState.layers.districts !== frameState.layers.districts;
@@ -217,6 +241,12 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
 
     if (scenarioChanged) {
       const target = fitProjection(frameState.scenario.region, width, height);
+      const previousStaticCanvas = document.createElement("canvas");
+      previousStaticCanvas.width = staticCanvas.width;
+      previousStaticCanvas.height = staticCanvas.height;
+      const previousStaticContext = previousStaticCanvas.getContext("2d");
+      if (previousStaticContext) previousStaticContext.drawImage(staticCanvas, 0, 0);
+      scenarioFade = { frameState: previousFrameState, projection, staticCanvas: previousStaticCanvas, startedAt: performance.now() };
       projectionTween = startProjectionTween(projection, target, performance.now());
       redrawStatic();
     }

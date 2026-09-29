@@ -18,9 +18,9 @@ const initialLayers: Record<LayerId, boolean> = {
   lightning: true,
 };
 
-// restores state that must never leak when an operator switches demo scenarios
-function scenarioReset(scenarioId: ScenarioId): Pick<AppState, "scenarioId" | "timeMin" | "selectedCellId" | "horizon" | "highlight" | "sensorOff" | "issuedWarnings"> {
-  return { scenarioId, timeMin: 0, selectedCellId: null, horizon: 30, highlight: null, sensorOff: { ...initialSensorOff }, issuedWarnings: [] };
+// restores scenario-bound controls at the first prepared frame for a clean operator handoff
+function scenarioReset(scenarioId: ScenarioId): Pick<AppState, "scenarioId" | "timeMin" | "playing" | "selectedCellId" | "horizon" | "highlight" | "sensorOff" | "issuedWarnings"> {
+  return { scenarioId, timeMin: -60, playing: false, selectedCellId: null, horizon: 30, highlight: null, sensorOff: { ...initialSensorOff }, issuedWarnings: [] };
 }
 
 // makes the selected atmospheric source visible while keeping radar and satellite mutually exclusive
