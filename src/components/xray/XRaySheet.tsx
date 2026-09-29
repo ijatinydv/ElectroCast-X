@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AltitudeSlider } from "@/components/xray/AltitudeSlider";
+import { XRayControls } from "@/components/xray/XRayControls";
+import type { XRayFeatureVisibility } from "@/components/xray/XRayControls";
 import { sliceReadoutFor } from "@/lib/derive/volume";
 import { frameAt } from "@/lib/map/interpolate";
 import { useStore } from "@/store/useStore";
@@ -23,6 +25,16 @@ const scenarios: Record<"A" | "B" | "C", Scenario> = {
   C: scenarioC as unknown as Scenario,
 };
 
+// starts every physical layer visible while keeping display choices local to the sheet
+const initialFeatures: XRayFeatureVisibility = {
+  reflectivity: true,
+  zdrColumn: true,
+  kdpCore: true,
+  updraft: true,
+  mixedPhase: true,
+  flashes: true,
+};
+
 // presents the selected cell's lazy digital twin above the Mission Control map
 export function XRaySheet() {
   const open = useStore((state) => state.panels.xray);
@@ -30,8 +42,10 @@ export function XRaySheet() {
   const scenarioId = useStore((state) => state.scenarioId);
   const timeMin = useStore((state) => state.timeMin);
   const selectedCellId = useStore((state) => state.selectedCellId);
-  const cell = selectedCellId ? frameAt(scenarios[scenarioId], timeMin).cells.find((candidate) => candidate.id === selectedCellId) : undefined;
+  const frame = frameAt(scenarios[scenarioId], timeMin);
+  const cell = selectedCellId ? frame.cells.find((candidate) => candidate.id === selectedCellId) : undefined;
   const [sliceAltitudeKm, setSliceAltitudeKm] = React.useState(0);
+  const [features, setFeatures] = React.useState<XRayFeatureVisibility>(initialFeatures);
 
   React.useEffect(() => {
     if (cell) setSliceAltitudeKm(cell.freezingLevelKm);
@@ -54,7 +68,10 @@ export function XRaySheet() {
       <div className="relative flex min-h-0 flex-1 bg-bg">
         <AltitudeSlider altitudeKm={sliceAltitudeKm} echoTopKm={cell.echoTopKm} freezingLevelKm={cell.freezingLevelKm} onAltitudeChange={setSliceAltitudeKm} />
         <div className="min-w-0 flex-1">
-          <StormScene cell={cell} sliceAltitudeKm={sliceAltitudeKm} />
+          <StormScene cell={cell} features={features} flashes={frame.lightning} predictedFlashes={frame.kind === "forecast"} sliceAltitudeKm={sliceAltitudeKm} />
+        </div>
+        <div className="absolute right-4 top-4">
+          <XRayControls features={features} onFeatureChange={(feature, visible) => setFeatures((current) => ({ ...current, [feature]: visible }))} />
         </div>
         <aside aria-label="Slice readout" className="absolute bottom-4 right-4 w-52 border border-line bg-bg/95 p-3">
           <p className="mb-3 text-xs font-medium text-fg">Slice readout</p>

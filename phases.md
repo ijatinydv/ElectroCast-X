@@ -397,7 +397,7 @@ Read docs/02-ui-spec.md (X-ray) and docs/04-data-contract.md (procedural volume)
 Read docs/02-ui-spec.md (X-ray). Add src/components/xray/AltitudeSlider.tsx (vertical, custom, labelled bands: "0 °C freezing level", "−10 °C strong mixed-phase region", "−20 °C ice-charge separation") and temperature planes in StormScene (height = freezingLevelKm + k·lapse for −10 °C and −20 °C; lapse 6.5 K/km). Slice plane follows the slider; voxels within ±0.4 km brighten. Slice readout via derive helpers (reflectivity from the volume; ZDR and KDP from cell fields with smooth altitude profiles). Keep DOM labels via drei Html sparingly (≤ 5).
 ```
 
-### [ ] 5.3 ZDR column, KDP core, updraft, graupel, flashes
+### [x] 5.3 ZDR column, KDP core, updraft, graupel, flashes
 **Does:** Parametric physical features and flashes inside the twin, each toggleable.
 **Depends on:** 5.2.
 **Verify:**
