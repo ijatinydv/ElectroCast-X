@@ -442,7 +442,7 @@ Read docs/04-data-contract.md and docs/02-ui-spec.md (X-ray). Subscribe the X-ra
 Read docs/01-design-system.md (Landing page) and docs/07-content-and-copy.md. Build src/app/page.tsx, src/components/landing/Hero.tsx and HeroMapLoop.tsx (reuse the map engine with a fixed looping scenario A, no interaction, non-blocking, paused when off-screen) and QuestionSections.tsx (three sections with live mini-views reusing Dial, corridor drawing on a tiny canvas, and a four-dot sensor row). Use blur-fade and text-reveal only for the initial load sequence, then nothing. Headline and sub exactly as in the design doc; single primary button and a text link to /how-it-works. Check bundle size with next build output and fix if over budget.
 ```
 
-### [ ] 6.2 How it works: pipeline view
+### [x] 6.2 How it works: pipeline view
 **Does:** The technical flow diagram with animated beams and the currently active stage lit.
 **Depends on:** 0.2.
 **Verify:**

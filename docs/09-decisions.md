@@ -31,6 +31,7 @@ Add a row whenever you make a choice that another person might question.
 # Phase 2.6 — Exposure asset rendering
 
 - Exposure assets are split into seven independent layer switches. Village records feed a cached low-resolution density field rather than map markers; all point and transmission asset hover tooltips retain the required `synthetic` label.
+
 | D25 | Prepared offline sensors are included in the effective corridor uncertainty mask | Scenario C's radar outage must visibly widen its forecast motion uncertainty without requiring a separate operator action | Rendering its uncertainty as if the unavailable radar feed were still active |
 | D26 | The selected forecast horizon is shared between countdown and exposure panels | Exposure counts must describe the same operator-selected corridor as the risk dial | Independent panel horizons that disagree about the affected region |
 | D27 | Evidence deltas scale from each prepared sparkline's starting value to its current marker | The panel remains a pure function of scenario time while retaining the units supplied by scenario data | A static full-trend delta that does not respond to playback |
@@ -38,3 +39,9 @@ Add a row whenever you make a choice that another person might question.
 | D29 | Slice readout samples the generated reflectivity field and smooth cell-derived ZDR/KDP vertical profiles | Keeps X-ray slice values physically responsive while preserving the single prepared cell record as their source | Independent display-only values or a second volume data source |
 | D30 | X-ray physical layers are local display toggles over the shared current frame | Operators can isolate prepared volume signals without duplicating forecast values in component state | Global layer state or separate feature datasets |
 | D31 | Validation charts dynamically import only their ECharts core modules from client components | Keeps ECharts isolated to the dedicated validation route and out of the landing and Mission Control bundles | Static chart imports in a shared route dependency |
+
+# Phase 6.2 — How it works pipeline
+
+| Decision | Choice | Why | Rejected |
+|---|---|---|---|
+| D32 | A single requestAnimationFrame moves the pipeline beam along an SVG route every six seconds | Keeps the adapted animated beam coordinated, token-based and idle while the document is hidden | Independent CSS animations for each connection; continuous animation while hidden |
