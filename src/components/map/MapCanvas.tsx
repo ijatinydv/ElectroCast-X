@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Plus, Minus, Maximize2 } from "lucide-react";
 import scenarioA from "@/data/scenarios/a-first-flash.json";
 import scenarioB from "@/data/scenarios/b-severe-storm.json";
 import scenarioC from "@/data/scenarios/c-sensor-loss.json";
-import { createMapEngine } from "@/lib/map/engine";
+import { createMapEngine, type MapEngine } from "@/lib/map/engine";
 import type { AssetTooltip } from "@/lib/map/layers/assets";
 import { useStore } from "@/store/useStore";
 import type { Scenario } from "@/types/scenario";
@@ -17,6 +18,7 @@ export function MapCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const coordinateRef = useRef<HTMLOutputElement>(null);
   const hoveredAssetRef = useRef<string | null>(null);
+  const engineRef = useRef<MapEngine | null>(null);
   const [hoveredAsset, setHoveredAsset] = useState<AssetTooltip | null>(null);
 
   useEffect(() => {
@@ -35,6 +37,7 @@ export function MapCanvas() {
         useStore.getState().setCompare({ split });
       },
     });
+    engineRef.current = engine;
 
     // updates the coordinate directly and changes React tooltip state only when the hovered asset changes
     const onPointerMove = (event: PointerEvent) => {
@@ -63,6 +66,7 @@ export function MapCanvas() {
       canvas.removeEventListener("pointermove", onPointerMove);
       canvas.removeEventListener("pointerleave", onPointerLeave);
       engine.destroy();
+      engineRef.current = null;
     };
   }, []);
 
@@ -71,6 +75,38 @@ export function MapCanvas() {
       <canvas ref={canvasRef} className="block h-full w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg" aria-label="Scenario map. In comparison mode, use left and right arrow keys to move the prediction and actual divider." tabIndex={0} />
       {hoveredAsset && <AssetTooltipOverlay asset={hoveredAsset} />}
       <output ref={coordinateRef} aria-live="off" className="pointer-events-none absolute bottom-3 left-3 min-w-28 text-xs text-fg-3 num" />
+      
+      {/* Floating map camera controls */}
+      <div className="absolute bottom-3 right-3 flex flex-col gap-1 rounded-md border border-line bg-rail/85 p-1 backdrop-blur-md shadow-md z-10">
+        <button
+          type="button"
+          onClick={() => engineRef.current?.zoomBy(1.25)}
+          className="flex h-7 w-7 items-center justify-center rounded text-fg-2 hover:bg-raised hover:text-fg focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-line-strong transition-colors"
+          title="Zoom in"
+          aria-label="Zoom in"
+        >
+          <Plus size={14} />
+        </button>
+        <button
+          type="button"
+          onClick={() => engineRef.current?.zoomBy(0.8)}
+          className="flex h-7 w-7 items-center justify-center rounded text-fg-2 hover:bg-raised hover:text-fg focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-line-strong transition-colors"
+          title="Zoom out"
+          aria-label="Zoom out"
+        >
+          <Minus size={14} />
+        </button>
+        <div className="my-0.5 h-px w-full bg-line" />
+        <button
+          type="button"
+          onClick={() => engineRef.current?.resetView()}
+          className="flex h-7 w-7 items-center justify-center rounded text-fg-2 hover:bg-raised hover:text-fg focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-line-strong transition-colors"
+          title="Reset region extent"
+          aria-label="Reset region extent"
+        >
+          <Maximize2 size={12} />
+        </button>
+      </div>
     </div>
   );
 }
