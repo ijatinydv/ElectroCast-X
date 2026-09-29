@@ -42,7 +42,7 @@ export function RightRail() {
   return (
     <ScrollArea className="h-full bg-rail border-l border-line">
       <div className="flex flex-col">
-        {cell ? <CellHeader cell={cell} /> : <div className="flex flex-col gap-2 border-b border-line p-4 text-sm text-fg-2"><p>{scenario.story}</p><p>Select a storm cell on the map, or use the available storm cells control.</p></div>}
+        {cell ? <CellHeader cell={cell} /> : <NoSelectionSummary cells={frame.cells} scenarioStory={scenario.story} />}
         {compareOn && outcomeSummary && <div className="border-b border-line px-4 py-3 text-sm text-fg-2">First flash observed at <span className="num">+{outcomeSummary.firstFlashMin} min</span>, {outcomeSummary.insidePrediction ? "inside" : "outside"} the <span className="num">{outcomeSummary.windowMin[0]}–{outcomeSummary.windowMin[1]} min</span> window</div>}
         {cell && <Panel title={cell.mode === "active" ? "Active storm" : "When"} defaultOpen={true}><CountdownPanel scenario={scenario} cell={cell} timeMin={timeMin} sensorOff={effectiveMask} /></Panel>}
         <Panel title="Where" defaultOpen={true}>
@@ -69,4 +69,10 @@ export function RightRail() {
       <AlertComposer />
     </ScrollArea>
   );
+}
+
+// presents current-frame storm choices when an operator cannot use the canvas pointer
+function NoSelectionSummary({ cells, scenarioStory }: { cells: Scenario["frames"][number]["cells"]; scenarioStory: string }) {
+  const selectCell = useStore((state) => state.selectCell);
+  return <div className="flex flex-col gap-3 border-b border-line p-4 text-sm text-fg-2"><p>{scenarioStory}</p><p>Select a storm cell on the map, or choose an available storm cell.</p><div aria-label="Available storm cells" className="flex flex-col gap-2">{cells.map((candidate) => <Button key={candidate.id} onClick={() => selectCell(candidate.id)} size="sm" variant="outline" className="justify-start"><span className="num">{candidate.id}</span><span className="ml-2">{candidate.stage}</span></Button>)}</div></div>;
 }

@@ -30,9 +30,20 @@ function trackPercent(timeMin: number): number {
 }
 
 // returns the adjacent prepared frame so stepping never lands between scenario snapshots
-function steppedFrame(frameTimes: readonly number[], timeMin: number, direction: -1 | 1): number {
+export function steppedFrame(frameTimes: readonly number[], timeMin: number, direction: -1 | 1): number {
   if (direction === 1) return frameTimes.find((frameTime) => frameTime > timeMin) ?? 60;
   return [...frameTimes].reverse().find((frameTime) => frameTime < timeMin) ?? -60;
+}
+
+// maps documented slider keys to shared scenario timeline frame positions
+export function scrubberKeyTime(frameTimes: readonly number[], timeMin: number, key: string): number | null {
+  if (key === "ArrowLeft") return steppedFrame(frameTimes, timeMin, -1);
+  if (key === "ArrowRight") return steppedFrame(frameTimes, timeMin, 1);
+  if (key === "Home") return frameTimes[0] ?? -60;
+  if (key === "End") return frameTimes.at(-1) ?? 60;
+  if (key === "PageUp") return steppedFrame(frameTimes, steppedFrame(frameTimes, timeMin, 1), 1);
+  if (key === "PageDown") return steppedFrame(frameTimes, steppedFrame(frameTimes, timeMin, -1), -1);
+  return null;
 }
 
 // combines authored timeline events with operator warnings from the shared state
@@ -80,6 +91,7 @@ function Scrubber({ events, frameTimes, timeMin, onScrub }: ScrubberProps) {
         aria-valuemax={60}
         aria-valuemin={-60}
         aria-valuenow={Math.round(timeMin)}
+        aria-valuetext={formatTimecode(timeMin)}
         className="absolute inset-x-0 top-1/2 h-8 -translate-y-1/2 touch-none cursor-ew-resize"
         onPointerDown={(event) => {
           draggingRef.current = true;
@@ -91,6 +103,12 @@ function Scrubber({ events, frameTimes, timeMin, onScrub }: ScrubberProps) {
         }}
         onPointerUp={finishDrag}
         onPointerCancel={finishDrag}
+        onKeyDown={(event) => {
+          const nextTime = scrubberKeyTime(frameTimes, timeMin, event.key);
+          if (nextTime === null) return;
+          event.preventDefault();
+          onScrub(nextTime);
+        }}
         role="slider"
         tabIndex={0}
       >
