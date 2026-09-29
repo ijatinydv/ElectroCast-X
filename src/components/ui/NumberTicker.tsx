@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { useMotionValue, useSpring, useTransform, m } from "motion/react";
+import { animate } from "motion/react";
 import { cn } from "@/lib/utils";
 
 // describes the source precision required while a numeric display animates
@@ -13,22 +13,22 @@ interface NumberTickerProps {
 
 // animates displayed forecast values without losing precision from the source data
 export function NumberTicker({ value, direction = "up", className, precision = 0 }: NumberTickerProps) {
-  const motionValue = useMotionValue(direction === "down" ? value + 100 : 0);
-  const springValue = useSpring(motionValue, {
-    stiffness: 100,
-    damping: 30,
-    mass: 1,
-  });
-
-  const display = useTransform(springValue, (current) => Number(current.toFixed(precision)));
+  const initialValue = direction === "down" ? value + 100 : 0;
+  const [display, setDisplay] = React.useState(initialValue);
+  const currentValue = React.useRef(initialValue);
 
   React.useEffect(() => {
-    motionValue.set(value);
-  }, [motionValue, value]);
+    const controls = animate(currentValue.current, value, {
+      duration: 0.4,
+      ease: [0.2, 0.7, 0.2, 1],
+      onUpdate: (current) => {
+        currentValue.current = current;
+        setDisplay(Number(current.toFixed(precision)));
+      },
+    });
 
-  return (
-    <m.span className={cn("inline-block num", className)}>
-      {display}
-    </m.span>
-  );
+    return controls.stop;
+  }, [precision, value]);
+
+  return <span className={cn("inline-block num", className)}>{display}</span>;
 }
