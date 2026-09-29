@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cellRadiusPx, fitProjection, hitTestCells, projectTweenAt, startProjectionTween } from "@/lib/map/project";
+import { cellRadiusPx, fitProjection, hitTestCells, panProjection, projectTweenAt, startProjectionTween } from "@/lib/map/project";
 import type { Cell, Scenario } from "@/types/scenario";
 
 const region: Scenario["region"] = { bbox: [84, 19, 88, 23], center: [86, 21], zoom: 7 };
@@ -58,6 +58,13 @@ describe("map projection", () => {
 
     expect(projectTweenAt(tween, 500).complete).toBe(true);
     expect(projectTweenAt(tween, 500).projection.translate).toEqual(to.translate);
+  });
+
+  it("pans a prepared asset to the map centre without changing scale", () => {
+    const projection = fitProjection(region, 960, 600);
+    const focused = panProjection(projection, region.center, 960, 600);
+    expect(focused.scale).toBe(projection.scale);
+    expect(focused.project(region.center)).toEqual([480, 300]);
   });
 
   // accepts an eight-pixel extension beyond the projected cell radius and rejects farther clicks

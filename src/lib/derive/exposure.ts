@@ -2,8 +2,16 @@ import type { SyntheticAssets } from "@/types/assets";
 import type { Cell } from "@/types/scenario";
 import type { Corridor, Polygon } from "./corridor";
 
-// describes synthetic assets exposed by one corridor and their earliest arrival
-export type Exposure = { villages: number; schools: number; hospitals: number; transmission: number; arrivalMin: number };
+// identifies a prepared asset listed in the exposure panel
+export type ExposureAsset = { id: string; name: string; type: "village" | "school" | "hospital" | "transmission" };
+
+// groups corridor counts with the named assets available for map focus
+export type Exposure = { villages: number; schools: number; hospitals: number; transmission: number; arrivalMin: number; assets: ExposureAsset[] };
+
+// narrows prepared points to the asset types represented in the exposure summary
+function isExposurePoint(asset: SyntheticAssets["points"][number]): asset is SyntheticAssets["points"][number] & { type: "village" | "school" | "hospital" } {
+  return asset.type === "village" || asset.type === "school" || asset.type === "hospital";
+}
 
 // detects whether a point belongs to a corridor polygon including its outer boundary
 function pointInPolygon([x, y]: [number, number], polygon: Polygon): boolean {
@@ -37,5 +45,9 @@ export function exposureFor(corridor: Corridor, assets: SyntheticAssets, cell: P
     hospitals: points.filter((asset) => asset.type === "hospital").length,
     transmission,
     arrivalMin,
+    assets: [
+      ...points.filter(isExposurePoint).map((asset) => ({ id: asset.id, name: asset.name, type: asset.type })),
+      ...assets.polylines.filter((line) => line.path.some(inside)).map((line) => ({ id: line.id, name: line.name, type: line.type })),
+    ],
   };
 }
