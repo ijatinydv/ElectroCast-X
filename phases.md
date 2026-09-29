@@ -480,7 +480,7 @@ Read docs/07-content-and-copy.md (Validation page copy). Build src/app/validatio
 Read docs/02-ui-spec.md (Prediction vs Actual) and docs/04-data-contract.md (outcome). Implement compare mode in the map engine using canvas clipping: draw prediction layers clipped to x < split and outcome layers (observedFlashes, observedPath, observed cells) clipped to x ≥ split; draw a 1px divider with a grabbable handle; enable the dock toggle from 3.1. Add an outcome summary line to the right rail (computed from outcome and firstFlash window; wording per copy doc) shown only in compare mode. Handle pointer and keyboard for the divider.
 ```
 
-### [ ] 6.5 Guided demo mode
+### [x] 6.5 Guided demo mode
 **Does:** Auto-plays the recommended demo flow with captions and a Stop control.
 **Depends on:** 4.3, 5.4, 6.4, 3.6.
 **Verify:**

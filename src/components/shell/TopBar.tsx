@@ -21,16 +21,18 @@ const scenarios: Record<"A" | "B" | "C", Scenario> = { A: scenarioA as unknown a
 interface TopBarProps {
   onToggleLeft: () => void;
   onToggleRight: () => void;
+  onGuidedDemo: () => void;
   leftOpen: boolean;
   rightOpen: boolean;
 }
 
 // keeps scenario health, operational controls, and pipeline context accessible from Mission Control
-export function TopBar({ onToggleLeft, onToggleRight, leftOpen, rightOpen }: TopBarProps) {
+export function TopBar({ onToggleLeft, onToggleRight, onGuidedDemo, leftOpen, rightOpen }: TopBarProps) {
   const [time, setTime] = React.useState(new Date());
   const scenarioId = useStore((state) => state.scenarioId);
   const timeMin = useStore((state) => state.timeMin);
   const sensorOff = useStore((state) => state.sensorOff);
+  const guidedOn = useStore((state) => state.guided.on);
   const frame = frameAt(scenarios[scenarioId], timeMin);
   const sensorMask = effectiveSensorMask(sensorOff, frame.sensorHealth);
   React.useEffect(() => {
@@ -91,8 +93,8 @@ export function TopBar({ onToggleLeft, onToggleRight, leftOpen, rightOpen }: Top
           </Tooltip>
         </TooltipProvider>
 
-        <Button variant="outline" size="sm" className="h-7 text-xs" disabled>
-          Guided demo
+        <Button aria-label={guidedOn ? "Restart guided demo" : "Start guided demo"} className="h-7 text-xs" onClick={onGuidedDemo} size="sm" variant="outline">
+          {guidedOn ? "Restart" : "Guided demo"}
         </Button>
 
         <PipelineSheet activeStageId={leftOpen ? "masks" : undefined} />

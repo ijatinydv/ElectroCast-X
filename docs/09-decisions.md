@@ -75,3 +75,9 @@ Add a row whenever you make a choice that another person might question.
 | Decision | Rationale | Rejected |
 | --- | --- | --- |
 | D35 | Compare mode clips prediction and prepared outcome passes within the existing canvas | Preserves one map projection, one engine lifecycle and shared playback state while providing a direct swipe comparison | A second synchronized map instance or DOM geographic overlays |
+
+# Phase 6.5 — Guided demo mode
+
+| Decision | Choice | Why | Rejected |
+| --- | --- | --- | --- |
+| D36 | Guide captions and actions are authored in local JSON and executed through a cancellable store runner | Keeps presenter flow repeatable, offline, and consistent with every mission-control surface without synthetic pointer events | DOM click playback or panel-local guide state |
