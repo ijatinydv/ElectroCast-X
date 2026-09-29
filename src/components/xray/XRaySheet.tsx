@@ -88,31 +88,31 @@ function XRaySheetContents({ cell, close, effectiveRadarUnavailable, features, f
   const readout = sliceReadoutFor(cell, sliceAltitudeKm);
 
   return (
-    <m.section animate={{ opacity: 1, y: 0 }} aria-label="Storm X-ray" className="absolute inset-0 z-30 flex min-h-0 flex-col border border-line bg-bg xl:left-[264px] xl:right-[336px]" exit={{ opacity: 0, y: 12 }} initial={{ opacity: 0, y: 12 }} transition={{ duration: 0.25, ease: [0.2, 0.7, 0.2, 1] }}>
-      <header className="flex h-12 shrink-0 items-center justify-between border-b border-line px-4">
+    <m.section animate={{ opacity: 1, y: 0 }} aria-label="Storm X-ray" className="absolute inset-0 z-30 flex min-h-0 flex-col border-t border-line bg-bg shadow-2xl" exit={{ opacity: 0, y: 12 }} initial={{ opacity: 0, y: 12 }} transition={{ duration: 0.25, ease: [0.2, 0.7, 0.2, 1] }}>
+      <header className="flex h-12 shrink-0 items-center justify-between border-b border-line px-4 bg-rail/50 backdrop-blur-md">
         <div>
           <h2 className="text-sm font-medium text-fg">Storm X-ray</h2>
-          <p className="text-xs text-fg-2">Simulated demo scenario · <span className="num">{cell.id}</span> reflectivity volume</p>
+          <p className="text-xs text-fg-2">Simulated demo scenario • <span className="num text-fg-1">{cell.id}</span> reflectivity volume</p>
         </div>
-        <Button aria-label="Close storm X-ray" autoFocus onClick={close} size="icon-sm" variant="outline">
-          <X />
+        <Button aria-label="Close storm X-ray" autoFocus onClick={close} size="icon-sm" variant="outline" className="rounded-full hover:bg-risk/10 hover:text-risk transition-colors">
+          <X size={16} />
         </Button>
       </header>
-      <div className="relative flex min-h-0 flex-1 bg-bg">
+      <div className="relative flex min-h-0 flex-1 bg-bg/50">
         <AltitudeSlider altitudeKm={sliceAltitudeKm} echoTopKm={cell.echoTopKm} freezingLevelKm={cell.freezingLevelKm} onAltitudeChange={setSliceAltitudeKm} />
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 relative">
           <StormScene cell={cell} features={features} flashes={frame.lightning} predictedFlashes={frame.kind === "forecast"} radarAvailable={!effectiveRadarUnavailable} sliceAltitudeKm={sliceAltitudeKm} />
         </div>
-        <div className="absolute right-4 top-4">
+        <div className="absolute right-6 top-6 z-20 shadow-xl rounded-md overflow-hidden">
           <XRayControls features={features} onFeatureChange={(feature, visible) => setFeatures((current) => ({ ...current, [feature]: visible }))} />
         </div>
-        <aside aria-label="Slice readout" className="absolute bottom-4 right-4 w-52 border border-line bg-bg/95 p-3">
-          <p className="mb-3 text-xs font-medium text-fg">Slice readout</p>
-          {effectiveRadarUnavailable && <p className="mb-3 text-xs font-medium text-risk">Radar unavailable</p>}
-          <dl className="space-y-2 text-xs">
-            <div className="flex items-baseline justify-between gap-3"><dt className="text-fg-2">Reflectivity</dt><dd className="num text-fg">{readout.reflectivityDbz.toFixed(1)} dBZ</dd></div>
-            <div className="flex items-baseline justify-between gap-3"><dt className="text-fg-2">ZDR</dt><dd className="num text-fg">{readout.zdrDb.toFixed(2)} dB</dd></div>
-            <div className="flex items-baseline justify-between gap-3"><dt className="text-fg-2">KDP</dt><dd className="num text-fg">{readout.kdpDegKm.toFixed(2)} °/km</dd></div>
+        <aside aria-label="Slice readout" className="absolute bottom-6 left-[14rem] w-56 rounded-md border border-line bg-bg/95 p-4 shadow-xl backdrop-blur-md z-20">
+          <p className="mb-3 text-xs font-semibold tracking-wide text-fg uppercase">Slice readout</p>
+          {effectiveRadarUnavailable && <p className="mb-3 text-xs font-medium text-risk bg-risk/10 px-2 py-1 rounded-sm inline-block">Radar unavailable</p>}
+          <dl className="space-y-2.5 text-xs">
+            <div className="flex items-baseline justify-between gap-3"><dt className="text-fg-2 font-medium">Reflectivity</dt><dd className="num text-fg font-medium">{readout.reflectivityDbz.toFixed(1)} dBZ</dd></div>
+            <div className="flex items-baseline justify-between gap-3"><dt className="text-fg-2 font-medium">ZDR</dt><dd className="num text-fg font-medium">{readout.zdrDb.toFixed(2)} dB</dd></div>
+            <div className="flex items-baseline justify-between gap-3"><dt className="text-fg-2 font-medium">KDP</dt><dd className="num text-fg font-medium">{readout.kdpDegKm.toFixed(2)} °/km</dd></div>
           </dl>
         </aside>
       </div>
