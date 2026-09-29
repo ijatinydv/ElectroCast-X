@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { m } from "motion/react";
-import { ArrowRight, ChevronRight, Sparkles } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import scenarioA from "@/data/scenarios/a-first-flash.json";
 import { HeroMapLoop } from "@/components/landing/HeroMapLoop";
 import { Dial } from "@/components/ui/Dial";
@@ -28,28 +28,30 @@ export function Hero() {
 
   return (
     <section
-      className="relative isolate min-h-screen flex items-center justify-between overflow-hidden px-5 pt-28 pb-16 sm:px-8 lg:px-12"
+      className="relative isolate min-h-screen flex items-center justify-between overflow-hidden px-6 pt-28 pb-16 sm:px-8 lg:px-12"
       aria-labelledby="landing-title"
     >
-      {/* Background live canvas loop with subtle Apple vignette */}
+      {/* Background live canvas loop showing Odisha radar across the full hero */}
       <m.div
         initial={{ opacity: 0, filter: "blur(12px)" }}
-        animate={{ opacity: 0.55, filter: "blur(0px)" }}
-        transition={{ duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
+        animate={{ opacity: 0.65, filter: "blur(0px)" }}
+        transition={{ duration: 0.8, ease: [0.2, 0.7, 0.2, 1] }}
         className="absolute inset-0 -z-20 pointer-events-none"
       >
         <HeroMapLoop />
-        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/25 to-bg/50" />
+        {/* Apple-grade atmospheric gradients: left is darkened for high text contrast, right allows radar storm visual to shine */}
+        <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/85 via-50% to-bg/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-bg/40" />
       </m.div>
 
-      <div className="mx-auto flex w-full max-w-7xl flex-col lg:flex-row lg:items-center lg:justify-between gap-12 lg:gap-16">
-        {/* Left Headline & Pitch */}
+      <div className="mx-auto flex w-full max-w-7xl flex-col lg:flex-row lg:items-center lg:justify-between gap-12 lg:gap-16 z-10">
+        {/* Left Headline & Value Proposition */}
         <div className="max-w-2xl">
           <m.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
-            className="inline-flex items-center gap-2 rounded-full border border-line bg-rail/80 px-3 py-1 text-xs text-fg-2 backdrop-blur-md mb-6"
+            transition={{ delay: 0.15, duration: 0.45, ease: [0.2, 0.7, 0.2, 1] }}
+            className="inline-flex items-center gap-2 rounded-full border border-line bg-rail/80 px-3.5 py-1 text-xs text-fg-2 backdrop-blur-md mb-6"
           >
             <span className="size-1.5 rounded-full bg-observed animate-pulse" />
             <span>Physics-Guided Multimodal Lightning Intelligence</span>
@@ -64,7 +66,7 @@ export function Hero() {
               aria-hidden="true"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
+              transition={{ delay: 0.25, duration: 0.5, ease: [0.2, 0.7, 0.2, 1] }}
               className="block"
             >
               Lightning warnings
@@ -73,7 +75,7 @@ export function Hero() {
               aria-hidden="true"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
+              transition={{ delay: 0.35, duration: 0.5, ease: [0.2, 0.7, 0.2, 1] }}
               className="block text-fg-2"
             >
               that start before
@@ -82,7 +84,7 @@ export function Hero() {
               aria-hidden="true"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
+              transition={{ delay: 0.45, duration: 0.5, ease: [0.2, 0.7, 0.2, 1] }}
               className="block"
             >
               the first flash.
@@ -92,7 +94,7 @@ export function Hero() {
           <m.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
+            transition={{ delay: 0.6, duration: 0.5, ease: [0.2, 0.7, 0.2, 1] }}
             className="mt-6 max-w-xl text-base leading-relaxed text-fg-2 sm:text-lg"
           >
             ElectroCast-X forecasts when a developing cloud will first produce lightning, where an active storm will go, and how far to trust it—15, 30 and 60 minutes ahead.
@@ -101,7 +103,7 @@ export function Hero() {
           <m.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.72, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
+            transition={{ delay: 0.72, duration: 0.5, ease: [0.2, 0.7, 0.2, 1] }}
             className="mt-8 flex flex-wrap items-center gap-4"
           >
             <Link
@@ -120,9 +122,32 @@ export function Hero() {
               <ChevronRight size={15} className="text-fg-3" />
             </Link>
           </m.div>
+
+          {/* Quick Metrics Bar */}
+          <m.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.82, duration: 0.5, ease: [0.2, 0.7, 0.2, 1] }}
+            className="mt-10 flex flex-wrap items-center gap-6 border-t border-line/60 pt-6 text-xs text-fg-3"
+          >
+            <div>
+              <span className="num text-fg font-medium text-sm">+18 min</span>
+              <span className="block mt-0.5 text-fg-3">First-flash lead time</span>
+            </div>
+            <div className="h-6 w-px bg-line" />
+            <div>
+              <span className="num text-fg font-medium text-sm">1 km / 5 min</span>
+              <span className="block mt-0.5 text-fg-3">Physics-guided update</span>
+            </div>
+            <div className="h-6 w-px bg-line" />
+            <div>
+              <span className="text-fg font-medium text-sm">Odisha DWR</span>
+              <span className="block mt-0.5 text-fg-3">Dual-pol radar network</span>
+            </div>
+          </m.div>
         </div>
 
-        {/* Right Signature Element Widget (Apple Pro Card Design) */}
+        {/* Right Signature Element: Apple-Style Telemetry & Forecast Graph Card */}
         <m.div
           initial={{ opacity: 0, scale: 0.94, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -145,8 +170,8 @@ export function Hero() {
               </span>
             </div>
 
-            {/* Dial visual */}
-            <div className="flex justify-center py-2">
+            {/* Dial centerpiece */}
+            <div className="flex justify-center py-1">
               <Dial
                 probability={dial.probability}
                 windowStart={dial.windowStart}
@@ -155,20 +180,60 @@ export function Hero() {
               />
             </div>
 
-            {/* Sub-card details */}
-            <div className="mt-5 rounded-2xl border border-line bg-raised/50 p-3.5 text-xs">
-              <div className="flex items-center justify-between text-fg-2">
-                <span>Cloud-top cooling</span>
-                <span className="num text-fg font-medium">−4.2 °C/10 min</span>
+            {/* Probability Trajectory Graph */}
+            <div className="mt-4 rounded-2xl border border-line bg-raised/40 p-3.5">
+              <div className="flex items-center justify-between text-xs mb-2">
+                <span className="text-fg-3">Probability Trajectory</span>
+                <span className="font-mono text-risk font-medium text-[11px]">+64% in 20 min</span>
               </div>
-              <div className="mt-2 flex items-center justify-between text-fg-2">
-                <span>ZDR column height</span>
-                <span className="num text-fg font-medium">Reached −10 °C</span>
+              <div className="h-10 w-full">
+                <svg viewBox="0 0 200 40" className="w-full h-full overflow-visible" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="probGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--color-risk)" stopOpacity="0.35" />
+                      <stop offset="100%" stopColor="var(--color-risk)" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M 0,36 Q 50,34 90,28 T 150,14 T 200,4 L 200,40 L 0,40 Z"
+                    fill="url(#probGrad)"
+                  />
+                  <path
+                    d="M 0,36 Q 50,34 90,28 T 150,14 T 200,4"
+                    fill="none"
+                    stroke="var(--color-risk)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <circle cx="200" cy="4" r="3" fill="var(--color-risk)" className="animate-pulse" />
+                </svg>
+              </div>
+              <div className="flex items-center justify-between text-[10px] font-mono text-fg-3 mt-1 border-t border-line/40 pt-1.5">
+                <span>−30m</span>
+                <span>−15m (ZDR breach)</span>
+                <span className="text-risk font-medium">t₀ (78%)</span>
+              </div>
+            </div>
+
+            {/* Physical Signatures */}
+            <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+              <div className="rounded-xl border border-line bg-raised/30 p-2.5">
+                <div className="text-[10px] text-fg-3">Cloud-top cooling</div>
+                <div className="num text-fg font-medium mt-0.5">−4.2 °C/10 min</div>
+              </div>
+              <div className="rounded-xl border border-line bg-raised/30 p-2.5">
+                <div className="text-[10px] text-fg-3">ZDR Column</div>
+                <div className="num text-fg font-medium mt-0.5">Reached −10 °C</div>
               </div>
             </div>
           </div>
         </m.div>
       </div>
+
+      {/* Honest simulation watermark */}
+      <p className="absolute bottom-4 left-6 text-xs text-fg-3 sm:left-8 lg:left-12">
+        Simulated demo scenario over Odisha
+      </p>
     </section>
   );
 }
