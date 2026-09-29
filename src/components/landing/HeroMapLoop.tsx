@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import scenarioA from "@/data/scenarios/a-first-flash.json";
-import type { MapEngine } from "@/lib/map/engine";
+import { createMapEngine, type MapEngine } from "@/lib/map/engine";
 import type { AppState } from "@/types/store";
 import type { Scenario } from "@/types/scenario";
 
@@ -64,7 +64,6 @@ export function HeroMapLoop() {
     let frameId: number | null = null;
     let lastTime: number | null = null;
     let intersecting = true;
-    let cancelled = false;
     const listeners = new Set<(nextState: AppState) => void>();
 
     // sends timestamped scenario frames to the engine without forcing React to render
@@ -92,25 +91,21 @@ export function HeroMapLoop() {
       }
     }, { threshold: 0.01 });
 
-    observer.observe(container);
-    void import("@/lib/map/engine").then(({ createMapEngine }) => {
-      if (cancelled) return;
-      engine = createMapEngine({
-        canvas,
-        scenarios: heroScenarios,
-        initialState: state,
-        subscribe: (listener) => {
-          listeners.add(listener);
-          return () => listeners.delete(listener);
-        },
-        onCellSelect: () => undefined,
-      });
-      engine.setActive(intersecting);
-      if (intersecting) frameId = window.requestAnimationFrame(advance);
+    engine = createMapEngine({
+      canvas,
+      scenarios: heroScenarios,
+      initialState: state,
+      subscribe: (listener) => {
+        listeners.add(listener);
+        return () => listeners.delete(listener);
+      },
+      onCellSelect: () => undefined,
     });
 
+    observer.observe(container);
+    frameId = window.requestAnimationFrame(advance);
+
     return () => {
-      cancelled = true;
       observer.disconnect();
       if (frameId !== null) window.cancelAnimationFrame(frameId);
       engine?.destroy();
