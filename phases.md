@@ -411,7 +411,7 @@ Read docs/02-ui-spec.md (X-ray). Add src/components/xray/AltitudeSlider.tsx (ver
 Read docs/01-design-system.md (colour meaning) and docs/02-ui-spec.md (X-ray toggles). Add to StormScene: a ZDR column cylinder (from freezing level to the level in cell.zdrColumnLevel), a KDP core (icosphere near −10 °C sized by kdpCore), updraft streamlines (a few animated line particles, rate by updraftMs, animated with a single useFrame that only runs when the toggle is on), graupel/mixed-phase highlight (recolour voxels between −10 and −20 °C above a reflectivity threshold in amber), and flashes from frame.lightning inside the cell (solid) plus predicted (hollow). Build XRayControls.tsx with the six toggles. Keep instance counts and draw calls small.
 ```
 
-### [ ] 5.4 Sync with time and sensor mask; polish
+### [x] 5.4 Sync with time and sensor mask; polish
 **Does:** X-ray reflects the current frame and degrades when sensors are off.
 **Depends on:** 5.3, 3.3.
 **Verify:**

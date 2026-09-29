@@ -52,7 +52,7 @@ export function RightRail() {
         <Panel title="Actions" defaultOpen={true} collapsible={false}>
           <div className="flex flex-col gap-3">
             <Button disabled={!cell} onClick={() => setPanel("alert", true)} variant="default" className="w-full">Create warning</Button>
-            <Button disabled={!cell} onClick={() => setPanel("xray", true)} variant="outline" className="w-full">Open storm X-ray</Button>
+            <Button className="w-full" data-xray-trigger disabled={!cell} onClick={() => setPanel("xray", true)} variant="outline">Open storm X-ray</Button>
           </div>
         </Panel>
       </div>

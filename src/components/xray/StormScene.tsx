@@ -5,7 +5,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Html, Line, OrbitControls } from "@react-three/drei";
 import { BoxGeometry, Color, Matrix4, MeshBasicMaterial, Vector3 } from "three";
 import type { Group, InstancedMesh } from "three";
-import { buildVolume, VOLUME_DEPTH, VOLUME_HEIGHT, VOLUME_WIDTH } from "@/lib/derive/volume";
+import { buildVolume, volumeNeedsRebuild, VOLUME_DEPTH, VOLUME_HEIGHT, VOLUME_WIDTH } from "@/lib/derive/volume";
 import type { Flash, Cell } from "@/types/scenario";
 import type { XRayFeatureVisibility } from "@/components/xray/XRayControls";
 
@@ -60,10 +60,10 @@ function voxelsFor(cell: Cell): Voxel[] {
 }
 
 // updates fixed instance transforms and colours after each procedural volume change
-function VoxelCloud({ cell, sliceAltitudeKm, showMixedPhase }: { cell: Cell; sliceAltitudeKm: number; showMixedPhase: boolean }) {
+function VoxelCloud({ cell, volumeCell, sliceAltitudeKm, showMixedPhase, radarAvailable }: { cell: Cell; volumeCell: Cell; sliceAltitudeKm: number; showMixedPhase: boolean; radarAvailable: boolean }) {
   const { invalidate } = useThree();
   const instances = React.useRef<InstancedMesh>(null);
-  const voxels = React.useMemo(() => voxelsFor(cell), [cell]);
+  const voxels = React.useMemo(() => voxelsFor(volumeCell), [volumeCell]);
   const geometry = React.useMemo(() => new BoxGeometry(0.15, 0.15, 0.15), []);
   const material = React.useMemo(() => new MeshBasicMaterial({ transparent: true, opacity: 0.68, vertexColors: true, depthWrite: false }), []);
 
@@ -80,17 +80,21 @@ function VoxelCloud({ cell, sliceAltitudeKm, showMixedPhase }: { cell: Cell; sli
     const mixedPhaseThreshold = Math.max(20, cell.reflectivityDbz * 0.62);
 
     voxels.forEach((voxel, index) => {
-      matrix.makeTranslation((voxel.x - VOLUME_WIDTH / 2) * 0.18, (voxel.z - VOLUME_HEIGHT / 2) * 0.18, (voxel.y - VOLUME_DEPTH / 2) * 0.18);
+      const droppedOut = !radarAvailable && (voxel.x * 17 + voxel.y * 11 + voxel.z * 7) % 5 < 2;
+      matrix.makeScale(droppedOut ? 0 : 1, droppedOut ? 0 : 1, droppedOut ? 0 : 1);
+      matrix.setPosition((voxel.x - VOLUME_WIDTH / 2) * 0.18, (voxel.z - VOLUME_HEIGHT / 2) * 0.18, (voxel.y - VOLUME_DEPTH / 2) * 0.18);
       mesh.setMatrixAt(index, matrix);
       const voxelAltitudeKm = (voxel.z / (VOLUME_HEIGHT - 1)) * cell.echoTopKm;
       const sliceBrightness = Math.abs(voxelAltitudeKm - sliceAltitudeKm) <= 0.4 ? 0.35 : 0;
       const isMixedPhaseHazard = showMixedPhase && voxelAltitudeKm >= mixedPhaseBottomKm && voxelAltitudeKm <= mixedPhaseTopKm && voxel.value >= mixedPhaseThreshold;
       mesh.setColorAt(index, darkest.clone().lerp(isMixedPhaseHazard ? mixedPhaseColor : color, Math.min(1, voxel.value / maxValue + sliceBrightness)));
     });
+    material.opacity = radarAvailable ? 0.68 : 0.24;
+    material.needsUpdate = true;
     mesh.instanceMatrix.needsUpdate = true;
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     invalidate();
-  }, [cell.echoTopKm, cell.freezingLevelKm, cell.reflectivityDbz, invalidate, showMixedPhase, sliceAltitudeKm, voxels]);
+  }, [cell.echoTopKm, cell.freezingLevelKm, cell.reflectivityDbz, invalidate, material, radarAvailable, showMixedPhase, sliceAltitudeKm, voxels]);
 
   React.useEffect(() => () => {
     geometry.dispose();
@@ -109,7 +113,7 @@ function zdrColumnAltitude(cell: Cell): number | null {
 }
 
 // marks the supercooled liquid column extending above the freezing level
-function ZdrColumn({ cell }: { cell: Cell }) {
+function ZdrColumn({ cell, radarAvailable }: { cell: Cell; radarAvailable: boolean }) {
   const topAltitudeKm = zdrColumnAltitude(cell);
   if (topAltitudeKm === null || topAltitudeKm <= cell.freezingLevelKm) return null;
   const bottom = sceneHeightFor(cell.freezingLevelKm, cell.echoTopKm);
@@ -117,22 +121,27 @@ function ZdrColumn({ cell }: { cell: Cell }) {
 
   return (
     <mesh position={[-0.22, (bottom + top) / 2, 0.08]}>
-      <cylinderGeometry args={[0.3, 0.3, top - bottom, 16, 1, true]} />
-      <meshBasicMaterial color={observedColor()} depthWrite={false} opacity={0.32} side={2} transparent />
+      <cylinderGeometry args={[0.3, 0.3, top - bottom, 16, 1, true, 0, radarAvailable ? Math.PI * 2 : Math.PI * 1.2]} />
+      <meshBasicMaterial color={observedColor()} depthWrite={false} opacity={radarAvailable ? 0.32 : 0.11} side={2} transparent />
     </mesh>
   );
 }
 
 // shows the concentrated differential-phase signal at the strong mixed-phase level
-function KdpCore({ cell }: { cell: Cell }) {
+function KdpCore({ cell, radarAvailable }: { cell: Cell; radarAvailable: boolean }) {
   const altitudeKm = cell.freezingLevelKm + 10 / 6.5;
   const radius = Math.min(0.62, Math.max(0.18, cell.kdpCore * 0.2));
+  const fragments = radarAvailable ? [[0, 0, 0]] : [[-0.18, 0.08, 0.1], [0.14, -0.1, -0.08], [0.02, 0.16, -0.16]];
 
   return (
-    <mesh position={[0.32, sceneHeightFor(altitudeKm, cell.echoTopKm), -0.2]}>
-      <icosahedronGeometry args={[radius, 2]} />
-      <meshBasicMaterial color={observedColor()} depthWrite={false} opacity={0.6} transparent />
-    </mesh>
+    <group position={[0.32, sceneHeightFor(altitudeKm, cell.echoTopKm), -0.2]}>
+      {fragments.map(([x, y, z]) => (
+        <mesh key={`${x}-${y}-${z}`} position={[x!, y!, z!]}>
+          <icosahedronGeometry args={[radarAvailable ? radius : radius * 0.42, 2]} />
+          <meshBasicMaterial color={observedColor()} depthWrite={false} opacity={radarAvailable ? 0.6 : 0.2} transparent />
+        </mesh>
+      ))}
+    </group>
   );
 }
 
@@ -255,9 +264,14 @@ function IdleRotation({ active }: { active: boolean }) {
 }
 
 // renders the compact on-demand R3F storm volume without affecting Mission Control's initial bundle
-export function StormScene({ cell, features, flashes, predictedFlashes, sliceAltitudeKm }: { cell: Cell; features: XRayFeatureVisibility; flashes: Flash[]; predictedFlashes: boolean; sliceAltitudeKm: number }) {
+export function StormScene({ cell, features, flashes, predictedFlashes, radarAvailable, sliceAltitudeKm }: { cell: Cell; features: XRayFeatureVisibility; flashes: Flash[]; predictedFlashes: boolean; radarAvailable: boolean; sliceAltitudeKm: number }) {
   const [interacting, setInteracting] = React.useState(false);
   const [webglSupported] = React.useState(supportsWebGl);
+  const [volumeCell, setVolumeCell] = React.useState(cell);
+
+  React.useEffect(() => {
+    setVolumeCell((previous) => volumeNeedsRebuild(previous, cell) ? cell : previous);
+  }, [cell]);
 
   if (!webglSupported) {
     return <div className="flex h-full items-center justify-center p-6 text-center text-sm text-fg-2" role="status">WebGL is unavailable in this browser, so the simulated reflectivity volume cannot render.</div>;
@@ -273,10 +287,10 @@ export function StormScene({ cell, features, flashes, predictedFlashes, sliceAlt
       onCreated={({ gl }) => gl.setClearColor(getComputedStyle(document.documentElement).getPropertyValue("--color-bg").trim(), 1)}
     >
       <ambientLight intensity={0.35} />
-      {features.reflectivity && <VoxelCloud cell={cell} showMixedPhase={features.mixedPhase} sliceAltitudeKm={sliceAltitudeKm} />}
+      {features.reflectivity && <VoxelCloud cell={cell} radarAvailable={radarAvailable} showMixedPhase={features.mixedPhase} sliceAltitudeKm={sliceAltitudeKm} volumeCell={volumeCell} />}
       <TemperaturePlanes cell={cell} sliceAltitudeKm={sliceAltitudeKm} />
-      {features.zdrColumn && <ZdrColumn cell={cell} />}
-      {features.kdpCore && <KdpCore cell={cell} />}
+      {features.zdrColumn && <ZdrColumn cell={cell} radarAvailable={radarAvailable} />}
+      {features.kdpCore && <KdpCore cell={cell} radarAvailable={radarAvailable} />}
       <UpdraftStreamlines cell={cell} visible={features.updraft} />
       {features.flashes && <Flashes cell={cell} flashes={flashes} predicted={predictedFlashes} />}
       <SceneControls onInteraction={() => setInteracting(true)} />
