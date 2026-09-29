@@ -7,8 +7,10 @@ import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetT
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PhonePreview } from "@/components/alerts/PhonePreview";
 import { SmsPreview } from "@/components/alerts/SmsPreview";
+import { CapPreview } from "@/components/alerts/CapPreview";
 import { getOdishaDistricts } from "@/lib/geo/load";
 import { composeAlert, type AlertLanguage, type AlertTemplateFields } from "@/lib/i18n/alertTemplates";
+import { buildCap } from "@/lib/i18n/cap";
 import { frameAt } from "@/lib/map/interpolate";
 import { useStore } from "@/store/useStore";
 import type { Cell, Scenario } from "@/types/scenario";
@@ -75,7 +77,7 @@ export function AlertComposer() {
   const setPanel = useStore((state) => state.setPanel);
   const issueWarning = useStore((state) => state.issueWarning);
   const [language, setLanguage] = useState<AlertLanguage>("en");
-  const [preview, setPreview] = useState<"sms" | "notification">("sms");
+  const [preview, setPreview] = useState<"sms" | "phone" | "cap">("sms");
   const [fields, setFields] = useState<AlertTemplateFields>({ place: "", start: "", end: "" });
   const [toast, setToast] = useState<string | null>(null);
   const scenario = scenarios[scenarioId];
@@ -95,6 +97,7 @@ export function AlertComposer() {
   }, [toast]);
 
   const text = useMemo(() => composeAlert(language, fields), [fields, language]);
+  const cap = useMemo(() => cell ? buildCap(scenario, cell, horizon, fields.place, timeMin) : null, [cell, fields.place, horizon, scenario, timeMin]);
 
   // commits a timeline marker only after the prepared alert has a selected forecast cell
   const issue = () => {
@@ -133,13 +136,15 @@ export function AlertComposer() {
               </TabsList>
               {languages.map(({ id }) => <TabsContent key={id} value={id} className="mt-4 border border-line bg-bg p-4 text-sm leading-6 text-fg"><p lang={id === "en" ? "en" : id === "hi" ? "hi" : "or"} className={id === "hi" ? "font-[Noto_Sans_Devanagari]" : id === "od" ? "font-[Noto_Sans_Oriya]" : undefined}>{text}</p></TabsContent>)}
             </Tabs>
-            <Tabs value={preview} onValueChange={(value) => setPreview(value as "sms" | "notification")}>
-              <TabsList className="grid w-full grid-cols-2 bg-raised">
-                <TabsTrigger value="sms">SMS preview</TabsTrigger>
-                <TabsTrigger value="notification">Mobile notification</TabsTrigger>
+            <Tabs value={preview} onValueChange={(value) => setPreview(value as "sms" | "phone" | "cap")}>
+              <TabsList className="grid w-full grid-cols-3 bg-raised">
+                <TabsTrigger value="sms">SMS</TabsTrigger>
+                <TabsTrigger value="phone">Phone</TabsTrigger>
+                <TabsTrigger value="cap">CAP</TabsTrigger>
               </TabsList>
               <TabsContent value="sms" className="mt-4"><SmsPreview text={text} language={language} /></TabsContent>
-              <TabsContent value="notification" className="mt-4"><PhonePreview text={text} language={language} isActive={preview === "notification"} /></TabsContent>
+              <TabsContent value="phone" className="mt-4"><PhonePreview text={text} language={language} isActive={preview === "phone"} /></TabsContent>
+              <TabsContent value="cap" className="mt-4">{cap && <CapPreview cap={cap} onCopied={setToast} />}</TabsContent>
             </Tabs>
           </div> : <div className="p-5 text-sm text-fg-2">Select a storm cell on the map.</div>}
           <SheetFooter className="border-t border-line p-5">
