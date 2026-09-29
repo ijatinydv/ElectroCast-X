@@ -173,13 +173,13 @@ export const lightningLayer: Layer = {
   draw: (context, state, now) => {
     if (!state.layers.lightning) return;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const flashes = state.compareOn ? state.scenario.outcome.observedFlashes : state.frame.lightning;
+    const flashes = state.frame.lightning;
     const activeFlashes = scheduler.advance({
       scenarioId: state.scenario.id,
       timeMin: state.timeMin,
       flashes,
       now,
-      outcomeMode: state.compareOn,
+      outcomeMode: false,
     });
     for (const active of activeFlashes) drawFlash(context, active, state, now, reducedMotion);
   },

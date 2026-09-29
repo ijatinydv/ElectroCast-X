@@ -142,6 +142,8 @@ export function BottomDock() {
   const setTime = useStore((state) => state.setTime);
   const setPlaying = useStore((state) => state.setPlaying);
   const setSpeed = useStore((state) => state.setSpeed);
+  const compareOn = useStore((state) => state.compare.on);
+  const setCompare = useStore((state) => state.setCompare);
   const scenario = scenarios[scenarioId];
   const frameTimes = React.useMemo(() => scenario.frames.map((frame) => frame.t), [scenario]);
 
@@ -186,7 +188,7 @@ export function BottomDock() {
           ))}
         </div>
         <div className="hidden shrink-0 sm:block">
-          <Button disabled size="sm" variant="outline" className="h-8 text-xs">
+          <Button aria-pressed={compareOn} onClick={() => setCompare({ on: !compareOn })} size="sm" variant={compareOn ? "secondary" : "outline"} className="h-8 text-xs">
             Prediction / Actual
           </Button>
         </div>

@@ -63,3 +63,9 @@ Add a row whenever you make a choice that another person might question.
 | Decision | Choice | Why | Rejected |
 |---|---|---|---|
 | D34 | X-ray voxel instances rebuild only after material atmospheric changes | Preserves continuous timeline updates without allocating Three geometry or materials for every scrubber tick | Rebuilding the procedural volume for every interpolated frame |
+
+# Phase 6.4 — Prediction vs Actual compare mode
+
+| Decision | Rationale | Rejected |
+| --- | --- | --- |
+| D35 | Compare mode clips prediction and prepared outcome passes within the existing canvas | Preserves one map projection, one engine lifecycle and shared playback state while providing a direct swipe comparison | A second synchronized map instance or DOM geographic overlays |

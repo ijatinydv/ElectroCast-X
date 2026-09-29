@@ -8,7 +8,7 @@ import { CountdownPanel } from "@/components/panels/CountdownPanel";
 import { EvidencePanel } from "@/components/panels/EvidencePanel";
 import { ExposurePanel } from "@/components/panels/ExposurePanel";
 import { AlertComposer } from "@/components/alerts/AlertComposer";
-import { effectiveSensorMask } from "@/lib/derive";
+import { effectiveSensorMask, outcomeSummaryFor } from "@/lib/derive";
 import { frameAt } from "@/lib/map/interpolate";
 import { useStore } from "@/store/useStore";
 import type { Scenario } from "@/types/scenario";
@@ -30,15 +30,18 @@ export function RightRail() {
   const selectedCellId = useStore((state) => state.selectedCellId);
   const sensorOff = useStore((state) => state.sensorOff);
   const setPanel = useStore((state) => state.setPanel);
+  const compareOn = useStore((state) => state.compare.on);
   const scenario = scenarios[scenarioId];
   const frame = frameAt(scenario, timeMin);
   const cell = selectedCellId ? frame.cells.find((candidate) => candidate.id === selectedCellId) : undefined;
   const effectiveMask = effectiveSensorMask(sensorOff, frame.sensorHealth);
+  const outcomeSummary = outcomeSummaryFor(scenario);
 
   return (
     <ScrollArea className="h-full bg-rail border-l border-line">
       <div className="flex flex-col">
         {cell ? <CellHeader cell={cell} /> : <div className="p-4 text-sm text-fg-2">Select a storm cell on the map.</div>}
+        {compareOn && outcomeSummary && <div className="border-b border-line px-4 py-3 text-sm text-fg-2">First flash observed at <span className="num">+{outcomeSummary.firstFlashMin} min</span>, {outcomeSummary.insidePrediction ? "inside" : "outside"} the <span className="num">{outcomeSummary.windowMin[0]}–{outcomeSummary.windowMin[1]} min</span> window</div>}
         {cell && <Panel title={cell.mode === "active" ? "Active storm" : "When"} defaultOpen={true}><CountdownPanel scenario={scenario} cell={cell} timeMin={timeMin} sensorOff={effectiveMask} /></Panel>}
         <Panel title="Where" defaultOpen={true}>
           <div className="text-sm text-fg-2">Corridor summary available when a storm cell is selected.</div>
