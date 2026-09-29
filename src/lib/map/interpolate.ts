@@ -143,5 +143,6 @@ export function frameAt(scenario: Scenario, timeMin: number): Frame {
     ...nearest,
     t: time,
     cells: interpolateCells(start.cells, end.cells, progress),
+    sensorHealth: time < end.t ? start.sensorHealth : end.sensorHealth,
   };
 }

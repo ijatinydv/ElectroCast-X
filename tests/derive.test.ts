@@ -153,7 +153,7 @@ describe("store", () => {
     store.toggleSensor("radar");
     store.issueWarning({ tMin: 48, cellId: "C-A07", horizon: 30 });
     store.selectScenario("B");
-    expect(useStore.getState()).toMatchObject({ scenarioId: "B", timeMin: 0, selectedCellId: null, sensorOff: { radar: false, insat: false, lightning: false, nwp: false }, issuedWarnings: [] });
+    expect(useStore.getState()).toMatchObject({ scenarioId: "B", timeMin: -60, playing: false, selectedCellId: null, sensorOff: { radar: false, insat: false, lightning: false, nwp: false }, issuedWarnings: [] });
   });
 
   it("increments highlights so selecting an asset twice pulses it twice", () => {

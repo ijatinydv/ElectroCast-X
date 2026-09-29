@@ -60,7 +60,10 @@ export function TopBar({ onToggleLeft, onToggleRight, leftOpen, rightOpen }: Top
           </Tooltip>
         </TooltipProvider>
 
-        <div className="text-sm text-fg-2 hidden sm:block">{scenarios[scenarioId].name}</div>
+        <div className="hidden sm:block">
+          <div className="text-sm text-fg-2">{scenarios[scenarioId].name}</div>
+          <p className="max-w-72 text-xs leading-4 text-fg-3">{scenarios[scenarioId].story}</p>
+        </div>
       </div>
 
       <div className="flex items-center gap-6">

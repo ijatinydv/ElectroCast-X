@@ -309,7 +309,7 @@ Read docs/02-ui-spec.md (Right rail: How sure and why) and docs/07-content-and-c
 Read docs/02-ui-spec.md (Right rail: Exposure). Build src/components/panels/ExposurePanel.tsx from exposureFor(corridor, assets) at the selected horizon. Show counts with icons, top 3 named items each, estimated arrival (mono), and a synthetic chip on the header. Clicking an item triggers a one-time pulse on the map layer at that asset (store field `highlight`). Ensure 15 ⊂ 30 ⊂ 60 in tests.
 ```
 
-### [ ] 3.6 Scenario switcher and scenario stories
+### [x] 3.6 Scenario switcher and scenario stories
 **Does:** Scenario list with cross-fade, resets and per-scenario framing.
 **Depends on:** 3.3.
 **Verify:**
