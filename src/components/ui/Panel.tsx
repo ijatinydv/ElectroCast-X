@@ -14,11 +14,11 @@ export function Panel({ title, defaultOpen = true, collapsible = true, className
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
   return (
-    <div className={cn("bg-rail border-line border rounded-none flex flex-col", className)} {...props}>
-      <header className="border-b border-line">
+    <div className={cn("bg-rail border-b border-line flex flex-col", className)} {...props}>
+      <header className={isOpen ? "border-b border-line/50" : ""}>
         <button
           aria-expanded={collapsible ? isOpen : undefined}
-          className={cn("flex w-full items-center justify-between px-4 py-2 text-left", collapsible && "cursor-pointer hover:bg-raised focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-line-strong")}
+          className={cn("flex w-full items-center justify-between px-4 py-2 text-left transition-colors", collapsible && "cursor-pointer hover:bg-raised/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-line-strong")}
           disabled={!collapsible}
           onClick={() => setIsOpen(!isOpen)}
           type="button"

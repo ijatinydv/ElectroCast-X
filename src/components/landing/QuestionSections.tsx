@@ -103,16 +103,16 @@ export function QuestionSections() {
   };
 
   return (
-    <section className="border-t border-white/10" aria-label="Forecast principles">
+    <section className="border-t border-line" aria-label="Forecast principles">
       {/* 01 / WHEN */}
-      <article id="when" className="mx-auto max-w-6xl px-6 py-28 lg:py-36 grid items-center gap-16 lg:grid-cols-2 border-b border-white/5">
+      <article id="when" className="mx-auto max-w-6xl px-6 py-24 lg:py-32 grid items-center gap-16 lg:grid-cols-2 border-b border-line">
         <div className="max-w-xl">
-          <p className="text-xs font-mono uppercase tracking-wider text-[#ffb020]">When</p>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-[-0.03em] text-white leading-tight">
+          <p className="text-xs font-mono uppercase tracking-wider text-risk">01 / When</p>
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-[-0.03em] text-fg leading-tight">
             Know when a cloud is becoming electrified.
           </h2>
-          <p className="mt-5 text-base sm:text-lg text-[#86868b] leading-relaxed">
-            The first-flash countdown combines rapid cloud-top cooling, mixed-phase radar growth, and the −10 °C level into one forecast window.
+          <p className="mt-5 text-base sm:text-lg text-fg-2 leading-relaxed">
+            The first-flash countdown combines rapid cloud-top cooling, mixed-phase radar growth, and the −10 °C level into one calibrated forecast window.
           </p>
 
           <div className="mt-8 flex items-center gap-2" role="group" aria-label="Select horizon">
@@ -122,20 +122,20 @@ export function QuestionSections() {
                 type="button"
                 onClick={() => setHorizon(h)}
                 aria-pressed={horizon === h}
-                className={`h-8 px-4 rounded-full text-xs font-medium transition-all ${
+                className={`h-8 px-4 rounded-md text-xs font-medium transition-colors ${
                   horizon === h
-                    ? "bg-[#ffb020] text-black font-semibold"
-                    : "border border-white/10 bg-white/5 text-[#86868b] hover:text-white"
+                    ? "bg-risk text-bg font-semibold"
+                    : "border border-line bg-raised/40 text-fg-2 hover:text-fg hover:border-line-strong"
                 }`}
               >
-                {h} min ({probabilities[h].toFixed(0)}%)
+                {h} min (<span className="num">{probabilities[h].toFixed(0)}%</span>)
               </button>
             ))}
           </div>
         </div>
 
         <div className="flex justify-center">
-          <div className="rounded-3xl border border-white/10 bg-[#070b12] p-8 shadow-2xl flex flex-col items-center">
+          <div className="w-full max-w-md rounded-lg border border-line bg-rail/80 p-8 shadow-xl flex flex-col items-center">
             <Dial
               probability={probabilities[horizon]}
               horizon={horizon}
@@ -143,30 +143,30 @@ export function QuestionSections() {
               windowEnd={cell.firstFlash.windowMin[1]}
               rising={horizon === 30}
             />
-            <div className="mt-4 text-xs font-mono text-[#86868b]">
-              Initiation window: {cell.firstFlash.windowMin[0]}–{cell.firstFlash.windowMin[1]} min
+            <div className="mt-5 text-xs font-mono text-fg-3">
+              Initiation window: <span className="num text-fg-2">{cell.firstFlash.windowMin[0]}–{cell.firstFlash.windowMin[1]} min</span>
             </div>
           </div>
         </div>
       </article>
 
       {/* 02 / WHERE */}
-      <article id="where" className="mx-auto max-w-6xl px-6 py-28 lg:py-36 grid items-center gap-16 lg:grid-cols-2 border-b border-white/5">
+      <article id="where" className="mx-auto max-w-6xl px-6 py-24 lg:py-32 grid items-center gap-16 lg:grid-cols-2 border-b border-line">
         <div className="max-w-xl lg:order-2">
-          <p className="text-xs font-mono uppercase tracking-wider text-[#9e86ff]">Where</p>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-[-0.03em] text-white leading-tight">
+          <p className="text-xs font-mono uppercase tracking-wider text-forecast">02 / Where</p>
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-[-0.03em] text-fg leading-tight">
             Follow the storm’s likely path, not a single point.
           </h2>
-          <p className="mt-5 text-base sm:text-lg text-[#86868b] leading-relaxed">
+          <p className="mt-5 text-base sm:text-lg text-fg-2 leading-relaxed">
             The risk corridor follows observed storm motion and expected growth or decay, widening where the future path is less certain.
           </p>
         </div>
 
         <div className="lg:order-1">
-          <div className="rounded-3xl border border-white/10 bg-[#070b12] p-6 shadow-2xl">
-            <div className="text-xs font-mono text-[#86868b] mb-2 flex items-center justify-between">
+          <div className="rounded-lg border border-line bg-rail/80 p-6 shadow-xl">
+            <div className="text-xs font-mono text-fg-3 mb-3 flex items-center justify-between">
               <span>Advection trajectory</span>
-              <span className="text-[#9e86ff]">15 · 30 · 60 min</span>
+              <span className="text-forecast">15 · 30 · 60 min</span>
             </div>
             <CorridorMiniView />
           </div>
@@ -174,35 +174,35 @@ export function QuestionSections() {
       </article>
 
       {/* 03 / HOW SURE */}
-      <article id="how-sure" className="mx-auto max-w-6xl px-6 py-28 lg:py-36 grid items-center gap-16 lg:grid-cols-2">
+      <article id="how-sure" className="mx-auto max-w-6xl px-6 py-24 lg:py-32 grid items-center gap-16 lg:grid-cols-2">
         <div className="max-w-xl">
-          <p className="text-xs font-mono uppercase tracking-wider text-[#4fd8eb]">How Sure</p>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-[-0.03em] text-white leading-tight">
+          <p className="text-xs font-mono uppercase tracking-wider text-observed">03 / How Sure</p>
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-[-0.03em] text-fg leading-tight">
             See which observations support the forecast.
           </h2>
-          <p className="mt-5 text-base sm:text-lg text-[#86868b] leading-relaxed">
+          <p className="mt-5 text-base sm:text-lg text-fg-2 leading-relaxed">
             A visible sensor mask keeps uncertainty explicit when Doppler radar, satellite, lightning or NWP forecast inputs are unavailable.
           </p>
         </div>
 
         <div>
-          <div className="rounded-3xl border border-white/10 bg-[#070b12] p-8 shadow-2xl">
-            <div className="text-xs font-mono text-[#86868b] mb-6">
-              Multimodal input feeds
+          <div className="rounded-lg border border-line bg-rail/80 p-8 shadow-xl">
+            <div className="text-xs font-mono text-fg-3 mb-5 uppercase tracking-wider">
+              Multimodal input telemetry
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               {[
                 { name: "Doppler radar", role: "Volume & Echo Tops" },
                 { name: "INSAT satellite", role: "Cloud-top Cooling" },
                 { name: "Lightning network", role: "Flash History" },
                 { name: "NWP forecast", role: "Environmental CAPE" },
               ].map((feed) => (
-                <div key={feed.name} className="rounded-2xl border border-white/5 bg-white/[0.02] p-4">
+                <div key={feed.name} className="rounded border border-line bg-raised/30 p-3.5">
                   <div className="flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-[#4fd8eb]" />
-                    <span className="text-sm font-medium text-white">{feed.name}</span>
+                    <span className="size-2 rounded-full bg-observed" />
+                    <span className="text-sm font-medium text-fg">{feed.name}</span>
                   </div>
-                  <div className="mt-1 text-xs text-[#86868b]">{feed.role}</div>
+                  <div className="mt-1 text-xs text-fg-3">{feed.role}</div>
                 </div>
               ))}
             </div>

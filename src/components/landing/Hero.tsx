@@ -4,7 +4,6 @@ import Link from "next/link";
 import { m } from "motion/react";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import scenarioA from "@/data/scenarios/a-first-flash.json";
-import { HeroMapLoop } from "@/components/landing/HeroMapLoop";
 import { Dial } from "@/components/ui/Dial";
 import type { Scenario } from "@/types/scenario";
 
@@ -28,21 +27,24 @@ export function Hero() {
 
   return (
     <section
-      className="relative isolate min-h-screen flex items-center justify-between overflow-hidden px-6 pt-28 pb-16 sm:px-8 lg:px-12"
+      className="relative isolate min-h-screen flex items-center justify-between overflow-hidden px-6 pt-24 pb-16 sm:px-8 lg:px-12"
       aria-labelledby="landing-title"
     >
-      {/* Background live canvas loop showing Odisha radar across the full hero */}
-      <m.div
-        initial={{ opacity: 0, filter: "blur(12px)" }}
-        animate={{ opacity: 0.65, filter: "blur(0px)" }}
-        transition={{ duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
-        className="absolute inset-0 -z-20 pointer-events-none"
-      >
-        <HeroMapLoop />
-        {/* Apple-grade atmospheric gradients: left is darkened for high text contrast, right allows radar storm visual to shine */}
-        <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/85 via-50% to-bg/30" />
-        <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-bg/40" />
-      </m.div>
+      {/* Background video loop */}
+      <div className="absolute inset-0 -z-20 pointer-events-none overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="size-full object-cover opacity-80"
+        >
+          <source src="/media/hero-bg.mp4" type="video/mp4" />
+        </video>
+        {/* Soft atmospheric gradient: protects text legibility on the left, leaves the rest of the video clear and luminous */}
+        <div className="absolute inset-0 bg-gradient-to-r from-bg/90 via-bg/40 via-45% to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent opacity-70" />
+      </div>
 
       <div className="mx-auto flex w-full max-w-7xl flex-col lg:flex-row lg:items-center lg:justify-between gap-12 lg:gap-16 z-10">
         {/* Left Headline & Value Proposition */}
@@ -51,10 +53,12 @@ export function Hero() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
-            className="inline-flex items-center gap-2 rounded-full border border-line bg-rail/80 px-3.5 py-1 text-xs text-fg-2 backdrop-blur-md mb-6"
+            className="inline-flex items-center gap-2 rounded border border-line bg-rail px-3 py-1 text-xs text-fg-2 mb-6"
           >
-            <span className="size-1.5 rounded-full bg-observed animate-pulse" />
-            <span>Physics-Guided Multimodal Lightning Intelligence</span>
+            <span className="size-1.5 rounded-full bg-observed" />
+            <span className="font-mono text-[11px] text-fg-3 uppercase tracking-wider">SIH PS26072</span>
+            <span className="text-line">|</span>
+            <span>Physics-guided multimodal lightning nowcasting</span>
           </m.div>
 
           <h1
@@ -104,11 +108,11 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.72, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
-            className="mt-8 flex flex-wrap items-center gap-4"
+            className="mt-8 flex flex-wrap items-center gap-3"
           >
             <Link
               href="/mission-control"
-              className="inline-flex h-11 items-center gap-2 rounded-full bg-fg px-6 text-sm font-medium text-bg hover:bg-fg/90 transition-all duration-200 shadow-lg shadow-white/5 group"
+              className="inline-flex h-10 items-center gap-2 rounded-md bg-fg px-5 text-sm font-medium text-bg hover:bg-fg/90 transition-colors group"
             >
               <span>Open Mission Control</span>
               <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
@@ -116,7 +120,7 @@ export function Hero() {
 
             <Link
               href="/how-it-works"
-              className="inline-flex h-11 items-center gap-1.5 rounded-full border border-line bg-rail/60 px-5 text-sm font-medium text-fg-2 hover:text-fg hover:border-line-strong transition-all duration-200 backdrop-blur-md"
+              className="inline-flex h-10 items-center gap-1.5 rounded-md border border-line bg-rail px-4 text-sm font-medium text-fg-2 hover:text-fg hover:border-line-strong transition-colors"
             >
               <span>Explore Architecture</span>
               <ChevronRight size={15} className="text-fg-3" />
@@ -128,7 +132,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.82, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
-            className="mt-10 flex flex-wrap items-center gap-6 border-t border-line/60 pt-6 text-xs text-fg-3"
+            className="mt-10 flex flex-wrap items-center gap-6 border-t border-line pt-6 text-xs text-fg-3"
           >
             <div>
               <span className="num text-fg font-medium text-sm">+18 min</span>
@@ -147,31 +151,33 @@ export function Hero() {
           </m.div>
         </div>
 
-        {/* Right Signature Element: Apple-Style Telemetry & Forecast Graph Card */}
+        {/* Right Signature Element: Operational Telemetry & Dial Monitor */}
         <m.div
-          initial={{ opacity: 0, scale: 0.94, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.85, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
           className="w-full max-w-sm shrink-0 self-center lg:self-auto"
         >
-          <div className="relative rounded-3xl border border-line-strong/60 bg-rail/85 p-6 backdrop-blur-2xl shadow-2xl ring-1 ring-white/5">
+          <div className="relative rounded-lg border border-line bg-rail/95 p-5 shadow-2xl">
             {/* Header info */}
-            <div className="flex items-center justify-between border-b border-line pb-4 mb-5">
+            <div className="flex items-center justify-between border-b border-line pb-3.5 mb-4">
               <div>
-                <div className="text-[11px] font-mono uppercase tracking-wider text-fg-3">Live Telemetry</div>
+                <div className="text-[10px] font-mono tracking-wider text-fg-3 uppercase">Convective Target</div>
                 <div className="text-sm font-medium text-fg flex items-center gap-2 mt-0.5">
-                  <span className="num">{dial.cellId}</span>
-                  <span className="size-1.5 rounded-full bg-risk animate-pulse" />
-                  <span className="text-xs text-risk font-normal">Initiating</span>
+                  <span className="num font-mono">Cell {dial.cellId}</span>
+                  <span className="inline-flex items-center gap-1.5 rounded bg-risk/10 border border-risk/30 px-1.5 py-0.5 text-[11px] font-mono text-risk">
+                    <span className="size-1.5 rounded-full bg-risk" />
+                    Initiating
+                  </span>
                 </div>
               </div>
-              <span className="rounded-full bg-raised px-2.5 py-1 text-[11px] font-mono text-fg-2 ring-1 ring-line">
-                Window {dial.windowStart}–{dial.windowEnd} min
+              <span className="rounded bg-raised px-2 py-1 text-[11px] font-mono text-fg-2 border border-line">
+                Window {dial.windowStart}–{dial.windowEnd}m
               </span>
             </div>
 
             {/* Dial centerpiece */}
-            <div className="flex justify-center py-1">
+            <div className="flex justify-center py-2">
               <Dial
                 probability={dial.probability}
                 windowStart={dial.windowStart}
@@ -180,48 +186,35 @@ export function Hero() {
               />
             </div>
 
-            {/* Probability Trajectory Graph */}
-            <div className="mt-4 rounded-2xl border border-line bg-raised/40 p-3.5">
-              <div className="flex items-center justify-between text-xs mb-2">
-                <span className="text-fg-3">Probability Trajectory</span>
-                <span className="font-mono text-risk font-medium text-[11px]">+64% in 20 min</span>
+            {/* Physical initiation milestones */}
+            <div className="mt-4 rounded border border-line bg-raised/40 p-3">
+              <div className="flex items-center justify-between text-xs mb-2.5">
+                <span className="text-fg-2 text-xs font-medium">Physical initiation sequence</span>
+                <span className="font-mono text-risk text-[11px] num font-medium">P(flash) = 78%</span>
               </div>
-              <div className="h-10 w-full">
-                <svg viewBox="0 0 200 40" className="w-full h-full overflow-visible" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id="probGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--color-risk)" stopOpacity="0.35" />
-                      <stop offset="100%" stopColor="var(--color-risk)" stopOpacity="0" />
-                    </linearGradient>
-                  </defs>
-                  <path
-                    d="M 0,36 Q 50,34 90,28 T 150,14 T 200,4 L 200,40 L 0,40 Z"
-                    fill="url(#probGrad)"
-                  />
-                  <path
-                    d="M 0,36 Q 50,34 90,28 T 150,14 T 200,4"
-                    fill="none"
-                    stroke="var(--color-risk)"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                  <circle cx="200" cy="4" r="3" fill="var(--color-risk)" className="animate-pulse" />
-                </svg>
-              </div>
-              <div className="flex items-center justify-between text-[10px] font-mono text-fg-3 mt-1 border-t border-line/40 pt-1.5">
-                <span>−30m</span>
-                <span>−15m (ZDR breach)</span>
-                <span className="text-risk font-medium">t₀ (78%)</span>
+              <div className="flex flex-col gap-2 font-mono text-[11px]">
+                <div className="flex items-center justify-between text-fg-3 border-b border-line/40 pb-1.5">
+                  <span>−30m: Reflectivity surge</span>
+                  <span className="num text-fg-2">35 dBZ at −10°C</span>
+                </div>
+                <div className="flex items-center justify-between text-fg-3 border-b border-line/40 pb-1.5">
+                  <span>−15m: ZDR column breach</span>
+                  <span className="num text-observed">+2.1 dB above 0°C</span>
+                </div>
+                <div className="flex items-center justify-between text-fg">
+                  <span className="text-risk font-medium">t₀ (NOW): Forecast window</span>
+                  <span className="num text-risk font-medium">+18–32 min</span>
+                </div>
               </div>
             </div>
 
             {/* Physical Signatures */}
             <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-              <div className="rounded-xl border border-line bg-raised/30 p-2.5">
+              <div className="rounded border border-line bg-raised/30 p-2.5">
                 <div className="text-[10px] text-fg-3">Cloud-top cooling</div>
                 <div className="num text-fg font-medium mt-0.5">−4.2 °C/10 min</div>
               </div>
-              <div className="rounded-xl border border-line bg-raised/30 p-2.5">
+              <div className="rounded border border-line bg-raised/30 p-2.5">
                 <div className="text-[10px] text-fg-3">ZDR Column</div>
                 <div className="num text-fg font-medium mt-0.5">Reached −10 °C</div>
               </div>
