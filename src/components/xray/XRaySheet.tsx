@@ -94,7 +94,7 @@ function XRaySheetContents({ cell, close, effectiveRadarUnavailable, features, f
           <h2 className="text-sm font-medium text-fg">Storm X-ray</h2>
           <p className="text-xs text-fg-2">Simulated demo scenario • <span className="num text-fg-1">{cell.id}</span> reflectivity volume</p>
         </div>
-        <Button aria-label="Close storm X-ray" autoFocus onClick={close} size="icon-sm" variant="outline" className="rounded-full hover:bg-risk/10 hover:text-risk transition-colors">
+        <Button aria-label="Close storm X-ray" autoFocus onClick={close} size="icon-sm" variant="outline" className="rounded-full hover:bg-line hover:text-fg transition-colors">
           <X size={16} />
         </Button>
       </header>

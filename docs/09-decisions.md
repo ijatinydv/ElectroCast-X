@@ -81,3 +81,5 @@ Add a row whenever you make a choice that another person might question.
 | Decision | Choice | Why | Rejected |
 | --- | --- | --- | --- |
 | D36 | Guide captions and actions are authored in local JSON and executed through a cancellable store runner | Keeps presenter flow repeatable, offline, and consistent with every mission-control surface without synthetic pointer events | DOM click playback or panel-local guide state |
+|   D 3 7   |   U p d a t e d   U I   p a l e t t e   t o   r e s t r a i n e d   o p e r a t i o n a l   t o k e n s   |   P r e s e r v e s   s t r i c t   m e t e o r o l o g i c a l   s e m a n t i c s   ( o b s e r v e d = c y a n ,   f o r e c a s t = p u r p l e ,   r i s k = a m b e r ,   a l e r t = r e d )   w h i l e   r e m o v i n g   g e n e r i c   b l u e / a m b e r   d e c o r a t i o n   a n d   e s t a b l i s h i n g   n e u t r a l   h i g h - c o n t r a s t   U I   c o n t r o l s .   |   R e t a i n i n g   g e n e r i c   S a a S / d a s h b o a r d   b r a n d i n g   c o l o r s   t h a t   c o n f l i c t   w i t h   o p e r a t i o n a l   m e a n i n g   |  
+ 

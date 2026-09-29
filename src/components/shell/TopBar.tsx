@@ -54,7 +54,7 @@ export function TopBar({ onToggleLeft, onToggleRight, onGuidedDemo, leftOpen, ri
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div><Chip variant="alert" className="cursor-help">SIMULATED</Chip></div>
+              <div><Chip variant="neutral" className="cursor-help">SIMULATED</Chip></div>
             </TooltipTrigger>
             <TooltipContent>
               <p>All data in this scenario is prepared. No live feeds.</p>

@@ -13,7 +13,7 @@ export function Chip({ variant = "neutral", className, children, ...props }: Chi
     forecast: "bg-forecast/16 text-forecast ring-1 ring-forecast/30",
     risk: "bg-risk/16 text-risk ring-1 ring-risk/30",
     alert: "bg-alert/16 text-alert ring-1 ring-alert/30",
-    neutral: "bg-raised text-fg-2 ring-1 ring-line",
+    neutral: "bg-rail text-fg-2 ring-1 ring-line",
   };
 
   return (
