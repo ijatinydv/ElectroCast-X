@@ -71,6 +71,15 @@ Rules
 - Selection: 1px `fg` ring plus cell ID label in mono.
 - Assets: 12px glyphs, `fg-2`, turning `risk` when inside a corridor.
 
+### Storm cell station glyph
+- The storm-cell station glyph adapts the WMO synoptic station model to ElectroCast-X fields. It is drawn directly on the map canvas at 1× scale; canvas device-pixel ratio remains capped at 2.
+- The centre circle has a 9px radius and 1.5px stroke. Its stroke is `observed` for an `obs` frame at or before t=0 and `forecast` for a `forecast` frame after t=0; this is the only glyph stroke that encodes time type.
+- Its face is a sky-cover-style pie: it starts at 12 o’clock, sweeps clockwise through `(headlineRisk / 100) × 360°`, and fills in opaque `risk`. The remaining wedge is opaque `bg`, never transparent. At 0% the glyph is hollow except for its ring; at 100% it is a solid `risk` disc.
+- A motion barb starts at the circle edge and extends 22px at `cell.motion.dirDeg` (north is 0°, increasing clockwise), using the same stroke as the ring. It has one 8px tick per 10 km/h and a 4px half tick for a rounded remainder of at least 5 km/h. Ticks sit on one clockwise side, angle back 60° from the shaft, and are spaced 5px apart moving outward. Speeds are rounded to the nearest 5 km/h before marks are calculated. At 60 km/h and above, one filled 10px-base pennant replaces the first 50 km/h and the remaining sub-50 km/h speed supplies the ticks.
+- Mono, tabular 10px numerals use the same colour as the ring: upper left at (-14px, -10px) is `echoTopKm` to one decimal plus `km`; lower left at (-14px, +14px) is `flashRate` to one decimal plus `/min` for active cells, otherwise headline risk plus `%`; right at (+14px, 0) is the cell ID. The glyph never uses a lightning-bolt icon.
+- Selection adds only an outer 13px-radius, 1px `fg` ring with no fill. Hover changes only the cursor to a pointer.
+- The full glyph renders for a selected or hovered cell, or when the frame has three or fewer cells. In denser frames, unfocused cells retain only the ring and pie face. The fixed 13px outer-ring radius is also the click and hover target in either level of detail.
+
 ## Landing page
 - Hero opens with the live product: the real map engine running a looping storm over Odisha at full bleed, dimmed to 60%.
 - Headline (sentence case, left aligned, max 14ch per line at hero size): "Lightning warnings that start before the first flash."

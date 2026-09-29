@@ -96,3 +96,9 @@ Add a row whenever you make a choice that another person might question.
 | --- | --- | --- | --- |
 | D39 | NumberTicker uses a 400 ms `--ease-instrument` tween | Keeps forecast readouts precise and predictable without spring overshoot | Physics spring interpolation |
 | D40 | Minimalist editorial landing design inspired by Apple and Trace | Eliminates AI-generated bento card clutter, badge spam, and metric chips in favor of massive centered typography, generous negative space, a cinematic product hero window with real radar loop canvas, and clean editorial question showcases (When, Where, How Sure) | Cluttered bento box dashboards on landing, micro-metric card soup, generic AI SaaS tropes |
+
+# Storm cell station glyph
+
+| Decision | Choice | Why | Rejected |
+| --- | --- | --- | --- |
+| D41 | Use a WMO-inspired station-model glyph for each storm cell | It combines headline risk, echo top, motion, and active flash rate in one familiar, compact operational mark while preserving canvas performance and dense-frame legibility | Separate motion arrows and cell-ID labels, sprite-cached markers, or decorative lightning-bolt icons |
