@@ -32,3 +32,4 @@ Add a row whenever you make a choice that another person might question.
 
 - Exposure assets are split into seven independent layer switches. Village records feed a cached low-resolution density field rather than map markers; all point and transmission asset hover tooltips retain the required `synthetic` label.
 | D25 | Prepared offline sensors are included in the effective corridor uncertainty mask | Scenario C's radar outage must visibly widen its forecast motion uncertainty without requiring a separate operator action | Rendering its uncertainty as if the unavailable radar feed were still active |
+| D26 | Evidence deltas scale from each prepared sparkline's starting value to its current marker | The panel remains a pure function of scenario time while retaining the units supplied by scenario data | A static full-trend delta that does not respond to playback |
