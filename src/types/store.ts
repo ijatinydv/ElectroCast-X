@@ -4,7 +4,7 @@ import type { SensorId } from "./scenario";
 export type ScenarioId = "A" | "B" | "C";
 
 // names map layers whose visibility must remain globally coordinated
-export type LayerId = "districts" | "radar" | "satellite" | "flashDensity" | "corridors" | "assets" | "lightning";
+export type LayerId = "districts" | "radar" | "satellite" | "flashDensity" | "corridors" | "population" | "schools" | "hospitals" | "airports" | "powerLines" | "mines" | "outdoorEvents" | "lightning";
 
 // records an operator action against its time cell and horizon
 export type Warning = { tMin: number; cellId: string; horizon: 15 | 30 | 60 };

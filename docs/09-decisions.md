@@ -27,3 +27,7 @@ Add a row whenever you make a choice that another person might question.
 | D19 | The initial map engine caches the required placeholder background in an offscreen canvas | Establishes the final static-layer render path before geographic visual layers arrive in their dedicated chunks | Repainting static content in every RAF frame; adding a temporary DOM map |
 | D23 | Corridors are rendered for all cells, with nonselected cells dimmed | Preserves storm context while letting the selected cell remain the operational focus | Hiding all unselected forecast paths |
 | D24 | Storm Time Machine pointer positions round to whole scenario minutes while step controls use prepared keyframes | Scrubbing remains continuously responsive while stepping remains data-aligned | Snapping pointer input to keyframes; allowing arbitrary step values |
+
+# Phase 2.6 — Exposure asset rendering
+
+- Exposure assets are split into seven independent layer switches. Village records feed a cached low-resolution density field rather than map markers; all point and transmission asset hover tooltips retain the required `synthetic` label.

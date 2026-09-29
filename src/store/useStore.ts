@@ -2,7 +2,21 @@ import { create } from "zustand";
 import type { AppState, LayerId, ScenarioId } from "@/types/store";
 
 const initialSensorOff = { radar: false, insat: false, lightning: false, nwp: false } as const;
-const initialLayers: Record<LayerId, boolean> = { districts: true, radar: true, satellite: false, flashDensity: true, corridors: true, assets: true, lightning: true };
+const initialLayers: Record<LayerId, boolean> = {
+  districts: true,
+  radar: true,
+  satellite: false,
+  flashDensity: true,
+  corridors: true,
+  population: true,
+  schools: true,
+  hospitals: true,
+  airports: true,
+  powerLines: true,
+  mines: true,
+  outdoorEvents: true,
+  lightning: true,
+};
 
 // restores state that must never leak when an operator switches demo scenarios
 function scenarioReset(scenarioId: ScenarioId): Pick<AppState, "scenarioId" | "timeMin" | "selectedCellId" | "sensorOff" | "issuedWarnings"> {
