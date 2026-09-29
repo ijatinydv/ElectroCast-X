@@ -9,11 +9,11 @@ import { corridorsLayer } from "./layers/corridors";
 import { decompositionLayer } from "./layers/decomposition";
 import { labelsLayer } from "./layers/labels";
 import { motionLayer } from "./layers/motion";
-import { assetsLayer, hitTestAsset, type AssetTooltip } from "./layers/assets";
+import { assetLocation, assetsLayer, hitTestAsset, type AssetTooltip } from "./layers/assets";
 import { radarLayer } from "./layers/radar";
 import { prepareSatelliteLayer, satelliteLayer } from "./layers/satellite";
 import { scaleBarLayer } from "./layers/scalebar";
-import { fitProjection, hitTestCells, projectTweenAt, startProjectionTween, type MapProjection, type ProjectionTween } from "./project";
+import { fitProjection, hitTestCells, panProjection, projectTweenAt, startProjectionTween, type MapProjection, type ProjectionTween } from "./project";
 import { frameAt } from "./interpolate";
 import { readMapTheme, type MapTheme } from "./theme";
 import { getSpriteSet } from "./sprites";
@@ -24,6 +24,7 @@ export interface MapFrameState {
   timeMin: number;
   frame: Frame;
   selectedCellId: string | null;
+  highlight: AppState["highlight"];
   decomposition: boolean;
   decompositionOpacity: number;
   mapMode: AppState["mapMode"];
@@ -83,6 +84,7 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
   let projection = fitProjection(options.scenarios[options.initialState.scenarioId].region, 1, 1);
   let frameState = toFrameState(options.initialState, options.scenarios, backgroundColor, theme, projection, 1, 1);
   let projectionTween: ProjectionTween | null = null;
+  let highlightPulse: { point: [number, number]; startedAt: number } | null = null;
   let animationFrame: number | null = null;
   let visible = document.visibilityState === "visible";
   let width = 1;
@@ -139,11 +141,13 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
     context.drawImage(staticCanvas, 0, 0, width, height);
     const drawStartedAt = performance.now();
     dynamicLayers.forEach((layer) => layer.draw(context, { ...frameState, projection, width, height, corridorScale, decompositionOpacity }, now));
+    if (highlightPulse && now - highlightPulse.startedAt < 800) drawHighlightPulse(context, projection.project(highlightPulse.point), now - highlightPulse.startedAt);
+    else highlightPulse = null;
     const drawDuration = performance.now() - drawStartedAt;
     if (measuredStormFrames >= 2 && drawDuration > 4) console.warn(`Map storm-layer draw exceeded 4 ms: ${drawDuration.toFixed(2)} ms`);
     measuredStormFrames += 1;
 
-    if (projectionTween || corridorScaleStartedAt !== null || decompositionStartedAt !== null || hasStormAnimation(frameState)) requestFrame();
+    if (projectionTween || highlightPulse || corridorScaleStartedAt !== null || decompositionStartedAt !== null || hasStormAnimation(frameState)) requestFrame();
   };
 
   // keeps the backing store sharp while CSS owns the responsive centre-panel dimensions
@@ -200,6 +204,13 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
       decompositionOpacityTo = nextState.decomposition ? 1 : 0;
       decompositionStartedAt = performance.now();
     }
+    if (nextState.highlight && nextState.highlight.sequence !== frameState.highlight?.sequence) {
+      const location = assetLocation(nextState.highlight.assetId);
+      if (location) {
+        highlightPulse = { point: location, startedAt: performance.now() };
+        projectionTween = startProjectionTween(projection, panProjection(projection, location, width, height), performance.now());
+      }
+    }
     frameState = nextState;
 
     if (scenarioChanged) {
@@ -238,6 +249,7 @@ function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenari
     timeMin: state.timeMin,
     frame,
     selectedCellId: state.selectedCellId,
+    highlight: state.highlight,
     decomposition: state.decomposition,
     decompositionOpacity: state.decomposition ? 1 : 0,
     mapMode: state.mapMode,
@@ -250,6 +262,19 @@ function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenari
     height,
     corridorScale: widthScale(effectiveSensorMask(state.sensorOff, frame.sensorHealth), frame.sensorHealth),
   };
+}
+
+// draws a brief attention ring after a named exposure item is selected
+function drawHighlightPulse(context: CanvasRenderingContext2D, point: readonly [number, number], elapsedMs: number): void {
+  const progress = elapsedMs / 800;
+  context.save();
+  context.strokeStyle = "rgba(255, 183, 77, 0.9)";
+  context.lineWidth = 2;
+  context.globalAlpha = 1 - progress;
+  context.beginPath();
+  context.arc(point[0], point[1], 8 + progress * 28, 0, Math.PI * 2);
+  context.stroke();
+  context.restore();
 }
 
 // keeps the canvas RAF active only while a visible storm layer has ambient motion to render
