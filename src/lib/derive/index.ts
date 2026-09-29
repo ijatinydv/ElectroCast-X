@@ -4,3 +4,4 @@ export { contributionFor, evidenceDeltaAt, evidenceFor, evidenceMarkerIndex, sen
 export { exposureFor, type Exposure, type ExposureAsset } from "./exposure";
 export { effectiveSensorMask, enabledSensors, maskBits, widthScale, type SensorMask } from "./mask";
 export { riskFor } from "./risk";
+export { outcomeSummaryFor, type OutcomeSummary } from "./outcome";

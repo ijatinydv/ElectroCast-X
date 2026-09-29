@@ -467,7 +467,7 @@ Read docs/07-content-and-copy.md (Pipeline page copy) and docs/08-ps-traceabilit
 Read docs/07-content-and-copy.md (Validation page copy). Build src/app/validation/page.tsx and src/components/validation/{ReliabilityChart,SkillChart}.tsx using echarts/core with LineChart, BarChart (only if used), GridComponent, TooltipComponent, LegendComponent, CanvasRenderer, registered lazily inside a dynamic import. Data from src/data/content/validation-placeholder.json (clearly marked). Theme via a custom ECharts theme object built from our tokens. Include a small table of POD/FAR/CSI/Brier at 15/30/60 min. Tag everything `illustrative placeholder`. Ensure the chunk is not in Mission Control's bundle.
 ```
 
-### [ ] 6.4 Prediction vs Actual compare mode
+### [x] 6.4 Prediction vs Actual compare mode
 **Does:** Single-map swipe divider comparing prediction with observed outcome.
 **Depends on:** 3.1, 2.5, 1.3.
 **Verify:**

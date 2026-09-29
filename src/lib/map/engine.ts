@@ -13,6 +13,7 @@ import { assetLocation, assetsLayer, hitTestAsset, type AssetTooltip } from "./l
 import { radarLayer } from "./layers/radar";
 import { prepareSatelliteLayer, satelliteLayer } from "./layers/satellite";
 import { scaleBarLayer } from "./layers/scalebar";
+import { compareLayer } from "./layers/compare";
 import { fitProjection, hitTestCells, panProjection, projectTweenAt, startProjectionTween, type MapProjection, type ProjectionTween } from "./project";
 import { frameAt } from "./interpolate";
 import { readMapTheme, type MapTheme } from "./theme";
@@ -31,6 +32,7 @@ export interface MapFrameState {
   decompositionOpacity: number;
   mapMode: AppState["mapMode"];
   compareOn: boolean;
+  compareSplit: number;
   layers: AppState["layers"];
   backgroundColor: string;
   theme: MapTheme;
@@ -53,6 +55,7 @@ export interface MapEngineOptions {
   initialState: AppState;
   subscribe: (listener: (state: AppState) => void) => () => void;
   onCellSelect: (cellId: string | null) => void;
+  onCompareSplit?: (split: number) => void;
 }
 
 // exposes the lifecycle cleanup required when the React wrapper unmounts the canvas
@@ -105,6 +108,8 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
   let decompositionOpacityFrom = decompositionOpacity;
   let decompositionOpacityTo = decompositionOpacity;
   let decompositionStartedAt: number | null = null;
+  let draggingDivider = false;
+  let suppressClick = false;
 
   // renders a static layer once per resize rather than repeating its work in the animation loop
   const redrawStatic = () => {
@@ -165,8 +170,19 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
     }
     context.save();
     context.globalAlpha = fadeProgress;
-    dynamicLayers.forEach((layer) => layer.draw(context, { ...frameState, projection, width, height, corridorScale, decompositionOpacity }, now));
-    context.restore();
+    const dynamicState = { ...frameState, projection, width, height, corridorScale, decompositionOpacity };
+    if (dynamicState.compareOn) {
+      context.beginPath();
+      context.rect(0, 0, width * dynamicState.compareSplit, height);
+      context.clip();
+      dynamicLayers.forEach((layer) => layer.draw(context, dynamicState, now));
+      context.restore();
+      compareLayer.draw(context, dynamicState, now);
+      drawCompareDivider(context, dynamicState);
+    } else {
+      dynamicLayers.forEach((layer) => layer.draw(context, dynamicState, now));
+      context.restore();
+    }
     if (highlightPulse && now - highlightPulse.startedAt < 800) drawHighlightPulse(context, projection.project(highlightPulse.point), now - highlightPulse.startedAt);
     else highlightPulse = null;
     const drawDuration = performance.now() - drawStartedAt;
@@ -206,6 +222,10 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
 
   // resolves a click in CSS pixels against the current frame's projected cell centres
   const onClick = (event: MouseEvent) => {
+    if (suppressClick) {
+      suppressClick = false;
+      return;
+    }
     const bounds = options.canvas.getBoundingClientRect();
     const cellId = hitTestCells(
       frameState.frame.cells,
@@ -214,6 +234,50 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
     );
 
     options.onCellSelect(cellId);
+  };
+
+  // updates the shared split from a pointer while preserving normal map selection away from the handle
+  const updateDividerFromPointer = (event: PointerEvent) => {
+    const bounds = options.canvas.getBoundingClientRect();
+    options.onCompareSplit?.(Math.min(0.95, Math.max(0.05, (event.clientX - bounds.left) / bounds.width)));
+  };
+
+  // begins a divider drag only when the pointer targets its visible canvas handle
+  const onPointerDown = (event: PointerEvent) => {
+    if (!frameState.compareOn) return;
+    const bounds = options.canvas.getBoundingClientRect();
+    const dividerX = bounds.left + bounds.width * frameState.compareSplit;
+    if (Math.abs(event.clientX - dividerX) > 16) return;
+    draggingDivider = true;
+    suppressClick = true;
+    options.canvas.setPointerCapture(event.pointerId);
+    updateDividerFromPointer(event);
+  };
+
+  // continues a canvas-native divider drag without mounting another map or DOM overlay
+  const onPointerMove = (event: PointerEvent) => {
+    if (!draggingDivider) return;
+    updateDividerFromPointer(event);
+  };
+
+  // releases a completed divider drag and restores ordinary map pointer behavior
+  const onPointerUp = (event: PointerEvent) => {
+    if (!draggingDivider) return;
+    draggingDivider = false;
+    options.canvas.releasePointerCapture(event.pointerId);
+  };
+
+  // exposes the divider's split to keyboard users when compare mode is enabled
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (!frameState.compareOn) return;
+    const next = event.key === "ArrowLeft" ? frameState.compareSplit - 0.05
+      : event.key === "ArrowRight" ? frameState.compareSplit + 0.05
+        : event.key === "Home" ? 0.05
+          : event.key === "End" ? 0.95 : null;
+    if (next === null) return;
+    event.preventDefault();
+    event.stopPropagation();
+    options.onCompareSplit?.(Math.min(0.95, Math.max(0.05, next)));
   };
 
   // updates the RAF-owned snapshot without subscribing React to high-frequency playback state
@@ -260,6 +324,10 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
   observer.observe(options.canvas);
   document.addEventListener("visibilitychange", onVisibilityChange);
   options.canvas.addEventListener("click", onClick);
+  options.canvas.addEventListener("pointerdown", onPointerDown);
+  options.canvas.addEventListener("pointermove", onPointerMove);
+  options.canvas.addEventListener("pointerup", onPointerUp);
+  options.canvas.addEventListener("keydown", onKeyDown);
 
   return {
     destroy: () => {
@@ -267,6 +335,10 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
       observer.disconnect();
       document.removeEventListener("visibilitychange", onVisibilityChange);
       options.canvas.removeEventListener("click", onClick);
+      options.canvas.removeEventListener("pointerdown", onPointerDown);
+      options.canvas.removeEventListener("pointermove", onPointerMove);
+      options.canvas.removeEventListener("pointerup", onPointerUp);
+      options.canvas.removeEventListener("keydown", onKeyDown);
       if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
     },
     setActive: (nextActive) => {
@@ -298,6 +370,7 @@ function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenari
     decompositionOpacity: state.decomposition ? 1 : 0,
     mapMode: state.mapMode,
     compareOn: state.compare.on,
+    compareSplit: state.compare.split,
     layers: state.layers,
     backgroundColor,
     theme,
@@ -306,6 +379,34 @@ function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenari
     height,
     corridorScale: widthScale(effectiveSensorMask(state.sensorOff, frame.sensorHealth), frame.sensorHealth),
   };
+}
+
+// paints the one-pixel boundary, grab handle, and corner labels for comparison orientation
+function drawCompareDivider(context: CanvasRenderingContext2D, state: MapFrameState): void {
+  const splitX = state.width * state.compareSplit;
+  context.save();
+  context.strokeStyle = state.theme.foreground;
+  context.lineWidth = 1;
+  context.beginPath();
+  context.moveTo(splitX + 0.5, 0);
+  context.lineTo(splitX + 0.5, state.height);
+  context.stroke();
+  context.fillStyle = state.theme.background;
+  context.strokeStyle = state.theme.foreground;
+  context.beginPath();
+  context.arc(splitX, state.height / 2, 11, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  context.fillStyle = state.theme.foreground;
+  context.fillRect(splitX - 3, state.height / 2 - 4, 1, 8);
+  context.fillRect(splitX + 2, state.height / 2 - 4, 1, 8);
+  context.font = `12px ${state.theme.fontSans}`;
+  context.textBaseline = "top";
+  context.textAlign = "left";
+  context.fillText("Prediction", 12, 12);
+  context.textAlign = "right";
+  context.fillText("Actual", state.width - 12, 12);
+  context.restore();
 }
 
 // draws a brief attention ring after a named exposure item is selected

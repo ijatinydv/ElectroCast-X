@@ -31,6 +31,9 @@ export function MapCanvas() {
       onCellSelect: (cellId) => {
         useStore.getState().selectCell(cellId);
       },
+      onCompareSplit: (split) => {
+        useStore.getState().setCompare({ split });
+      },
     });
 
     // updates the coordinate directly and changes React tooltip state only when the hovered asset changes
@@ -65,7 +68,7 @@ export function MapCanvas() {
 
   return (
     <div className="relative h-full w-full">
-      <canvas ref={canvasRef} className="block h-full w-full" aria-label="Scenario map" />
+      <canvas ref={canvasRef} className="block h-full w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg" aria-label="Scenario map. In comparison mode, use left and right arrow keys to move the prediction and actual divider." tabIndex={0} />
       {hoveredAsset && <AssetTooltipOverlay asset={hoveredAsset} />}
       <output ref={coordinateRef} aria-live="off" className="pointer-events-none absolute bottom-3 left-3 min-w-28 text-xs text-fg-3 num" />
     </div>
