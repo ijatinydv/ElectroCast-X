@@ -1,8 +1,11 @@
 "use client";
 
+import * as React from "react";
 import dynamic from "next/dynamic";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AltitudeSlider } from "@/components/xray/AltitudeSlider";
+import { sliceReadoutFor } from "@/lib/derive/volume";
 import { frameAt } from "@/lib/map/interpolate";
 import { useStore } from "@/store/useStore";
 import type { Scenario } from "@/types/scenario";
@@ -28,8 +31,14 @@ export function XRaySheet() {
   const timeMin = useStore((state) => state.timeMin);
   const selectedCellId = useStore((state) => state.selectedCellId);
   const cell = selectedCellId ? frameAt(scenarios[scenarioId], timeMin).cells.find((candidate) => candidate.id === selectedCellId) : undefined;
+  const [sliceAltitudeKm, setSliceAltitudeKm] = React.useState(0);
+
+  React.useEffect(() => {
+    if (cell) setSliceAltitudeKm(cell.freezingLevelKm);
+  }, [cell?.id, cell?.freezingLevelKm]);
 
   if (!open || !cell) return null;
+  const readout = sliceReadoutFor(cell, sliceAltitudeKm);
 
   return (
     <section aria-label="Storm X-ray" className="absolute inset-0 z-30 flex min-h-0 flex-col border border-line bg-bg xl:left-[264px] xl:right-[336px]">
@@ -42,8 +51,19 @@ export function XRaySheet() {
           <X />
         </Button>
       </header>
-      <div className="min-h-0 flex-1 bg-bg">
-        <StormScene cell={cell} />
+      <div className="relative flex min-h-0 flex-1 bg-bg">
+        <AltitudeSlider altitudeKm={sliceAltitudeKm} echoTopKm={cell.echoTopKm} freezingLevelKm={cell.freezingLevelKm} onAltitudeChange={setSliceAltitudeKm} />
+        <div className="min-w-0 flex-1">
+          <StormScene cell={cell} sliceAltitudeKm={sliceAltitudeKm} />
+        </div>
+        <aside aria-label="Slice readout" className="absolute bottom-4 right-4 w-52 border border-line bg-bg/95 p-3">
+          <p className="mb-3 text-xs font-medium text-fg">Slice readout</p>
+          <dl className="space-y-2 text-xs">
+            <div className="flex items-baseline justify-between gap-3"><dt className="text-fg-2">Reflectivity</dt><dd className="num text-fg">{readout.reflectivityDbz.toFixed(1)} dBZ</dd></div>
+            <div className="flex items-baseline justify-between gap-3"><dt className="text-fg-2">ZDR</dt><dd className="num text-fg">{readout.zdrDb.toFixed(2)} dB</dd></div>
+            <div className="flex items-baseline justify-between gap-3"><dt className="text-fg-2">KDP</dt><dd className="num text-fg">{readout.kdpDegKm.toFixed(2)} °/km</dd></div>
+          </dl>
+        </aside>
       </div>
     </section>
   );
