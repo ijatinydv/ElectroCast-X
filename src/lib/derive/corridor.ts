@@ -1,5 +1,7 @@
-import type { Cell } from "@/types/scenario";
+import type { Cell, Frame } from "@/types/scenario";
 import { geoDistance } from "d3-geo";
+import type { SensorMask } from "./mask";
+import { widthScale } from "./mask";
 
 // constrains corridor lookups to the forecast horizons generated in scenario data
 export type CorridorHorizon = "15" | "30" | "60";
@@ -30,6 +32,27 @@ export function corridorFor(cell: Cell, horizon: CorridorHorizon | 15 | 30 | 60,
 // measures the narrow cross-corridor edge after sensor uncertainty has been applied
 export function corridorWidthKm(cell: Cell, scale: number): number {
   const boundary = corridorFor(cell, 30, scale).outer;
+  if (boundary.length < 2) return 0;
+  const edgeLengths = boundary.map((point, index) => geoDistance(point, boundary[(index + 1) % boundary.length]!) * 6371);
+  return Math.min(...edgeLengths);
+}
+
+// combines the prepared motion corridor with current sensor uncertainty for operational display
+export function corridorSummaryFor(cell: Cell, horizon: CorridorHorizon | 15 | 30 | 60, sensorMask: SensorMask, sensorHealth: Frame["sensorHealth"]): { arrivalMin: number; speedKmh: number; directionDeg: number; widthKm: number } {
+  const corridor = corridorFor(cell, horizon, widthScale(sensorMask, sensorHealth));
+  const destination = corridor.center.at(-1) ?? cell.centroid;
+  const distanceKm = geoDistance(cell.centroid, destination) * 6371;
+  return {
+    arrivalMin: Math.round(distanceKm / cell.motion.speedKmh * 60),
+    speedKmh: cell.motion.speedKmh,
+    directionDeg: cell.motion.dirDeg,
+    widthKm: Math.round(corridorWidthFor(cell, horizon, widthScale(sensorMask, sensorHealth))),
+  };
+}
+
+// measures the horizon-specific narrow cross-corridor edge after uncertainty scaling
+function corridorWidthFor(cell: Cell, horizon: CorridorHorizon | 15 | 30 | 60, scale: number): number {
+  const boundary = corridorFor(cell, horizon, scale).outer;
   if (boundary.length < 2) return 0;
   const edgeLengths = boundary.map((point, index) => geoDistance(point, boundary[(index + 1) % boundary.length]!) * 6371);
   return Math.min(...edgeLengths);

@@ -27,7 +27,7 @@ export function Hero() {
         <HeroMapLoop />
       </m.div>
       <div className="max-w-2xl">
-        <m.p initial={{ opacity: 0, filter: "blur(6px)" }} animate={{ opacity: 1, filter: "blur(0px)" }} transition={{ delay: 0.2, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }} className="mb-5 text-sm text-observed">ElectroCast-X</m.p>
+        <m.p initial={{ opacity: 0, filter: "blur(6px)" }} animate={{ opacity: 1, filter: "blur(0px)" }} transition={{ delay: 0.2, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }} className="mb-5 text-sm text-fg-2">ElectroCast-X</m.p>
         <h1 id="landing-title" aria-label="Lightning warnings that start before the first flash." className="max-w-[14ch] text-5xl font-medium leading-[0.98] tracking-[-0.04em] text-fg sm:text-6xl lg:text-7xl">
           <m.span aria-hidden="true" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }} className="block">Lightning</m.span>
           <m.span aria-hidden="true" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.42, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }} className="block">warnings that</m.span>
@@ -38,7 +38,7 @@ export function Hero() {
           ElectroCast-X forecasts when a developing cloud will first produce lightning, where an active storm will go, and how far to trust it, 15, 30 and 60 minutes ahead.
         </m.p>
         <m.div initial={{ opacity: 0, filter: "blur(6px)" }} animate={{ opacity: 1, filter: "blur(0px)" }} transition={{ delay: 0.88, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }} className="mt-8 flex items-center gap-5">
-          <Link href="/mission-control" className="inline-flex h-10 items-center bg-observed px-5 text-sm font-medium text-bg hover:bg-observed/90">Open Mission Control</Link>
+          <Link href="/mission-control" className="inline-flex h-10 items-center bg-fg px-5 text-sm font-medium text-bg hover:bg-fg/90">Open Mission Control</Link>
           <Link href="/how-it-works" className="text-sm text-fg-2 underline decoration-line-strong underline-offset-4 hover:text-fg">How it works</Link>
         </m.div>
       </div>

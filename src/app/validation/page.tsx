@@ -29,7 +29,7 @@ export default function ValidationPage() {
       <div className="mx-auto max-w-6xl">
         <header className="flex flex-wrap items-start justify-between gap-6 border-b border-line pb-8">
           <div className="max-w-2xl">
-            <p className="text-xs font-medium tracking-wide text-observed">ElectroCast-X <span className="ml-2 rounded-full bg-observed/16 px-2 py-0.5 text-[11px] text-observed ring-1 ring-observed/30">Simulated demo scenario</span></p>
+            <p className="text-xs font-medium tracking-wide text-fg-2">ElectroCast-X <span className="ml-2 rounded-full bg-rail px-2 py-0.5 text-[11px] text-fg-2 ring-1 ring-line">Simulated demo scenario</span></p>
             <h1 className="mt-4 text-3xl font-medium tracking-tight sm:text-4xl">Illustrative validation</h1>
             <p className="mt-3 text-base leading-7 text-fg-2">These values are not results. They show the intended validation views for calibrated first-flash forecasts.</p>
           </div>

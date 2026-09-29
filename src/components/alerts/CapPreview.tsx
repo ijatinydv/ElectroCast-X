@@ -22,7 +22,7 @@ function highlightJson(json: string) {
     const token = match[0];
     if (match.index > cursor) nodes.push(json.slice(cursor, match.index));
     const isKey = /^"/.test(token) && /^\s*:/.test(json.slice(match.index + token.length));
-    const className = isKey ? "text-fg-2" : /^"/.test(token) ? "text-observed" : "text-risk";
+    const className = isKey ? "text-fg-2" : /^"/.test(token) ? "text-fg" : "text-fg-3";
     nodes.push(<span className={className} key={`${match.index}-${token}`}>{token}</span>);
     cursor = match.index + token.length;
     match = tokenPattern.exec(json);

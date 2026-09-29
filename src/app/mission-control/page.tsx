@@ -8,6 +8,7 @@ import { TopBar, LeftRail, RightRail, BottomDock } from "@/components/shell";
 import { SensorBanner } from "@/components/shell/SensorBanner";
 import { GuideCaption } from "@/components/shell/GuideCaption";
 import { GuideRunner } from "@/lib/guide";
+import { initialRailState } from "@/lib/mission-control";
 import { useStore } from "@/store/useStore";
 
 // keeps the X-ray and its Three runtime outside the initial Mission Control payload
@@ -16,7 +17,6 @@ const XRaySheet = dynamic(() => import("@/components/xray/XRaySheet").then((modu
 export default function MissionControlPage() {
   const [leftOpen, setLeftOpen] = React.useState(true);
   const [rightOpen, setRightOpen] = React.useState(true);
-  const [isMounted, setIsMounted] = React.useState(false);
   const guideRunnerRef = React.useRef<GuideRunner | null>(null);
 
   // keeps one cancellable guide runner alive across top-bar and caption controls
@@ -37,28 +37,40 @@ export default function MissionControlPage() {
     };
   }, [guideRunner]);
 
-  React.useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // Use a standard matching media query logic, handling SSR by waiting for mount
+  // synchronizes rail visibility to the layout breakpoint after the server-safe desktop shell hydrates
   const [isDesktop, setIsDesktop] = React.useState(true);
   React.useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 1280px)");
-    setIsDesktop(mediaQuery.matches);
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    const syncViewport = (nextDesktop: boolean) => {
+      setIsDesktop(nextDesktop);
+      const rails = initialRailState(nextDesktop);
+      setLeftOpen(rails.leftOpen);
+      setRightOpen(rails.rightOpen);
+    };
+    syncViewport(mediaQuery.matches);
+    const handler = (event: MediaQueryListEvent) => syncViewport(event.matches);
     mediaQuery.addEventListener("change", handler);
     return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
-  if (!isMounted) return null;
+  // keeps a mobile sheet from opening behind the sheet an operator has just selected
+  const toggleLeftRail = () => {
+    setLeftOpen((open) => !open);
+    if (!isDesktop) setRightOpen(false);
+  };
+
+  // keeps a mobile sheet from opening behind the sheet an operator has just selected
+  const toggleRightRail = () => {
+    setRightOpen((open) => !open);
+    if (!isDesktop) setLeftOpen(false);
+  };
 
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col bg-bg text-fg">
       <TopBar 
         onGuidedDemo={() => void guideRunner.run()}
-        onToggleLeft={() => setLeftOpen(!leftOpen)} 
-        onToggleRight={() => setRightOpen(!rightOpen)} 
+        onToggleLeft={toggleLeftRail}
+        onToggleRight={toggleRightRail}
         leftOpen={leftOpen} 
         rightOpen={rightOpen} 
       />
@@ -76,7 +88,7 @@ export default function MissionControlPage() {
             </div>
           </m.div>
         ) : (
-          <Sheet open={leftOpen && !isDesktop} onOpenChange={setLeftOpen}>
+          <Sheet open={leftOpen && !isDesktop} onOpenChange={(open) => { setLeftOpen(open); if (open) setRightOpen(false); }}>
             <SheetContent side="left" className="w-[264px] p-0 bg-rail border-r border-line sm:max-w-none">
               <SheetTitle className="sr-only">Left Rail</SheetTitle>
               <LeftRail />
@@ -103,7 +115,7 @@ export default function MissionControlPage() {
             </div>
           </m.div>
         ) : (
-          <Sheet open={rightOpen && !isDesktop} onOpenChange={setRightOpen}>
+          <Sheet open={rightOpen && !isDesktop} onOpenChange={(open) => { setRightOpen(open); if (open) setLeftOpen(false); }}>
             <SheetContent side="right" className="w-[336px] p-0 bg-rail border-l border-line sm:max-w-none">
               <SheetTitle className="sr-only">Right Rail</SheetTitle>
               <RightRail />

@@ -18,7 +18,7 @@ export function Stat({ label, value, delta, deltaTrend = "neutral", className, .
           <span
             className={cn(
               "text-xs font-mono num",
-              deltaTrend === "up" ? "text-alert" : deltaTrend === "down" ? "text-observed" : "text-fg-3"
+              deltaTrend === "neutral" ? "text-fg-3" : "text-fg-2"
             )}
           >
             {deltaTrend === "up" ? "+" : ""}{delta}

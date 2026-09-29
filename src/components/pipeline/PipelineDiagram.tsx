@@ -132,7 +132,7 @@ export function PipelineDiagram({ variant = "full", activeStageId }: PipelineDia
     <section className={isCompact ? "space-y-3" : "space-y-6"} aria-label="ElectroCast-X forecast pipeline">
       {!isCompact && (
         <div className="max-w-2xl space-y-2">
-          <p className="text-sm text-observed">Technical flow</p>
+          <p className="text-sm text-fg-2">Technical flow</p>
           <h1 className="text-3xl font-semibold tracking-tight text-fg sm:text-4xl">How ElectroCast-X builds a lightning nowcast</h1>
           <p className="max-w-xl text-base leading-6 text-fg-2">Prepared multimodal observations move through a calibrated, physics-guided forecast pipeline before reaching Mission Control.</p>
         </div>
@@ -169,7 +169,7 @@ export function PipelineDiagram({ variant = "full", activeStageId }: PipelineDia
       <div className="border-l-2 border-forecast bg-raised px-4 py-3" aria-live="polite">
         <p className="text-sm font-medium text-fg">{selectedItem.title}</p>
         <p className="mt-1 max-w-2xl text-sm leading-5 text-fg-2">{selectedItem.explanation}</p>
-        <Link href={selectedItem.href} className="mt-3 inline-flex text-sm font-medium text-observed underline underline-offset-4">See it in Mission Control: {selectedItem.feature}</Link>
+        <Link href={selectedItem.href} className="mt-3 inline-flex text-sm font-medium text-fg underline underline-offset-4">See it in Mission Control: {selectedItem.feature}</Link>
       </div>
     </section>
   );
