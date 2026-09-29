@@ -1,10 +1,9 @@
 "use client";
-import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/Chip";
 import { StatusDot } from "@/components/ui/StatusDot";
 import { SensorHealth } from "@/components/panels/SensorHealth";
-import { effectiveSensorMask } from "@/lib/derive";
+import { effectiveSensorMask, formatScenarioTime } from "@/lib/derive";
 import { frameAt } from "@/lib/map/interpolate";
 import { useStore } from "@/store/useStore";
 import type { Scenario, SensorId } from "@/types/scenario";
@@ -28,20 +27,13 @@ interface TopBarProps {
 
 // keeps scenario health, operational controls, and pipeline context accessible from Mission Control
 export function TopBar({ onToggleLeft, onToggleRight, onGuidedDemo, leftOpen, rightOpen }: TopBarProps) {
-  const [time, setTime] = React.useState(new Date());
   const scenarioId = useStore((state) => state.scenarioId);
   const timeMin = useStore((state) => state.timeMin);
   const sensorOff = useStore((state) => state.sensorOff);
   const guidedOn = useStore((state) => state.guided.on);
   const frame = frameAt(scenarios[scenarioId], timeMin);
   const sensorMask = effectiveSensorMask(sensorOff, frame.sensorHealth);
-  React.useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const istFormatter = new Intl.DateTimeFormat('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' });
-  const utcFormatter = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' });
+  const scenarioTime = formatScenarioTime(scenarios[scenarioId], timeMin);
 
   return (
     <header className="h-12 bg-rail border-b border-line flex items-center justify-between px-4 z-20 relative">
@@ -73,11 +65,11 @@ export function TopBar({ onToggleLeft, onToggleRight, onGuidedDemo, leftOpen, ri
           <Tooltip>
             <TooltipTrigger>
               <div className="text-sm font-mono num text-fg flex items-center gap-1">
-                IST {istFormatter.format(time)}
+                IST {scenarioTime.ist}
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>UTC {utcFormatter.format(time)}</p>
+              <p>UTC {scenarioTime.utc}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
