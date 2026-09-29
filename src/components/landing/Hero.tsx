@@ -35,7 +35,7 @@ export function Hero() {
       <m.div
         initial={{ opacity: 0, filter: "blur(12px)" }}
         animate={{ opacity: 0.65, filter: "blur(0px)" }}
-        transition={{ duration: 0.8, ease: [0.2, 0.7, 0.2, 1] }}
+        transition={{ duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
         className="absolute inset-0 -z-20 pointer-events-none"
       >
         <HeroMapLoop />
@@ -50,7 +50,7 @@ export function Hero() {
           <m.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.45, ease: [0.2, 0.7, 0.2, 1] }}
+            transition={{ delay: 0.15, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
             className="inline-flex items-center gap-2 rounded-full border border-line bg-rail/80 px-3.5 py-1 text-xs text-fg-2 backdrop-blur-md mb-6"
           >
             <span className="size-1.5 rounded-full bg-observed animate-pulse" />
@@ -66,7 +66,7 @@ export function Hero() {
               aria-hidden="true"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.5, ease: [0.2, 0.7, 0.2, 1] }}
+              transition={{ delay: 0.25, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
               className="block"
             >
               Lightning warnings
@@ -75,7 +75,7 @@ export function Hero() {
               aria-hidden="true"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.5, ease: [0.2, 0.7, 0.2, 1] }}
+              transition={{ delay: 0.35, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
               className="block text-fg-2"
             >
               that start before
@@ -84,7 +84,7 @@ export function Hero() {
               aria-hidden="true"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45, duration: 0.5, ease: [0.2, 0.7, 0.2, 1] }}
+              transition={{ delay: 0.45, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
               className="block"
             >
               the first flash.
@@ -94,7 +94,7 @@ export function Hero() {
           <m.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.5, ease: [0.2, 0.7, 0.2, 1] }}
+            transition={{ delay: 0.6, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
             className="mt-6 max-w-xl text-base leading-relaxed text-fg-2 sm:text-lg"
           >
             ElectroCast-X forecasts when a developing cloud will first produce lightning, where an active storm will go, and how far to trust it—15, 30 and 60 minutes ahead.
@@ -103,7 +103,7 @@ export function Hero() {
           <m.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.72, duration: 0.5, ease: [0.2, 0.7, 0.2, 1] }}
+            transition={{ delay: 0.72, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
             className="mt-8 flex flex-wrap items-center gap-4"
           >
             <Link
@@ -127,7 +127,7 @@ export function Hero() {
           <m.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.82, duration: 0.5, ease: [0.2, 0.7, 0.2, 1] }}
+            transition={{ delay: 0.82, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
             className="mt-10 flex flex-wrap items-center gap-6 border-t border-line/60 pt-6 text-xs text-fg-3"
           >
             <div>
@@ -151,7 +151,7 @@ export function Hero() {
         <m.div
           initial={{ opacity: 0, scale: 0.94, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ delay: 0.85, duration: 0.6, ease: [0.2, 0.7, 0.2, 1] }}
+          transition={{ delay: 0.85, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
           className="w-full max-w-sm shrink-0 self-center lg:self-auto"
         >
           <div className="relative rounded-3xl border border-line-strong/60 bg-rail/85 p-6 backdrop-blur-2xl shadow-2xl ring-1 ring-white/5">
