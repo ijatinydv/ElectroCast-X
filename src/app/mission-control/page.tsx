@@ -16,7 +16,6 @@ const XRaySheet = dynamic(() => import("@/components/xray/XRaySheet").then((modu
 export default function MissionControlPage() {
   const [leftOpen, setLeftOpen] = React.useState(true);
   const [rightOpen, setRightOpen] = React.useState(true);
-  const [isMounted, setIsMounted] = React.useState(false);
   const guideRunnerRef = React.useRef<GuideRunner | null>(null);
 
   // keeps one cancellable guide runner alive across top-bar and caption controls
@@ -37,10 +36,6 @@ export default function MissionControlPage() {
     };
   }, [guideRunner]);
 
-  React.useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   // Use a standard matching media query logic, handling SSR by waiting for mount
   const [isDesktop, setIsDesktop] = React.useState(true);
   React.useEffect(() => {
@@ -50,8 +45,6 @@ export default function MissionControlPage() {
     mediaQuery.addEventListener("change", handler);
     return () => mediaQuery.removeEventListener("change", handler);
   }, []);
-
-  if (!isMounted) return null;
 
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col bg-bg text-fg">
