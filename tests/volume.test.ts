@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import scenarioA from "@/data/scenarios/a-first-flash.json";
-import { buildVolume, volumeCoreFor, VOLUME_DEPTH, VOLUME_WIDTH } from "@/lib/derive/volume";
+import { buildVolume, volumeCoreFor, volumeNeedsRebuild, VOLUME_DEPTH, VOLUME_WIDTH } from "@/lib/derive/volume";
 import type { Scenario } from "@/types/scenario";
 
 // supplies a prepared developing cell that exercises the procedural storm field
@@ -32,5 +32,16 @@ describe("buildVolume", () => {
 
     expect(Math.abs(peakX - core.x)).toBeLessThanOrEqual(2);
     expect(Math.abs(peakY - core.y)).toBeLessThanOrEqual(2);
+  });
+});
+
+// verifies that minor time interpolation retains allocated voxel resources
+describe("volumeNeedsRebuild", () => {
+  it("rebuilds only for material atmospheric changes", () => {
+    const baseline = { ...sampleCell(), freezingLevelKm: 4.8, zdrColumnLevel: "0C" as const, kdpCore: 1.1 };
+
+    expect(volumeNeedsRebuild(baseline, { ...baseline, echoTopKm: baseline.echoTopKm + 0.2 })).toBe(false);
+    expect(volumeNeedsRebuild(baseline, { ...baseline, echoTopKm: baseline.echoTopKm + 0.5 })).toBe(true);
+    expect(volumeNeedsRebuild(baseline, { ...baseline, zdrColumnLevel: "-10C" })).toBe(true);
   });
 });
