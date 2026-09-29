@@ -22,9 +22,11 @@
 - [ ] Guided demo runs start to finish.
 
 ## Performance
+**Phase 7.1 audit (2026-09-29):** `npm run verify` passed: TypeScript, 66 tests, scenario validation, and a static Next build. The emitted X-ray and validation code remain route-local dynamic chunks; no full `motion` import, spring, bounce, or Lucide barrel import remains in shipped source. Static-export first-load measurements are over budget: landing is 289.5 KiB gzip (target ≤120 KiB) and Mission Control is 341.8 KiB gzip (target ≤220 KiB). Browser performance and a bundle-chunking pass remain open before Phase 7.1 can be completed.
+
 - [ ] 60 fps at 1080p during playback (Chrome Performance, no long tasks over 50 ms).
 - [ ] Paused: CPU near idle.
-- [ ] First-load JS within budgets (landing ≤ 120 KB, Mission Control ≤ 220 KB gzip).
+- [ ] First-load JS within budgets (landing 289.5 KiB gzip / target ≤120 KiB; Mission Control 341.8 KiB gzip / target ≤220 KiB).
 - [ ] X-ray and validation chunks load lazily.
 - [ ] Works with the network disabled (DevTools offline, hard reload of `out/`).
 

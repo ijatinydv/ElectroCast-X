@@ -81,3 +81,9 @@ Add a row whenever you make a choice that another person might question.
 | Decision | Choice | Why | Rejected |
 | --- | --- | --- | --- |
 | D36 | Guide captions and actions are authored in local JSON and executed through a cancellable store runner | Keeps presenter flow repeatable, offline, and consistent with every mission-control surface without synthetic pointer events | DOM click playback or panel-local guide state |
+
+# Phase 7.1 — Motion pass and performance audit
+
+| Decision | Choice | Why | Rejected |
+| --- | --- | --- | --- |
+| D37 | NumberTicker uses a 400 ms `--ease-instrument` tween | Keeps forecast readouts precise and predictable without spring overshoot | Physics spring interpolation |
