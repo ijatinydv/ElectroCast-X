@@ -2,16 +2,19 @@
 import * as React from "react";
 import { m } from "motion/react";
 import { cn } from "@/lib/utils";
+import { NumberTicker } from "@/components/ui/NumberTicker";
 
 interface DialProps {
   probability: number; // 0-100
   rising?: boolean;
   windowStart?: number; // 0-60
   windowEnd?: number; // 0-60
+  horizon?: 15 | 30 | 60;
   className?: string;
 }
 
-export function Dial({ probability, rising, windowStart, windowEnd, className }: DialProps) {
+// visualizes the selected first-flash horizon without duplicating forecast values
+export function Dial({ probability, rising, windowStart, windowEnd, horizon = 30, className }: DialProps) {
   const size = 168;
   const strokeWidth = 8;
   const radius = (size - strokeWidth) / 2;
@@ -23,7 +26,6 @@ export function Dial({ probability, rising, windowStart, windowEnd, className }:
 
   return (
     <div className={cn("relative flex items-center justify-center", className)} style={{ width: size, height: size }}>
-      {/* Outer track */}
       <svg width={size} height={size} className="absolute inset-0 rotate-[-90deg]">
         <circle
           cx={size / 2}
@@ -33,7 +35,6 @@ export function Dial({ probability, rising, windowStart, windowEnd, className }:
           stroke="var(--color-line-strong)"
           strokeWidth={strokeWidth}
         />
-        {/* Animated probability arc */}
         <m.circle
           cx={size / 2}
           cy={size / 2}
@@ -48,9 +49,6 @@ export function Dial({ probability, rising, windowStart, windowEnd, className }:
           strokeLinecap="round"
         />
         
-        {/* Ticks for 15, 30, 60. Angles: 15=90deg, 30=180deg, 60=360deg(0deg) */}
-        {/* But circumference is 60 mins mapped to 360 degrees. */}
-        {/* Let's draw ticks manually. 60m is a full circle. So 1m = 6 degrees. */}
         {[15, 30, 60].map(min => {
           const angle = min * 6 - 90; // -90 because we start at top
           const rad = (angle * Math.PI) / 180;
@@ -61,7 +59,6 @@ export function Dial({ probability, rising, windowStart, windowEnd, className }:
           return <line key={min} x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--color-line-strong)" strokeWidth={2} />;
         })}
 
-        {/* Window segment (optional) */}
         {windowStart !== undefined && windowEnd !== undefined && (
           <m.circle
             cx={size / 2}
@@ -79,7 +76,6 @@ export function Dial({ probability, rising, windowStart, windowEnd, className }:
         )}
       </svg>
       
-      {/* Pulse effect if rising */}
       {rising && (
         <m.div
           className="absolute inset-0 rounded-full border-2 border-risk"
@@ -89,13 +85,12 @@ export function Dial({ probability, rising, windowStart, windowEnd, className }:
         />
       )}
 
-      {/* Centre content */}
       <div className="flex flex-col items-center text-center z-10 w-24">
         <div className="text-3xl font-mono font-medium text-fg num">
-          <m.span>{p.toFixed(0)}</m.span>%
+          <NumberTicker value={p} />%
         </div>
         <div className="text-[11px] text-fg-2 mt-1 leading-tight normal-case">
-          chance of first flash within 30 min
+          chance of first flash within {horizon} min
         </div>
       </div>
     </div>

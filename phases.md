@@ -255,7 +255,7 @@ Read docs/02-ui-spec.md (Left rail: View) and docs/04-data-contract.md (decompos
 Read docs/02-ui-spec.md (Bottom dock). Build src/components/shell/BottomDock.tsx with a custom Scrubber (pointer events, no library): track split at NOW into cyan and purple, tick per keyframe, draggable handle, event markers from scenario.events and store.issuedWarnings. Add play/pause, step, speed, Replay, mono timecode (e.g. "−24:00", "NOW", "+25:00") and a disabled placeholder Prediction/Actual toggle (enabled in 6.4). Hotkeys via src/hooks/useHotkeys.ts (Space, ←, →). Dragging sets store.timeMin and pauses. Use transform-based handle movement.
 ```
 
-### [ ] 3.2 Selected cell panel and first-flash countdown
+### [x] 3.2 Selected cell panel and first-flash countdown
 **Does:** The right rail's When / Where content: dial, probabilities, window, confidence, electrification stage and physical timers; active-storm variant.
 **Depends on:** 3.1, 1.4, 0.2.
 **Verify:**
