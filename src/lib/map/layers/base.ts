@@ -17,18 +17,40 @@ interface LabelBox { x: number; y: number; width: number; height: number; }
 export const baseLayer: Layer = {
   id: "base",
   draw: (ctx, state) => {
-    ctx.fillStyle = state.theme.background;
-    ctx.fillRect(0, 0, state.width, state.height);
+    // draw a subtle clipping region fill so the tile basemap outside Odisha is dimmed
+    ctx.save();
     ctx.beginPath();
-    ctx.strokeStyle = state.theme.foregroundTertiary;
-    ctx.lineWidth = 1;
     stateBoundary.features.forEach((feature) => drawGeometry(ctx, feature.geometry, state));
-    ctx.stroke();
-    if (!state.layers.districts) return;
+    ctx.fillStyle = "rgba(7, 11, 18, 0.18)";
+    ctx.fill();
+    ctx.restore();
+
+    // state outline — strong glow effect for geographic context
+    ctx.save();
     ctx.beginPath();
-    ctx.strokeStyle = state.theme.lineStrong;
+    stateBoundary.features.forEach((feature) => drawGeometry(ctx, feature.geometry, state));
+    ctx.strokeStyle = "rgba(78, 216, 235, 0.55)";
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = "rgba(78, 216, 235, 0.35)";
+    ctx.shadowBlur = 8;
+    ctx.stroke();
+    // inner crisp border
+    ctx.beginPath();
+    stateBoundary.features.forEach((feature) => drawGeometry(ctx, feature.geometry, state));
+    ctx.strokeStyle = "rgba(78, 216, 235, 0.85)";
+    ctx.lineWidth = 1;
+    ctx.shadowBlur = 0;
+    ctx.stroke();
+    ctx.restore();
+
+    if (!state.layers.districts) return;
+    ctx.save();
+    ctx.beginPath();
+    ctx.strokeStyle = "rgba(39, 53, 74, 0.9)";
+    ctx.lineWidth = 0.75;
     districts.features.forEach((feature) => drawGeometry(ctx, feature.geometry, state));
     ctx.stroke();
+    ctx.restore();
     drawLabels(ctx, state);
   },
 };
@@ -55,8 +77,7 @@ function drawLabels(ctx: CanvasRenderingContext2D, state: MapFrameState): void {
   const candidates = districts.features
     .map((feature) => ({ feature, centroid: featureCentroid(feature), area: geometryArea(feature.geometry) }))
     .sort((left, right) => right.area - left.area);
-  ctx.fillStyle = state.theme.foregroundTertiary;
-  ctx.font = `11px ${state.theme.fontSans}`;
+  ctx.font = `bold 10px ${state.theme.fontSans}`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   candidates.forEach(({ feature, centroid }) => {
@@ -64,6 +85,10 @@ function drawLabels(ctx: CanvasRenderingContext2D, state: MapFrameState): void {
     const width = ctx.measureText(feature.properties.district).width;
     const label = { x: x - width / 2, y: y - 6, width, height: 12 };
     if (occupied.some((existing) => overlaps(existing, label))) return;
+    // dark backing for readability over tile imagery
+    ctx.fillStyle = "rgba(7, 11, 18, 0.6)";
+    ctx.fillRect(label.x - 2, label.y - 1, label.width + 4, label.height + 2);
+    ctx.fillStyle = state.theme.foregroundTertiary;
     ctx.fillText(feature.properties.district, x, y);
     occupied.push(label);
   });

@@ -64,17 +64,31 @@ export function TopBar({ onToggleLeft, onToggleRight, onGuidedDemo, leftOpen, ri
   });
 
   return (
-    <header className="h-12 bg-rail border-b border-line flex items-center justify-between px-4 z-20 relative">
-      <div className="flex items-center gap-4">
-        <Button aria-expanded={leftOpen} aria-label={`${leftOpen ? "Close" : "Open"} mission controls`} variant="ghost" size="icon" className="xl:hidden h-8 w-8" onClick={onToggleLeft}>
+    <header className="h-12 bg-rail border-b border-line flex items-center justify-between px-3 z-20 relative shrink-0">
+      {/* LEFT — brand + navigation */}
+      <div className="flex items-center gap-3 min-w-0">
+        <Button aria-expanded={leftOpen} aria-label={`${leftOpen ? "Close" : "Open"} mission controls`} variant="ghost" size="icon" className="xl:hidden h-8 w-8 text-fg-2 hover:text-fg" onClick={onToggleLeft}>
           <Menu size={16} />
         </Button>
-        <Link href="/" className="font-semibold text-fg tracking-wide hover:text-fg-2 transition-colors">ElectroCast-X</Link>
-        
+
+        {/* Brand wordmark */}
+        <Link href="/" className="flex items-center gap-2 group shrink-0">
+          <span className="flex items-center justify-center w-6 h-6 rounded bg-risk/15 border border-risk/25 text-risk group-hover:bg-risk/25 transition-colors">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M7 1L2 7h4l-1 4 5-6H6l1-4z" fill="currentColor"/>
+            </svg>
+          </span>
+          <span className="font-semibold text-sm tracking-wide text-fg group-hover:text-fg/90 transition-colors">
+            ElectroCast<span className="text-observed">-X</span>
+          </span>
+        </Link>
+
+        <div className="hidden lg:block w-px h-4 bg-line-strong" aria-hidden="true" />
+
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div><Chip variant="neutral" className="cursor-help">SIMULATED</Chip></div>
+              <div><Chip variant="neutral" className="cursor-help font-mono text-[9px] tracking-widest px-1.5">SIM</Chip></div>
             </TooltipTrigger>
             <TooltipContent>
               <p>All data in this scenario is prepared. No live feeds.</p>
@@ -82,27 +96,34 @@ export function TopBar({ onToggleLeft, onToggleRight, onGuidedDemo, leftOpen, ri
           </Tooltip>
         </TooltipProvider>
 
-        <nav aria-label="Product navigation" className="hidden lg:flex items-center rounded-md border border-line bg-raised/40 p-0.5 text-xs">
-          <Link href="/mission-control" className="rounded px-2.5 py-1 font-medium bg-raised text-fg">Mission Control</Link>
-          <Link href="/how-it-works" className="rounded px-2.5 py-1 text-fg-2 hover:text-fg transition-colors">Pipeline</Link>
-          <Link href="/validation" className="rounded px-2.5 py-1 text-fg-2 hover:text-fg transition-colors">Validation</Link>
+        <nav aria-label="Product navigation" className="hidden lg:flex items-center rounded border border-line bg-raised/20 p-0.5 text-xs gap-0.5">
+          <Link href="/mission-control" className="rounded px-3 py-1 font-medium bg-raised text-fg border border-line-strong/40">Mission Control</Link>
+          <Link href="/how-it-works" className="rounded px-3 py-1 text-fg-2 hover:text-fg hover:bg-raised/60 transition-colors">Pipeline</Link>
+          <Link href="/validation" className="rounded px-3 py-1 text-fg-2 hover:text-fg hover:bg-raised/60 transition-colors">Validation</Link>
         </nav>
 
-        <div className="hidden sm:block">
-          <div className="text-sm text-fg-2">{scenarios[scenarioId].name}</div>
-          <p className="max-w-72 text-xs leading-4 text-fg-3">{scenarios[scenarioId].story}</p>
+        <div className="hidden sm:block min-w-0">
+          <div className="text-xs font-medium text-fg truncate">{scenarios[scenarioId].name}</div>
+          <p className="max-w-56 text-[10px] leading-3.5 text-fg-3 truncate">{scenarios[scenarioId].story}</p>
         </div>
       </div>
 
-      <div className="flex items-center gap-3 sm:gap-5">
-        {/* Dual Tactical Clocks: IST and UTC */}
+      {/* RIGHT — clock, feeds, controls */}
+      <div className="flex items-center gap-2 shrink-0">
+        {/* Dual tactical clock */}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-2 rounded border border-line bg-raised/50 px-2.5 py-1 text-xs font-mono cursor-help">
-                <span className="text-fg font-medium num">{scenarioTime.ist} <span className="text-[10px] text-fg-3">IST</span></span>
-                <span className="text-line-strong">/</span>
-                <span className="text-fg-2 num">{scenarioTime.utc} <span className="text-[10px] text-fg-3">UTC</span></span>
+              <div className="hidden sm:flex items-center gap-1.5 rounded border border-line bg-raised/30 px-2.5 py-1 cursor-help">
+                <div className="flex flex-col items-center leading-none">
+                  <span className="text-[11px] font-mono font-medium text-fg num">{scenarioTime.ist}</span>
+                  <span className="text-[8px] font-mono text-fg-3 tracking-widest mt-0.5">IST</span>
+                </div>
+                <span className="text-line-strong text-xs mx-0.5">/</span>
+                <div className="flex flex-col items-center leading-none">
+                  <span className="text-[11px] font-mono text-fg-2 num">{scenarioTime.utc}</span>
+                  <span className="text-[8px] font-mono text-fg-3 tracking-widest mt-0.5">UTC</span>
+                </div>
               </div>
             </TooltipTrigger>
             <TooltipContent className="text-xs font-mono">
@@ -111,13 +132,13 @@ export function TopBar({ onToggleLeft, onToggleRight, onGuidedDemo, leftOpen, ri
           </Tooltip>
         </TooltipProvider>
 
-        {/* Live Sensor Health Cluster */}
+        {/* Live sensor feed cluster */}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button type="button" className="flex items-center gap-2 rounded border border-line bg-raised/30 px-2.5 py-1 text-xs hidden md:flex hover:bg-raised transition-colors focus-visible:outline-none" aria-label="Open sensor health">
-                <span className="text-[10px] font-mono text-fg-3 uppercase tracking-wider">FEEDS</span>
-                <div className="flex items-center gap-1.5">
+              <button type="button" className="hidden md:flex items-center gap-2 rounded border border-line bg-raised/20 px-2.5 py-1 text-xs hover:bg-raised/50 transition-colors focus-visible:outline-none" aria-label="Open sensor health">
+                <span className="text-[9px] font-mono text-fg-3 uppercase tracking-widest">FEEDS</span>
+                <div className="flex items-center gap-1">
                   {(Object.keys(frame.sensorHealth) as SensorId[]).map((sensor) => <StatusDot key={sensor} status={sensorMask[sensor] ? "offline" : frame.sensorHealth[sensor].status} />)}
                 </div>
               </button>
@@ -126,9 +147,15 @@ export function TopBar({ onToggleLeft, onToggleRight, onGuidedDemo, leftOpen, ri
           </Tooltip>
         </TooltipProvider>
 
-        <div className="flex items-center gap-2">
-          <Button aria-label={guidedOn ? "Restart guided demo" : "Start guided demo"} className="h-7 text-xs" onClick={onGuidedDemo} size="sm" variant="outline">
-            {guidedOn ? "Restart" : "Guided demo"}
+        <div className="flex items-center gap-1.5">
+          <Button
+            aria-label={guidedOn ? "Restart guided demo" : "Start guided demo"}
+            className="h-7 text-xs px-3 border-observed/25 text-observed hover:bg-observed/10 hover:border-observed/50 transition-all"
+            onClick={onGuidedDemo}
+            size="sm"
+            variant="outline"
+          >
+            {guidedOn ? "↺ Restart" : "▷ Demo"}
           </Button>
 
           <PipelineSheet activeStageId={leftOpen ? "masks" : undefined} />
@@ -137,7 +164,7 @@ export function TopBar({ onToggleLeft, onToggleRight, onGuidedDemo, leftOpen, ri
             aria-label="Keyboard shortcuts"
             variant="ghost"
             size="icon"
-            className="h-7 w-7 text-xs font-mono text-fg-2 hover:text-fg hover:bg-raised"
+            className="h-7 w-7 text-xs font-mono text-fg-3 hover:text-fg hover:bg-raised rounded"
             onClick={() => setShortcutsOpen(true)}
             title="Keyboard shortcuts (?)"
           >
@@ -145,7 +172,7 @@ export function TopBar({ onToggleLeft, onToggleRight, onGuidedDemo, leftOpen, ri
           </Button>
         </div>
 
-        <Button aria-expanded={rightOpen} aria-label={`${rightOpen ? "Close" : "Open"} storm details`} variant="ghost" size="icon" className="xl:hidden h-8 w-8" onClick={onToggleRight}>
+        <Button aria-expanded={rightOpen} aria-label={`${rightOpen ? "Close" : "Open"} storm details`} variant="ghost" size="icon" className="xl:hidden h-8 w-8 text-fg-2 hover:text-fg" onClick={onToggleRight}>
           <PanelRightClose size={16} />
         </Button>
       </div>

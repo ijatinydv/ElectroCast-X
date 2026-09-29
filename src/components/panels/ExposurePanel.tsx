@@ -21,23 +21,23 @@ export function ExposurePanel({ cell }: { cell: Cell }) {
   ].filter(({ count }) => count > 0);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
-        <div className="text-sm font-medium text-fg">Potentially affected region</div>
+        <div className="text-xs font-medium text-fg">Potentially affected</div>
         <Chip variant="neutral">synthetic</Chip>
       </div>
       <div className="grid grid-cols-3 gap-2">
         {groups.map(({ label, count, type, icon: Icon }) => (
-          <div key={type} className="border border-line p-2">
-            <Icon size={15} className="text-fg-2" aria-hidden="true" />
-            <div className="mt-1 num text-lg font-medium text-fg">{count}</div>
-            <div className="text-xs text-fg-2">{label}</div>
+          <div key={type} className="border border-line rounded bg-raised/20 p-2 flex flex-col gap-1">
+            <Icon size={13} className="text-fg-3" aria-hidden="true" />
+            <div className="num text-lg font-bold text-fg leading-none">{count}</div>
+            <div className="text-[10px] text-fg-3 leading-tight">{label}</div>
           </div>
         ))}
       </div>
-      <div className="flex items-baseline justify-between border-y border-line py-3">
-        <div className="text-sm text-fg-2">Estimated arrival</div>
-        <div className="num text-lg font-medium text-fg">{exposure.arrivalMin} min</div>
+      <div className="flex items-center justify-between rounded border border-risk/30 bg-risk/8 px-3 py-2">
+        <div className="text-xs text-fg-2">Est. arrival</div>
+        <div className="num text-base font-bold text-risk">{exposure.arrivalMin} min</div>
       </div>
       {groups.map(({ label, type }) => <ExposureItems key={type} label={label} assets={exposure.assets.filter((asset) => asset.type === type)} onSelect={highlightAsset} />)}
     </div>

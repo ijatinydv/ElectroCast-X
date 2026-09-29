@@ -68,3 +68,13 @@ Full context: `docs/00-product-brief.md`. Claim-to-screen mapping: `docs/08-ps-t
 - Present placeholder validation numbers as results.
 - Build generic dashboard cards, gradient washes, glassmorphism, glow shadows, or bouncing motion.
 - Change scenario numbers by hand in the JSON. Edit `scripts/generate-scenarios.ts` and regenerate.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

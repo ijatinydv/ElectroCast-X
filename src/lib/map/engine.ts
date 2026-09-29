@@ -14,6 +14,7 @@ import { radarLayer } from "./layers/radar";
 import { prepareSatelliteLayer, satelliteLayer } from "./layers/satellite";
 import { scaleBarLayer } from "./layers/scalebar";
 import { compareLayer } from "./layers/compare";
+import { tileLayer, setTileRepaintCallback } from "./layers/tiles";
 import { fitProjection, hitTestCells, panProjection, projectTweenAt, startProjectionTween, zoomProjection, type MapProjection, type ProjectionTween } from "./project";
 import { frameAt } from "./interpolate";
 import { readMapTheme, type MapTheme } from "./theme";
@@ -68,8 +69,8 @@ export interface MapEngine {
   resetView: () => void;
 }
 
-// fixes canvas composition order as later geographic layers are introduced in subsequent chunks
-const staticLayers: readonly Layer[] = [graticuleLayer, baseLayer, scaleBarLayer];
+// fixes canvas composition order: tiles are first so real map imagery sits under geographic overlays
+const staticLayers: readonly Layer[] = [tileLayer, graticuleLayer, baseLayer, scaleBarLayer];
 
 // fixes dynamic composition order so decomposition explains forecast cells before paths and exposure assets
 const dynamicLayers: readonly Layer[] = [satelliteLayer, radarLayer, heatmapLayer, lightningLayer, decompositionLayer, corridorsLayer, motionLayer, assetsLayer, labelsLayer];
@@ -125,6 +126,9 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
   const requestFrame = () => {
     if (active && visible && animationFrame === null) animationFrame = window.requestAnimationFrame(render);
   };
+
+  // wires the tile loader to request a static redraw + frame when tiles finish loading asynchronously
+  setTileRepaintCallback(() => { redrawStatic(); requestFrame(); });
 
   // composites cached static content and keeps the loop alive only during map-owned animation
   const render = (now: number) => {

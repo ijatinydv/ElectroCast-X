@@ -3,22 +3,22 @@
 /* Design tokens — see docs/01-design-system.md. Colour carries meaning only. */
 @theme {
   /* layered blue-charcoal surfaces, never pure black */
-  --color-bg: #070b12;
-  --color-rail: #0b111a;
-  --color-raised: #111a26;
-  --color-line: #1a2534;
-  --color-line-strong: #27354a;
+  --color-bg: #06090f;
+  --color-rail: #090e17;
+  --color-raised: #0f1822;
+  --color-line: #182030;
+  --color-line-strong: #243448;
 
   /* readable neutral hierarchy */
-  --color-fg: #e9e7e2;
-  --color-fg-2: #98a3b3;
-  --color-fg-3: #5c6879;
+  --color-fg: #eceae5;
+  --color-fg-2: #8fa0b2;
+  --color-fg-3: #526070;
 
   /* semantic meteorological colours */
-  --color-observed: #4fd8eb;  /* measured radar, satellite, current observations */
-  --color-forecast: #9e86ff;  /* future forecast and uncertainty corridor */
-  --color-risk: #ffb020;      /* risk, countdown, warning horizon */
-  --color-alert: #ff5a52;     /* sensor failure and severe warning only */
+  --color-observed: #3dd6ea;  /* measured radar, satellite, current observations */
+  --color-forecast: #9b82ff;  /* future forecast and uncertainty corridor */
+  --color-risk: #ffad14;      /* risk, countdown, warning horizon */
+  --color-alert: #ff4f4a;     /* sensor failure and severe warning only */
 
   --font-sans: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -49,10 +49,10 @@
   --color-input: var(--color-line);
   --color-ring: var(--color-line-strong);
 
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
+  --radius-sm: 3px;
+  --radius-md: 5px;
+  --radius-lg: 7px;
+  --radius-xl: 11px;
 }
 
 html,
@@ -62,6 +62,7 @@ body {
   color: var(--color-fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Every number is tabular so values never jitter while animating. */
@@ -73,6 +74,16 @@ body {
 :focus-visible {
   outline: 1px solid var(--color-observed);
   outline-offset: 2px;
+}
+
+/* Section label uppercase mono style used throughout panels */
+.label-mono {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-fg-3);
 }
 
 @media (prefers-reduced-motion: reduce) {

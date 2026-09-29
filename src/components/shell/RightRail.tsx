@@ -79,17 +79,18 @@ export function RightRail() {
           {cell ? <ExposurePanel cell={cell} /> : <div className="text-sm text-fg-2">Select a storm cell to assess affected places.</div>}
         </Panel>
         <Panel title="Actions" defaultOpen={true} collapsible={false}>
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-2">
             <Button
               disabled={!cell}
               onClick={() => setPanel("alert", true)}
               variant="default"
-              className="w-full h-10 font-semibold bg-risk text-bg hover:bg-risk/90 transition-colors shadow-sm"
+              className="w-full h-9 font-semibold bg-risk text-bg hover:bg-risk/90 transition-all shadow-sm disabled:opacity-40"
+              style={{ boxShadow: cell ? '0 0 16px rgba(255, 173, 20, 0.25)' : undefined }}
             >
-              Create warning
+              ⚡ Create warning
             </Button>
             <Button
-              className="w-full h-9 border border-line bg-raised/40 hover:bg-raised text-fg hover:border-line-strong transition-colors"
+              className="w-full h-8 border border-observed/25 text-observed/80 hover:bg-observed/8 hover:border-observed/50 hover:text-observed transition-all disabled:opacity-40"
               data-xray-trigger
               disabled={!cell}
               onClick={() => setPanel("xray", true)}

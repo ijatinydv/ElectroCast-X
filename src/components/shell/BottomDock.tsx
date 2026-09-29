@@ -223,20 +223,46 @@ export function BottomDock() {
   useHotkeys({ onTogglePlayback: togglePlayback, onStepBackward: () => step(-1), onStepForward: () => step(1) });
 
   return (
-    <section aria-label="Storm Time Machine" className="h-28 border-t border-line bg-rail px-4 py-2 relative z-20">
-      <div className="flex h-full items-center gap-4">
-        {/* Left Transport Cluster */}
-        <div className="flex shrink-0 items-center gap-1.5">
-          <Button aria-label="Replay from minus 60 minutes" className="h-8 px-2.5 text-xs text-fg-2 hover:text-fg" onClick={replay} variant="ghost">
-            <RotateCcw size={14} className="mr-1" /> Replay
+    <section aria-label="Storm Time Machine" className="border-t border-line bg-rail px-4 py-2 relative z-20" style={{ height: 96 }}>
+      {/* Header strip */}
+      <div className="flex items-center justify-between mb-1.5">
+        <div className="flex items-center gap-2">
+          <span className="flex items-center gap-1.5">
+            <span className="relative flex size-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-observed opacity-70" />
+              <span className="relative inline-flex rounded-full size-1.5 bg-observed" />
+            </span>
+            <span className="text-[9px] font-mono uppercase tracking-widest text-fg-3">Storm Time Machine</span>
+          </span>
+        </div>
+        <div className="hidden sm:block">
+          <button
+            aria-pressed={compareOn}
+            onClick={() => setCompare({ on: !compareOn })}
+            className={`h-6 px-3 text-[10px] font-mono uppercase tracking-wider rounded border transition-all ${
+              compareOn
+                ? "border-forecast/50 text-forecast bg-forecast/10 hover:bg-forecast/15"
+                : "border-line text-fg-3 hover:text-fg hover:border-line-strong"
+            }`}
+          >
+            {compareOn ? "◈ Compare: ON" : "◇ Compare"}
+          </button>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3">
+        {/* Transport cluster */}
+        <div className="flex shrink-0 items-center gap-1">
+          <Button aria-label="Replay from minus 60 minutes" className="h-7 w-7 text-fg-3 hover:text-fg" onClick={replay} size="icon" variant="ghost" title="Replay">
+            <RotateCcw size={13} />
           </Button>
           <div className="flex items-center rounded border border-line bg-raised/40 p-0.5">
             <Button aria-label="Previous frame" className="size-7 text-fg-2 hover:text-fg" onClick={() => step(-1)} size="icon" variant="ghost">
-              <SkipBack size={14} />
+              <SkipBack size={13} />
             </Button>
             <Button
               aria-label={playing ? "Pause playback" : "Play playback"}
-              className={`size-7 ${playing ? "text-risk" : "text-fg"}`}
+              className={`size-7 ${playing ? "text-risk" : "text-observed"}`}
               onClick={togglePlayback}
               size="icon"
               variant="ghost"
@@ -244,28 +270,32 @@ export function BottomDock() {
               {playing ? <Pause size={14} /> : <Play size={14} />}
             </Button>
             <Button aria-label="Next frame" className="size-7 text-fg-2 hover:text-fg" onClick={() => step(1)} size="icon" variant="ghost">
-              <SkipForward size={14} />
+              <SkipForward size={13} />
             </Button>
           </div>
         </div>
 
-        {/* Tactical Timecode readout */}
+        {/* Timecode */}
         <output
           aria-live="off"
-          className="num w-16 shrink-0 text-sm font-semibold text-fg bg-raised/70 px-2 py-1.5 rounded border border-line text-center shadow-inner tracking-tight"
+          className="num w-14 shrink-0 text-xs font-bold text-fg bg-raised/60 px-1.5 py-1.5 rounded border border-line text-center tracking-tight"
         >
           {formatTimecode(timeMin)}
         </output>
 
-        {/* Vernier Timeline Track */}
+        {/* Timeline track */}
         <Scrubber events={dockEvents(scenario.events, issuedWarnings)} frameTimes={frameTimes} onScrub={scrubTo} timeMin={timeMin} />
 
-        {/* Speed Multiplier Cluster */}
-        <div aria-label="Playback speed" className="flex shrink-0 rounded border border-line bg-raised/40 p-0.5">
+        {/* Speed cluster */}
+        <div aria-label="Playback speed" className="flex shrink-0 rounded border border-line bg-raised/30 p-0.5">
           {([1, 2, 4] as const).map((option) => (
             <Button
               aria-pressed={speed === option}
-              className={`h-7 min-w-8 px-1.5 text-xs num font-medium ${speed === option ? "bg-raised text-fg border border-line-strong" : "text-fg-3 hover:text-fg"}`}
+              className={`h-6 min-w-7 px-1.5 text-[10px] num font-mono ${
+                speed === option
+                  ? "bg-raised text-fg border border-line-strong/50"
+                  : "text-fg-3 hover:text-fg"
+              }`}
               key={option}
               onClick={() => setSpeed(option)}
               variant="ghost"
@@ -273,19 +303,6 @@ export function BottomDock() {
               {option}×
             </Button>
           ))}
-        </div>
-
-        {/* Verification Compare Mode */}
-        <div className="hidden shrink-0 sm:block">
-          <Button
-            aria-pressed={compareOn}
-            onClick={() => setCompare({ on: !compareOn })}
-            size="sm"
-            variant={compareOn ? "secondary" : "outline"}
-            className={`h-8 text-xs font-medium ${compareOn ? "border-forecast text-forecast bg-forecast/10" : ""}`}
-          >
-            Prediction / Actual
-          </Button>
         </div>
       </div>
     </section>
