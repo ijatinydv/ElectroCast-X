@@ -225,7 +225,7 @@ Read docs/01-design-system.md (Map look: Corridors, Selection) and docs/04-data-
 Read docs/01-design-system.md and docs/04-data-contract.md (Geo and assets). Implement layers/assets.ts drawing glyphs (draw simple vector glyphs on canvas: school, hospital, airplane, pylon, pick, ticket) pre-rendered into sprites; a population density field layer from village populations (gaussian splat into a low-res offscreen grid); transmission polylines. Highlight inside-corridor assets by point-in-polygon against the outer 30-min corridor. Add hover tooltips (name, type, population if relevant, `synthetic` chip) with pointer hit-testing on assets. Implement the Layers group UI in the left rail bound to the store.
 ```
 
-### [ ] 2.7 Forecast decomposition
+### [x] 2.7 Forecast decomposition
 **Does:** "Forecast decomposition" toggle animating Motion, Growth or decay, and New initiation as three coloured layers.
 **Depends on:** 2.5.
 **Verify:**
@@ -283,7 +283,7 @@ Read docs/02-ui-spec.md (Right rail) and docs/01-design-system.md (Dial). Build 
 Read docs/02-ui-spec.md (Left rail: Sensors; Sensor failure behaviour), docs/04-data-contract.md (sensor table, widthScale, contribution sentence) and docs/07-content-and-copy.md. Build src/components/panels/SensorLab.tsx and SensorHealth.tsx, plus SensorBanner in the shell. Effective sensor state = user toggle OR scenario-scripted outage at the current time. Everything derives from that one effective mask: riskFor, widthScale, countdownFor, contributionFor, top-bar StatusDots, banner text, corridor tween, dial arc. Show data age chips in mono. Remove the dev toggle. Add tests that cover all 16 masks for scenario A and B.
 ```
 
-### [ ] 3.4 Physical evidence panel
+### [x] 3.4 Physical evidence panel
 **Does:** "Why did risk increase?" list with small trend charts per variable.
 **Depends on:** 3.2.
 **Verify:**
@@ -296,7 +296,7 @@ Read docs/02-ui-spec.md (Left rail: Sensors; Sensor failure behaviour), docs/04-
 Read docs/02-ui-spec.md (Right rail: How sure and why) and docs/07-content-and-copy.md (Evidence rows). Build src/components/panels/EvidencePanel.tsx using cell.evidence and evidence.ts derive helpers. Sparkline marker follows timeMin. Rows dependent on radar (ZDR column, KDP core, mixed-phase growth, echo top) grey out with an inline "Radar unavailable" note when radar is effectively off; satellite rows (cloud-top cooling) grey when INSAT is off; flash rate when lightning network is off; CAPE when NWP is off. Include the confidence chip and the corridor width in km beside the panel header.
 ```
 
-### [ ] 3.5 Exposure panel
+### [x] 3.5 Exposure panel
 **Does:** "Potentially affected region" summary for the selected corridor with estimated arrival.
 **Depends on:** 3.2, 2.6.
 **Verify:**
@@ -371,7 +371,7 @@ Read docs/07-content-and-copy.md (CAP 1.2 preview). Implement src/lib/i18n/cap.t
 
 # Phase 5 — Storm X-ray
 
-### [ ] 5.1 Procedural voxel volume and lazy R3F scene
+### [x] 5.1 Procedural voxel volume and lazy R3F scene
 **Does:** Generates a small reflectivity volume from cell fields and renders it in a lazily loaded R3F scene.
 **Depends on:** 3.2.
 **Verify:**
@@ -384,7 +384,7 @@ Read docs/07-content-and-copy.md (CAP 1.2 preview). Implement src/lib/i18n/cap.t
 Read docs/02-ui-spec.md (X-ray) and docs/04-data-contract.md (procedural volume) and docs/03-motion-and-performance.md (bundle budgets). Implement src/lib/derive/volume.ts (buildVolume: sum of seeded gaussians shaped by echoTopKm/reflectivity/updraft, 24×24×16, Float32Array; tests). Build src/components/xray/XRaySheet.tsx (lazy via next/dynamic ssr:false) and StormScene.tsx using @react-three/fiber and drei OrbitControls (limit polar angle and distance). Render volume as an InstancedMesh of small cubes coloured by reflectivity on a cyan opacity ramp (observed) — thresholded to keep under ~3000 instances. frameloop="demand" with invalidate on control changes and a slow idle auto-rotate that stops on interaction. Dispose geometries/materials on unmount.
 ```
 
-### [ ] 5.2 Temperature layers and altitude slider
+### [x] 5.2 Temperature layers and altitude slider
 **Does:** 0 °C, −10 °C, −20 °C planes, vertical altitude slider with labelled bands, slice readout.
 **Depends on:** 5.1.
 **Verify:**
@@ -397,7 +397,7 @@ Read docs/02-ui-spec.md (X-ray) and docs/04-data-contract.md (procedural volume)
 Read docs/02-ui-spec.md (X-ray). Add src/components/xray/AltitudeSlider.tsx (vertical, custom, labelled bands: "0 °C freezing level", "−10 °C strong mixed-phase region", "−20 °C ice-charge separation") and temperature planes in StormScene (height = freezingLevelKm + k·lapse for −10 °C and −20 °C; lapse 6.5 K/km). Slice plane follows the slider; voxels within ±0.4 km brighten. Slice readout via derive helpers (reflectivity from the volume; ZDR and KDP from cell fields with smooth altitude profiles). Keep DOM labels via drei Html sparingly (≤ 5).
 ```
 
-### [ ] 5.3 ZDR column, KDP core, updraft, graupel, flashes
+### [x] 5.3 ZDR column, KDP core, updraft, graupel, flashes
 **Does:** Parametric physical features and flashes inside the twin, each toggleable.
 **Depends on:** 5.2.
 **Verify:**
@@ -428,7 +428,7 @@ Read docs/04-data-contract.md and docs/02-ui-spec.md (X-ray). Subscribe the X-ra
 
 # Phase 6 — Product surface
 
-### [ ] 6.1 Landing page with live hero
+### [x] 6.1 Landing page with live hero
 **Does:** The front door: live map loop hero and three question sections.
 **Depends on:** 2.7, 3.2 (for the mini dial), 0.2.
 **Verify:**
@@ -454,7 +454,7 @@ Read docs/01-design-system.md (Landing page) and docs/07-content-and-copy.md. Bu
 Read docs/07-content-and-copy.md (Pipeline page copy) and docs/08-ps-traceability.md. Build src/app/how-it-works/page.tsx and src/components/pipeline/PipelineDiagram.tsx as SVG laid out left to right with Magic UI animated-beam adapted to our tokens. Content in src/data/content/pipeline.json (stage id, title, one-line explanation, linked Mission Control feature). Colour: sources cyan, model stages purple, outputs amber. Hover/focus shows the explanation and a "See it in Mission Control" link. Add a compact variant used in a sheet from the Mission Control top bar highlighting a stage passed as a prop.
 ```
 
-### [ ] 6.3 Validation page (illustrative)
+### [x] 6.3 Validation page (illustrative)
 **Does:** Reliability diagram and POD/FAR/CSI/Brier vs lead time, clearly placeholder.
 **Depends on:** 0.2.
 **Verify:**

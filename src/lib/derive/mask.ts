@@ -15,12 +15,14 @@ export function enabledSensors(): SensorMask {
   return { radar: false, insat: false, lightning: false, nwp: false };
 }
 
-// merges operator choices with unavailable scenario feeds for every forecast consumer
-export function effectiveSensorMask(sensorOff: Partial<SensorMask>, sensorHealth: Frame["sensorHealth"]): SensorMask {
-  return (Object.keys(sensorHealth) as SensorId[]).reduce<SensorMask>((mask, sensor) => ({
-    ...mask,
-    [sensor]: Boolean(sensorOff[sensor]) || sensorHealth[sensor].status === "offline",
-  }), enabledSensors());
+// treats unavailable prepared feeds as disabled alongside an operator's explicit sensor mask
+export function effectiveSensorMask(mask: Partial<SensorMask>, sensorHealth: Frame["sensorHealth"]): SensorMask {
+  return {
+    radar: mask.radar || sensorHealth.radar.status === "offline",
+    insat: mask.insat || sensorHealth.insat.status === "offline",
+    lightning: mask.lightning || sensorHealth.lightning.status === "offline",
+    nwp: mask.nwp || sensorHealth.nwp.status === "offline",
+  };
 }
 
 // converts disabled sensors and stale available observations into corridor uncertainty

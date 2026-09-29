@@ -33,7 +33,7 @@ export const radarLayer: Layer = {
       const center = state.projection.project(cell.centroid);
       const radius = Math.max(12, cellRadiusPx(cell, state.projection));
       const band = source[bandFor(radius)];
-      const baseOpacity = opacityFor(cell.reflectivityDbz);
+      const baseOpacity = opacityFor(cell.reflectivityDbz) * (state.frame.t > 0 ? 1 - state.decompositionOpacity * 0.6 : 1);
 
       for (let index = 0; index < 3; index += 1) {
         const seed = seedFor(cell.id, index);

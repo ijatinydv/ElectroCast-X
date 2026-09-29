@@ -5,6 +5,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { CellHeader } from "@/components/panels/CellHeader";
 import { CountdownPanel } from "@/components/panels/CountdownPanel";
+import { EvidencePanel } from "@/components/panels/EvidencePanel";
+import { ExposurePanel } from "@/components/panels/ExposurePanel";
 import { effectiveSensorMask } from "@/lib/derive";
 import { frameAt } from "@/lib/map/interpolate";
 import { useStore } from "@/store/useStore";
@@ -26,6 +28,7 @@ export function RightRail() {
   const timeMin = useStore((state) => state.timeMin);
   const selectedCellId = useStore((state) => state.selectedCellId);
   const sensorOff = useStore((state) => state.sensorOff);
+  const setPanel = useStore((state) => state.setPanel);
   const scenario = scenarios[scenarioId];
   const frame = frameAt(scenario, timeMin);
   const cell = selectedCellId ? frame.cells.find((candidate) => candidate.id === selectedCellId) : undefined;
@@ -40,15 +43,15 @@ export function RightRail() {
           <div className="text-sm text-fg-2">Corridor summary available when a storm cell is selected.</div>
         </Panel>
         <Panel title="How sure, and why" defaultOpen={true}>
-          <div className="text-sm text-fg-2">Physical evidence will appear here.</div>
+          {cell ? <EvidencePanel scenario={scenario} cell={cell} timeMin={timeMin} sensorOff={sensorOff} /> : <div className="text-sm text-fg-2">Select a storm cell on the map.</div>}
         </Panel>
         <Panel title="Exposure" defaultOpen={true}>
-          <div className="text-sm text-fg-2">Affected region will appear here.</div>
+          {cell ? <ExposurePanel cell={cell} /> : <div className="text-sm text-fg-2">Select a storm cell to assess affected places.</div>}
         </Panel>
         <Panel title="Actions" defaultOpen={true} collapsible={false}>
           <div className="flex flex-col gap-3">
             <Button variant="default" className="w-full">Create warning</Button>
-            <Button variant="outline" className="w-full">Open storm X-ray</Button>
+            <Button disabled={!cell} onClick={() => setPanel("xray", true)} variant="outline" className="w-full">Open storm X-ray</Button>
           </div>
         </Panel>
       </div>

@@ -29,6 +29,15 @@ interface PopulationField {
 // reads the immutable prepared synthetic exposure fixture once for all canvas frames
 const assets = getSyntheticAssets();
 
+// resolves a panel selection to its prepared map coordinate for refitting and pulsing
+export function assetLocation(assetId: string): [number, number] | null {
+  const point = assets.points.find((asset) => asset.id === assetId);
+  if (point) return point.lonLat;
+  const line = assets.polylines.find((asset) => asset.id === assetId);
+  if (!line) return null;
+  return line.path[Math.floor(line.path.length / 2)] ?? null;
+}
+
 // preserves the required twelve-pixel footprint for every point exposure glyph
 const glyphSize = 12;
 

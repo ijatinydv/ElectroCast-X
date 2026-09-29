@@ -6,13 +6,14 @@ import { graticuleLayer } from "./layers/graticule";
 import { heatmapLayer, prepareHeatmapLayer } from "./layers/heatmap";
 import { lightningLayer } from "./layers/lightning";
 import { corridorsLayer } from "./layers/corridors";
+import { decompositionLayer } from "./layers/decomposition";
 import { labelsLayer } from "./layers/labels";
 import { motionLayer } from "./layers/motion";
-import { assetsLayer, hitTestAsset, type AssetTooltip } from "./layers/assets";
+import { assetLocation, assetsLayer, hitTestAsset, type AssetTooltip } from "./layers/assets";
 import { radarLayer } from "./layers/radar";
 import { prepareSatelliteLayer, satelliteLayer } from "./layers/satellite";
 import { scaleBarLayer } from "./layers/scalebar";
-import { fitProjection, hitTestCells, projectTweenAt, startProjectionTween, type MapProjection, type ProjectionTween } from "./project";
+import { fitProjection, hitTestCells, panProjection, projectTweenAt, startProjectionTween, type MapProjection, type ProjectionTween } from "./project";
 import { frameAt } from "./interpolate";
 import { readMapTheme, type MapTheme } from "./theme";
 import { getSpriteSet } from "./sprites";
@@ -23,6 +24,9 @@ export interface MapFrameState {
   timeMin: number;
   frame: Frame;
   selectedCellId: string | null;
+  highlight: AppState["highlight"];
+  decomposition: boolean;
+  decompositionOpacity: number;
   mapMode: AppState["mapMode"];
   compareOn: boolean;
   layers: AppState["layers"];
@@ -52,6 +56,7 @@ export interface MapEngineOptions {
 // exposes the lifecycle cleanup required when the React wrapper unmounts the canvas
 export interface MapEngine {
   destroy: () => void;
+  setActive: (active: boolean) => void;
   coordinateAt: (point: readonly [number, number]) => readonly [number, number] | null;
   assetAt: (point: readonly [number, number]) => AssetTooltip | null;
 }
@@ -59,8 +64,8 @@ export interface MapEngine {
 // fixes canvas composition order as later geographic layers are introduced in subsequent chunks
 const staticLayers: readonly Layer[] = [graticuleLayer, baseLayer, scaleBarLayer];
 
-// fixes dynamic composition order so atmospheric fields remain beneath radar and flash density
-const dynamicLayers: readonly Layer[] = [satelliteLayer, radarLayer, heatmapLayer, lightningLayer, corridorsLayer, motionLayer, assetsLayer, labelsLayer];
+// fixes dynamic composition order so decomposition explains forecast cells before paths and exposure assets
+const dynamicLayers: readonly Layer[] = [satelliteLayer, radarLayer, heatmapLayer, lightningLayer, decompositionLayer, corridorsLayer, motionLayer, assetsLayer, labelsLayer];
 
 // creates a device-pixel-ratio-aware canvas renderer driven entirely from mutable store state
 export function createMapEngine(options: MapEngineOptions): MapEngine {
@@ -80,8 +85,10 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
   let projection = fitProjection(options.scenarios[options.initialState.scenarioId].region, 1, 1);
   let frameState = toFrameState(options.initialState, options.scenarios, backgroundColor, theme, projection, 1, 1);
   let projectionTween: ProjectionTween | null = null;
+  let highlightPulse: { point: [number, number]; startedAt: number } | null = null;
   let animationFrame: number | null = null;
   let visible = document.visibilityState === "visible";
+  let active = true;
   let width = 1;
   let height = 1;
   let dpr = 1;
@@ -90,6 +97,10 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
   let corridorScaleFrom = corridorScale;
   let corridorScaleTo = corridorScale;
   let corridorScaleStartedAt: number | null = null;
+  let decompositionOpacity = frameState.decompositionOpacity;
+  let decompositionOpacityFrom = decompositionOpacity;
+  let decompositionOpacityTo = decompositionOpacity;
+  let decompositionStartedAt: number | null = null;
 
   // renders a static layer once per resize rather than repeating its work in the animation loop
   const redrawStatic = () => {
@@ -101,7 +112,7 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
 
   // schedules work only when a resize, store update, or active projection tween requires a frame
   const requestFrame = () => {
-    if (visible && animationFrame === null) animationFrame = window.requestAnimationFrame(render);
+    if (active && visible && animationFrame === null) animationFrame = window.requestAnimationFrame(render);
   };
 
   // composites cached static content and keeps the loop alive only during map-owned animation
@@ -120,17 +131,25 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
       corridorScale = corridorScaleFrom + (corridorScaleTo - corridorScaleFrom) * eased;
       if (progress === 1) corridorScaleStartedAt = null;
     }
+    if (decompositionStartedAt !== null) {
+      const progress = Math.min(1, Math.max(0, (now - decompositionStartedAt) / 250));
+      const eased = 1 - Math.pow(1 - progress, 3);
+      decompositionOpacity = decompositionOpacityFrom + (decompositionOpacityTo - decompositionOpacityFrom) * eased;
+      if (progress === 1) decompositionStartedAt = null;
+    }
 
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
     context.clearRect(0, 0, width, height);
     context.drawImage(staticCanvas, 0, 0, width, height);
     const drawStartedAt = performance.now();
-    dynamicLayers.forEach((layer) => layer.draw(context, { ...frameState, projection, width, height, corridorScale }, now));
+    dynamicLayers.forEach((layer) => layer.draw(context, { ...frameState, projection, width, height, corridorScale, decompositionOpacity }, now));
+    if (highlightPulse && now - highlightPulse.startedAt < 800) drawHighlightPulse(context, projection.project(highlightPulse.point), now - highlightPulse.startedAt);
+    else highlightPulse = null;
     const drawDuration = performance.now() - drawStartedAt;
     if (measuredStormFrames >= 2 && drawDuration > 4) console.warn(`Map storm-layer draw exceeded 4 ms: ${drawDuration.toFixed(2)} ms`);
     measuredStormFrames += 1;
 
-    if (projectionTween || corridorScaleStartedAt !== null || hasStormAnimation(frameState)) requestFrame();
+    if (projectionTween || highlightPulse || corridorScaleStartedAt !== null || decompositionStartedAt !== null || hasStormAnimation(frameState)) requestFrame();
   };
 
   // keeps the backing store sharp while CSS owns the responsive centre-panel dimensions
@@ -182,6 +201,18 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
       corridorScaleTo = nextState.corridorScale;
       corridorScaleStartedAt = performance.now();
     }
+    if (nextState.decomposition !== frameState.decomposition) {
+      decompositionOpacityFrom = decompositionOpacity;
+      decompositionOpacityTo = nextState.decomposition ? 1 : 0;
+      decompositionStartedAt = performance.now();
+    }
+    if (nextState.highlight && nextState.highlight.sequence !== frameState.highlight?.sequence) {
+      const location = assetLocation(nextState.highlight.assetId);
+      if (location) {
+        highlightPulse = { point: location, startedAt: performance.now() };
+        projectionTween = startProjectionTween(projection, panProjection(projection, location, width, height), performance.now());
+      }
+    }
     frameState = nextState;
 
     if (scenarioChanged) {
@@ -206,6 +237,14 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
       options.canvas.removeEventListener("click", onClick);
       if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
     },
+    setActive: (nextActive) => {
+      active = nextActive;
+      if (!active && animationFrame !== null) {
+        window.cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+      }
+      if (active) requestFrame();
+    },
     coordinateAt: (point) => projection.unproject(point),
     assetAt: (point) => hitTestAsset({ ...frameState, projection, width, height, corridorScale }, point),
   };
@@ -220,6 +259,9 @@ function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenari
     timeMin: state.timeMin,
     frame,
     selectedCellId: state.selectedCellId,
+    highlight: state.highlight,
+    decomposition: state.decomposition,
+    decompositionOpacity: state.decomposition ? 1 : 0,
     mapMode: state.mapMode,
     compareOn: state.compare.on,
     layers: state.layers,
@@ -232,7 +274,20 @@ function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenari
   };
 }
 
+// draws a brief attention ring after a named exposure item is selected
+function drawHighlightPulse(context: CanvasRenderingContext2D, point: readonly [number, number], elapsedMs: number): void {
+  const progress = elapsedMs / 800;
+  context.save();
+  context.strokeStyle = "rgba(255, 183, 77, 0.9)";
+  context.lineWidth = 2;
+  context.globalAlpha = 1 - progress;
+  context.beginPath();
+  context.arc(point[0], point[1], 8 + progress * 28, 0, Math.PI * 2);
+  context.stroke();
+  context.restore();
+}
+
 // keeps the canvas RAF active only while a visible storm layer has ambient motion to render
 function hasStormAnimation(state: MapFrameState): boolean {
-  return (state.mapMode === "radar" && state.layers.radar) || (state.mapMode === "satellite" && state.layers.satellite);
+  return state.decomposition || (state.mapMode === "radar" && state.layers.radar) || (state.mapMode === "satellite" && state.layers.satellite);
 }

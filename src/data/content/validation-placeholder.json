@@ -1,0 +1,14 @@
+{
+  "label": "illustrative placeholder",
+  "reliability": {
+    "forecastProbability": [0.1, 0.3, 0.5, 0.7, 0.9],
+    "observedFrequency": [0.09, 0.31, 0.49, 0.68, 0.88]
+  },
+  "skill": {
+    "leadMinutes": [15, 30, 60],
+    "pod": [0.82, 0.75, 0.66],
+    "far": [0.19, 0.24, 0.31],
+    "csi": [0.7, 0.62, 0.53],
+    "brier": [0.14, 0.18, 0.23]
+  }
+}

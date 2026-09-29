@@ -115,9 +115,31 @@ describe("derive functions", () => {
     expect(widthScale({ radar: false, insat: false, lightning: false, nwp: false }, { ...sensorHealth, radar: { ...sensorHealth.radar, dataAgeMin: 40 } })).toBe(1.25);
   });
 
+  // ensures the prepared sensor-loss narrative widens forecast uncertainty without an operator action
+  it("includes offline prepared sensors in the effective uncertainty mask", () => {
+    const forecastFrame = sensorLoss.frames.find((frame) => frame.t === 30);
+    if (!forecastFrame) throw new Error("Scenario C requires a +30 minute frame");
+    const mask = effectiveSensorMask({ radar: false, insat: false, lightning: false, nwp: false }, forecastFrame.sensorHealth);
+    expect(mask.radar).toBe(true);
+    expect(widthScale(mask, forecastFrame.sensorHealth)).toBeGreaterThan(1.35);
+  });
+
   it("returns the documented severe-storm synthetic exposure and arrival", () => {
     const cell = t0Cell(severeStorm);
     expect(exposureFor(corridorFor(cell, 30, 1), getSyntheticAssets(), cell)).toMatchObject({ villages: 3, schools: 2, transmission: 1, arrivalMin: 24 });
+  });
+
+  it("keeps exposure counts nested as the selected horizon expands", () => {
+    const cell = t0Cell(severeStorm);
+    const counts = [
+      exposureFor(corridorFor(cell, 15, 1), getSyntheticAssets(), cell),
+      exposureFor(corridorFor(cell, 30, 1), getSyntheticAssets(), cell),
+      exposureFor(corridorFor(cell, 60, 1), getSyntheticAssets(), cell),
+    ] as const;
+    for (const type of ["villages", "schools", "hospitals", "transmission"] as const) {
+      expect(counts[0][type]).toBeLessThanOrEqual(counts[1][type]);
+      expect(counts[1][type]).toBeLessThanOrEqual(counts[2][type]);
+    }
   });
 });
 
@@ -132,5 +154,13 @@ describe("store", () => {
     store.issueWarning({ tMin: 48, cellId: "C-A07", horizon: 30 });
     store.selectScenario("B");
     expect(useStore.getState()).toMatchObject({ scenarioId: "B", timeMin: 0, selectedCellId: null, sensorOff: { radar: false, insat: false, lightning: false, nwp: false }, issuedWarnings: [] });
+  });
+
+  it("increments highlights so selecting an asset twice pulses it twice", () => {
+    const store = useStore.getState();
+    store.highlightAsset("village-021");
+    expect(useStore.getState().highlight).toEqual({ assetId: "village-021", sequence: 1 });
+    useStore.getState().highlightAsset("village-021");
+    expect(useStore.getState().highlight).toEqual({ assetId: "village-021", sequence: 2 });
   });
 });

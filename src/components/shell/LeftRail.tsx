@@ -25,6 +25,8 @@ export function LeftRail() {
   const selectedCellId = useStore((state) => state.selectedCellId);
   const sensorOff = useStore((state) => state.sensorOff);
   const toggleSensor = useStore((state) => state.toggleSensor);
+  const decomposition = useStore((state) => state.decomposition);
+  const setDecomposition = useStore((state) => state.setDecomposition);
   const scenario = scenarios[scenarioId];
   const frame = frameAt(scenario, timeMin);
   const cell = frame.cells.find((candidate) => candidate.id === selectedCellId) ?? frame.cells[0];
@@ -62,7 +64,13 @@ export function LeftRail() {
           {cell ? <SensorLab scenario={scenario} frame={frame} cell={cell} sensorOff={sensorOff} onToggle={toggleSensor} /> : <div className="text-sm text-fg-2">No storm cell is available at this time.</div>}
         </Panel>
         <Panel title="View" defaultOpen={true}>
-          <div className="text-sm text-fg-2">Placeholder view options</div>
+          <div className="flex flex-col gap-3 text-sm text-fg-2">
+            <label className="flex items-center justify-between gap-3">
+              <span>Forecast decomposition</span>
+              <Switch size="sm" checked={decomposition} onCheckedChange={setDecomposition} aria-label="Toggle forecast decomposition" />
+            </label>
+            <DecompositionLegend />
+          </div>
         </Panel>
       </div>
     </ScrollArea>
@@ -72,4 +80,15 @@ export function LeftRail() {
 // keeps each map-layer switch accessible while routing changes through the shared store action
 function LayerToggle({ label, layerId, checked, onCheckedChange }: { label: string; layerId: LayerId; checked: boolean; onCheckedChange: (layerId: LayerId) => void }) {
   return <label className="flex items-center justify-between gap-3"><span>{label}</span><Switch size="sm" checked={checked} onCheckedChange={() => onCheckedChange(layerId)} aria-label={`Toggle ${label}`} /></label>;
+}
+
+// makes the decomposition colour meanings available before an operator turns the map layer on
+function DecompositionLegend() {
+  return (
+    <ul className="grid gap-1.5 text-xs" aria-label="Forecast decomposition legend">
+      <li className="flex items-center gap-2"><span className="size-2 rounded-full bg-forecast" aria-hidden="true" />Motion</li>
+      <li className="flex items-center gap-2"><span className="size-2 rounded-full bg-risk" aria-hidden="true" />Growth or decay</li>
+      <li className="flex items-center gap-2"><span className="size-2 rounded-full bg-observed" aria-hidden="true" />New initiation</li>
+    </ul>
+  );
 }

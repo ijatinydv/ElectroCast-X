@@ -61,6 +61,21 @@ export function fitProjection(region: Scenario["region"], width: number, height:
   return toMapProjection(projection);
 }
 
+// recentres an existing projection on an operator-selected map asset without changing its zoom
+export function panProjection(projection: MapProjection, lonLat: ScreenPoint, width: number, height: number): MapProjection {
+  const focus = projection.project(lonLat);
+  const offset: ScreenPoint = [width / 2 - focus[0], height / 2 - focus[1]];
+  return {
+    scale: projection.scale,
+    translate: [projection.translate[0] + offset[0], projection.translate[1] + offset[1]],
+    project: (point) => {
+      const projected = projection.project(point);
+      return [projected[0] + offset[0], projected[1] + offset[1]];
+    },
+    unproject: (point) => projection.unproject([point[0] - offset[0], point[1] - offset[1]]),
+  };
+}
+
 // preserves the requested 400ms data-change motion while avoiding a second render system
 export function startProjectionTween(from: MapProjection, to: MapProjection, startedAt: number, duration = 400): ProjectionTween {
   return { from, to, startedAt, duration };
