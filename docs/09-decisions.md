@@ -32,3 +32,4 @@ Add a row whenever you make a choice that another person might question.
 
 - Exposure assets are split into seven independent layer switches. Village records feed a cached low-resolution density field rather than map markers; all point and transmission asset hover tooltips retain the required `synthetic` label.
 | D25 | Prepared offline sensors are included in the effective corridor uncertainty mask | Scenario C's radar outage must visibly widen its forecast motion uncertainty without requiring a separate operator action | Rendering its uncertainty as if the unavailable radar feed were still active |
+| D26 | The X-ray has two dynamic boundaries: the sheet and its Three scene | Keeps `three`, R3F, and Drei out of the initial Mission Control payload while loading the operational shell promptly on demand | Importing the rendering stack from the Mission Control route |

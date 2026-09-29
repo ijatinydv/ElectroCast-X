@@ -371,7 +371,7 @@ Read docs/07-content-and-copy.md (CAP 1.2 preview). Implement src/lib/i18n/cap.t
 
 # Phase 5 — Storm X-ray
 
-### [ ] 5.1 Procedural voxel volume and lazy R3F scene
+### [x] 5.1 Procedural voxel volume and lazy R3F scene
 **Does:** Generates a small reflectivity volume from cell fields and renders it in a lazily loaded R3F scene.
 **Depends on:** 3.2.
 **Verify:**

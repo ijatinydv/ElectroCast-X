@@ -25,6 +25,7 @@ export function RightRail() {
   const timeMin = useStore((state) => state.timeMin);
   const selectedCellId = useStore((state) => state.selectedCellId);
   const sensorOff = useStore((state) => state.sensorOff);
+  const setPanel = useStore((state) => state.setPanel);
   const scenario = scenarios[scenarioId];
   const cell = selectedCellId ? frameAt(scenario, timeMin).cells.find((candidate) => candidate.id === selectedCellId) : undefined;
 
@@ -45,7 +46,7 @@ export function RightRail() {
         <Panel title="Actions" defaultOpen={true} collapsible={false}>
           <div className="flex flex-col gap-3">
             <Button variant="default" className="w-full">Create warning</Button>
-            <Button variant="outline" className="w-full">Open storm X-ray</Button>
+            <Button disabled={!cell} onClick={() => setPanel("xray", true)} variant="outline" className="w-full">Open storm X-ray</Button>
           </div>
         </Panel>
       </div>
