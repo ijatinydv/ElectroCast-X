@@ -84,15 +84,29 @@ function Scrubber({ events, frameTimes, timeMin, onScrub }: ScrubberProps) {
     event.currentTarget.releasePointerCapture(event.pointerId);
   }, []);
 
+  const majorTicks = [-60, -30, 0, 30, 60] as const;
+
   return (
-    <div className="relative h-10 flex-1 min-w-0 select-none" ref={trackRef}>
+    <div className="relative h-14 flex-1 min-w-0 select-none flex flex-col justify-center" ref={trackRef}>
+      {/* Top track labels: Observed vs Forecast */}
+      <div className="flex items-center justify-between text-[10px] font-mono mb-1.5 px-0.5 text-fg-3">
+        <span className="flex items-center gap-1.5 text-observed/90">
+          <span className="size-1.5 rounded-full bg-observed" />
+          OBSERVED RADAR &amp; SATELLITE
+        </span>
+        <span className="flex items-center gap-1.5 text-forecast/90">
+          NOWCAST EXTRAPOLATION
+          <span className="size-1.5 rounded-full bg-forecast" />
+        </span>
+      </div>
+
       <div
         aria-label="Scenario time scrubber"
         aria-valuemax={60}
         aria-valuemin={-60}
         aria-valuenow={Math.round(timeMin)}
         aria-valuetext={formatTimecode(timeMin)}
-        className="absolute inset-x-0 top-1/2 h-8 -translate-y-1/2 touch-none cursor-ew-resize"
+        className="relative h-8 touch-none cursor-ew-resize"
         onPointerDown={(event) => {
           draggingRef.current = true;
           event.currentTarget.setPointerCapture(event.pointerId);
@@ -112,38 +126,65 @@ function Scrubber({ events, frameTimes, timeMin, onScrub }: ScrubberProps) {
         role="slider"
         tabIndex={0}
       >
-        <div className="absolute inset-x-0 top-1/2 flex h-1 -translate-y-1/2 overflow-hidden rounded-full bg-line">
-          <div className="w-1/2 bg-observed" />
-          <div className="w-1/2 bg-forecast" />
+        {/* Track Bar with Dual Spectrum */}
+        <div className="absolute inset-x-0 top-1/2 flex h-2 -translate-y-1/2 overflow-hidden rounded border border-line bg-line">
+          <div className="w-1/2 bg-observed/70 hover:bg-observed transition-colors" />
+          <div className="w-1/2 bg-forecast/70 hover:bg-forecast transition-colors" />
         </div>
-        <div aria-hidden="true" className="absolute left-1/2 top-1/2 h-5 w-px -translate-x-1/2 -translate-y-1/2 bg-fg" />
-        <span aria-hidden="true" className="absolute left-1/2 top-0 -translate-x-1/2 text-[9px] font-medium text-fg-2">NOW</span>
+
+        {/* Vernier Major Ticks and Time Labels */}
+        {majorTicks.map((t) => (
+          <div
+            key={t}
+            aria-hidden="true"
+            className="absolute top-1/2 -translate-x-1/2 pointer-events-none"
+            style={{ left: `${trackPercent(t)}%` }}
+          >
+            <div className={`w-px -translate-y-1/2 ${t === 0 ? "h-6 bg-fg" : "h-3.5 bg-line-strong"}`} />
+            <span className={`absolute top-2.5 -translate-x-1/2 text-[9px] font-mono whitespace-nowrap ${t === 0 ? "text-fg font-semibold" : "text-fg-3"}`}>
+              {t === 0 ? "NOW" : `${t > 0 ? "+" : ""}${t}m`}
+            </span>
+          </div>
+        ))}
+
+        {/* Prepared frame snap tick marks */}
         {frameTimes.map((frameTime) => (
           <span
             aria-hidden="true"
-            className="absolute top-1/2 h-2 w-px -translate-x-1/2 -translate-y-1/2 bg-rail"
+            className="absolute top-1/2 h-2 w-px -translate-x-1/2 -translate-y-1/2 bg-rail/80 pointer-events-none"
             key={frameTime}
             style={{ left: `${trackPercent(frameTime)}%` }}
           />
         ))}
+
+        {/* Event Milestone Beads */}
         <TooltipProvider delayDuration={150}>
           {events.map((event, index) => (
             <Tooltip key={`${event.type}-${event.tMin}-${index}`}>
               <TooltipTrigger asChild>
                 <button
                   aria-label={`${event.label}, ${formatTimecode(event.tMin)}`}
-                  className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-rail bg-risk focus-visible:outline-none"
+                  className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-bg bg-risk shadow-sm hover:scale-125 focus-visible:outline-none transition-transform z-10"
                   onPointerDown={(pointerEvent) => pointerEvent.stopPropagation()}
                   style={{ left: `${trackPercent(event.tMin)}%` }}
                   type="button"
                 />
               </TooltipTrigger>
-              <TooltipContent>{event.label} · {formatTimecode(event.tMin)}</TooltipContent>
+              <TooltipContent className="bg-rail border border-line text-xs font-mono">
+                {event.label} · {formatTimecode(event.tMin)}
+              </TooltipContent>
             </Tooltip>
           ))}
         </TooltipProvider>
-        <span aria-hidden="true" className="absolute left-0 top-1/2 w-full" style={{ transform: `translateX(${trackPercent(timeMin)}%)` }}>
-          <span className="absolute left-0 top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-fg bg-bg shadow-none" />
+
+        {/* Tactical Needle Scrubber Handle */}
+        <span
+          aria-hidden="true"
+          className="absolute left-0 top-0 h-full pointer-events-none"
+          style={{ transform: `translateX(${trackPercent(timeMin)}%)` }}
+        >
+          <div className="absolute left-0 top-0 h-full w-px -translate-x-1/2 bg-fg shadow-[0_0_8px_rgba(255,255,255,0.7)]" />
+          <span className="absolute left-0 top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-fg bg-bg shadow-md" />
         </span>
       </div>
     </div>
@@ -183,30 +224,66 @@ export function BottomDock() {
 
   return (
     <section aria-label="Storm Time Machine" className="h-28 border-t border-line bg-rail px-4 py-2 relative z-20">
-      <div className="flex h-full items-center gap-3">
-        <div className="flex shrink-0 items-center gap-1">
-          <Button aria-label="Replay from minus 60 minutes" className="h-8 px-2 text-xs" onClick={replay} variant="ghost">
-            <RotateCcw size={14} /> Replay
+      <div className="flex h-full items-center gap-4">
+        {/* Left Transport Cluster */}
+        <div className="flex shrink-0 items-center gap-1.5">
+          <Button aria-label="Replay from minus 60 minutes" className="h-8 px-2.5 text-xs text-fg-2 hover:text-fg" onClick={replay} variant="ghost">
+            <RotateCcw size={14} className="mr-1" /> Replay
           </Button>
-          <div className="flex items-center rounded-md border border-line p-0.5">
-            <Button aria-label="Previous frame" className="size-7" onClick={() => step(-1)} size="icon" variant="ghost"><SkipBack size={14} /></Button>
-            <Button aria-label={playing ? "Pause playback" : "Play playback"} className="size-7" onClick={togglePlayback} size="icon" variant="ghost">
+          <div className="flex items-center rounded border border-line bg-raised/40 p-0.5">
+            <Button aria-label="Previous frame" className="size-7 text-fg-2 hover:text-fg" onClick={() => step(-1)} size="icon" variant="ghost">
+              <SkipBack size={14} />
+            </Button>
+            <Button
+              aria-label={playing ? "Pause playback" : "Play playback"}
+              className={`size-7 ${playing ? "text-risk" : "text-fg"}`}
+              onClick={togglePlayback}
+              size="icon"
+              variant="ghost"
+            >
               {playing ? <Pause size={14} /> : <Play size={14} />}
             </Button>
-            <Button aria-label="Next frame" className="size-7" onClick={() => step(1)} size="icon" variant="ghost"><SkipForward size={14} /></Button>
+            <Button aria-label="Next frame" className="size-7 text-fg-2 hover:text-fg" onClick={() => step(1)} size="icon" variant="ghost">
+              <SkipForward size={14} />
+            </Button>
           </div>
         </div>
-        <output aria-live="off" className="num w-14 shrink-0 text-xs text-fg-2">{formatTimecode(timeMin)}</output>
+
+        {/* Tactical Timecode readout */}
+        <output
+          aria-live="off"
+          className="num w-16 shrink-0 text-sm font-semibold text-fg bg-raised/70 px-2 py-1.5 rounded border border-line text-center shadow-inner tracking-tight"
+        >
+          {formatTimecode(timeMin)}
+        </output>
+
+        {/* Vernier Timeline Track */}
         <Scrubber events={dockEvents(scenario.events, issuedWarnings)} frameTimes={frameTimes} onScrub={scrubTo} timeMin={timeMin} />
-        <div aria-label="Playback speed" className="flex shrink-0 rounded-md border border-line p-0.5">
+
+        {/* Speed Multiplier Cluster */}
+        <div aria-label="Playback speed" className="flex shrink-0 rounded border border-line bg-raised/40 p-0.5">
           {([1, 2, 4] as const).map((option) => (
-            <Button aria-pressed={speed === option} className="h-7 min-w-8 px-1 text-xs num" key={option} onClick={() => setSpeed(option)} variant={speed === option ? "secondary" : "ghost"}>
+            <Button
+              aria-pressed={speed === option}
+              className={`h-7 min-w-8 px-1.5 text-xs num font-medium ${speed === option ? "bg-raised text-fg border border-line-strong" : "text-fg-3 hover:text-fg"}`}
+              key={option}
+              onClick={() => setSpeed(option)}
+              variant="ghost"
+            >
               {option}×
             </Button>
           ))}
         </div>
+
+        {/* Verification Compare Mode */}
         <div className="hidden shrink-0 sm:block">
-          <Button aria-pressed={compareOn} onClick={() => setCompare({ on: !compareOn })} size="sm" variant={compareOn ? "secondary" : "outline"} className="h-8 text-xs">
+          <Button
+            aria-pressed={compareOn}
+            onClick={() => setCompare({ on: !compareOn })}
+            size="sm"
+            variant={compareOn ? "secondary" : "outline"}
+            className={`h-8 text-xs font-medium ${compareOn ? "border-forecast text-forecast bg-forecast/10" : ""}`}
+          >
             Prediction / Actual
           </Button>
         </div>

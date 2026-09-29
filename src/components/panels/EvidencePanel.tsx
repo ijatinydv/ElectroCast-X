@@ -1,6 +1,7 @@
 import { ArrowDown, ArrowRight, ArrowUp } from "lucide-react";
 import { Chip } from "@/components/ui/Chip";
 import { Sparkline } from "@/components/ui/Sparkline";
+import { cn } from "@/lib/utils";
 import { corridorWidthKm, evidenceDeltaAt, evidenceFor, evidenceMarkerIndex, effectiveSensorMask, sensorForEvidence, widthScale } from "@/lib/derive";
 import { frameAt } from "@/lib/map/interpolate";
 import type { SensorMask } from "@/lib/derive";
@@ -33,14 +34,29 @@ function EvidenceRow({ evidence, timeMin, unavailable }: { evidence: Evidence; t
   const trendColor = unavailable ? "var(--color-fg-3)" : "var(--color-observed)";
 
   return (
-    <li className={unavailable ? "text-fg-3" : "text-fg"}>
-      <div className="flex items-center gap-2">
-        <DirectionIcon direction={evidence.direction} />
-        <span className="min-w-0 flex-1 text-sm">{evidence.label}</span>
-        {unavailable ? <span className="text-xs text-fg-3">{unavailableSensorLabel(evidence.variable)}</span> : <span className="num text-xs text-fg-2">{delta}</span>}
+    <li className={cn(
+      "rounded border p-2.5 transition-colors",
+      unavailable 
+        ? "border-line/50 bg-raised/20 text-fg-3" 
+        : "border-line bg-raised/30 text-fg hover:border-line-strong"
+    )}>
+      <div className="flex items-center justify-between gap-2 mb-1.5">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <DirectionIcon direction={evidence.direction} />
+          <span className="text-xs font-medium truncate">{evidence.label}</span>
+        </div>
+        {unavailable ? (
+          <span className="text-[10px] font-mono text-fg-3 uppercase tracking-wider bg-raised px-1.5 py-0.5 rounded border border-line">
+            {unavailableSensorLabel(evidence.variable)}
+          </span>
+        ) : (
+          <span className="num text-xs text-fg-2 font-medium bg-raised/80 px-1.5 py-0.5 rounded border border-line/60">
+            {delta}
+          </span>
+        )}
       </div>
-      <div className="ml-5 mt-1 flex justify-end">
-        <Sparkline aria-label={`${evidence.label} trend`} values={evidence.sparkline} markerIndex={markerIndex} color={trendColor} width={116} height={26} />
+      <div className="flex justify-end pt-1">
+        <Sparkline aria-label={`${evidence.label} trend`} values={evidence.sparkline} markerIndex={markerIndex} color={trendColor} width={128} height={26} />
       </div>
     </li>
   );

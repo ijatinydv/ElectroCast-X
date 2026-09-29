@@ -9,6 +9,7 @@ import { countdownFor } from "@/lib/derive";
 import { getOdishaDistricts } from "@/lib/geo/load";
 import { frameAt } from "@/lib/map/interpolate";
 import { useStore } from "@/store/useStore";
+import { cn } from "@/lib/utils";
 import type { SensorMask } from "@/lib/derive";
 import type { Cell, Scenario } from "@/types/scenario";
 
@@ -82,8 +83,9 @@ export function CountdownPanel({ scenario, cell, timeMin, sensorOff }: Countdown
   if (!countdown || !countdown.windowMin || !cell.firstFlash) return null;
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex justify-center">
+    <div className="flex flex-col gap-3.5">
+      {/* Crown Jewel Telemetry Stage */}
+      <div className="flex flex-col items-center justify-center p-3 rounded border border-line bg-raised/20 relative">
         <Dial
           probability={probability}
           horizon={horizon}
@@ -91,57 +93,67 @@ export function CountdownPanel({ scenario, cell, timeMin, sensorOff }: Countdown
           windowStart={countdown.windowMin[0]}
           windowEnd={countdown.windowMin[1]}
         />
-      </div>
-      <div className="grid grid-cols-3 rounded-md border border-line p-1" aria-label="Forecast horizon">
-        {([15, 30, 60] as const).map((value) => (
-          <button
-            key={value}
-            type="button"
-            aria-pressed={horizon === value}
-            onClick={() => setHorizon(value)}
-            className={horizon === value ? "rounded-sm bg-raised py-1.5 text-xs font-medium text-fg" : "rounded-sm py-1.5 text-xs text-fg-2 hover:text-fg"}
-          >
-            <span className="num">{value}</span> min
-          </button>
-        ))}
-      </div>
-      <div className="grid grid-cols-3 gap-2 border-y border-line py-3 text-center">
-        {([15, 30, 60] as const).map((value) => (
-          <div key={value}>
-            <div className="text-xs text-fg-2"><span className="num">{value}</span> min</div>
-            <div className="mt-1 text-lg font-medium text-fg"><NumberTicker value={countdown[`p${value}`]} />%</div>
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
-        <div>
-          <div className="text-xs text-fg-2">Estimated window</div>
-          <div className="num text-fg">{countdown.windowMin[0]}–{countdown.windowMin[1]} min</div>
-        </div>
-        <div>
-          <div className="text-xs text-fg-2">Confidence</div>
-          <Chip variant="forecast">{countdown.confidence}</Chip>
-        </div>
-        <div>
-          <div className="text-xs text-fg-2">Electrification stage</div>
-          <div className="text-fg">{cell.stage}</div>
-        </div>
-        <div>
-          <div className="text-xs text-fg-2">First appeared</div>
-          <div className="num text-fg">{cell.firstFlash.minutesSinceAppeared} min ago</div>
-        </div>
-        <div>
-          <div className="text-xs text-fg-2">Cloud-top cooling</div>
-          <div className="num text-fg">{cell.cloudTopCoolingKmin.toFixed(1)} K/min</div>
-        </div>
-        <div>
-          <div className="text-xs text-fg-2">Mixed-phase radar growth</div>
-          <div className="num text-fg">{mixedPhaseGrowth?.delta ?? "Unavailable"}</div>
+        <div className="mt-2 text-[11px] font-mono text-fg-3 flex items-center gap-1.5">
+          <span>WINDOW:</span>
+          <span className="num text-fg-2 font-medium">{countdown.windowMin[0]}–{countdown.windowMin[1]} MIN</span>
+          <span className="text-line-strong">|</span>
+          <span className="text-risk font-medium">INITIATING</span>
         </div>
       </div>
-      <div>
-        <div className="text-xs text-fg-2">Expected first-flash region</div>
-        <div className="text-sm text-fg">{firstFlashRegionName(cell.firstFlash.region)}</div>
+
+      {/* Unified Multi-Horizon Tactical Selector */}
+      <div className="grid grid-cols-3 rounded border border-line bg-raised/40 p-1" role="group" aria-label="Forecast horizon selection">
+        {([15, 30, 60] as const).map((value) => {
+          const isSelected = horizon === value;
+          const prob = countdown[`p${value}`];
+          return (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={isSelected}
+              onClick={() => setHorizon(value)}
+              className={cn(
+                "flex flex-col items-center py-2 px-1 rounded transition-colors text-center",
+                isSelected
+                  ? "bg-rail border border-risk/40 text-fg shadow-sm"
+                  : "hover:bg-raised/70 text-fg-2"
+              )}
+            >
+              <span className="text-[10px] font-mono text-fg-3 uppercase tracking-wider">{value} MIN</span>
+              <span className={cn("text-base font-medium num mt-0.5", isSelected ? "text-risk" : "text-fg")}>
+                <NumberTicker value={prob} />%
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Atmospheric Signatures Grid */}
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm border-t border-line/60 pt-3">
+        <div>
+          <div className="text-[11px] text-fg-3 uppercase font-mono tracking-wider">Confidence</div>
+          <div className="mt-0.5"><Chip variant="forecast">{countdown.confidence}</Chip></div>
+        </div>
+        <div>
+          <div className="text-[11px] text-fg-3 uppercase font-mono tracking-wider">Electrification</div>
+          <div className="text-sm font-medium text-fg capitalize mt-0.5">{cell.stage}</div>
+        </div>
+        <div>
+          <div className="text-[11px] text-fg-3 uppercase font-mono tracking-wider">First appeared</div>
+          <div className="num text-sm text-fg mt-0.5">{cell.firstFlash.minutesSinceAppeared} min ago</div>
+        </div>
+        <div>
+          <div className="text-[11px] text-fg-3 uppercase font-mono tracking-wider">Cooling rate</div>
+          <div className="num text-sm text-fg mt-0.5">{cell.cloudTopCoolingKmin.toFixed(1)} K/min</div>
+        </div>
+        <div className="col-span-2 border-t border-line/40 pt-2">
+          <div className="text-[11px] text-fg-3 uppercase font-mono tracking-wider">Mixed-phase growth</div>
+          <div className="num text-sm text-fg mt-0.5">{mixedPhaseGrowth?.delta ?? "Unavailable"}</div>
+        </div>
+        <div className="col-span-2 border-t border-line/40 pt-2">
+          <div className="text-[11px] text-fg-3 uppercase font-mono tracking-wider">Target region</div>
+          <div className="text-sm font-medium text-fg mt-0.5">{firstFlashRegionName(cell.firstFlash.region)}</div>
+        </div>
       </div>
     </div>
   );

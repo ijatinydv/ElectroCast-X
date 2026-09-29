@@ -74,10 +74,32 @@ export function MapCanvas() {
     <div className="relative h-full w-full">
       <canvas ref={canvasRef} className="block h-full w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg" aria-label="Scenario map. In comparison mode, use left and right arrow keys to move the prediction and actual divider." tabIndex={0} />
       {hoveredAsset && <AssetTooltipOverlay asset={hoveredAsset} />}
-      <output ref={coordinateRef} aria-live="off" className="pointer-events-none absolute bottom-3 left-3 min-w-28 text-xs text-fg-3 num" />
+      
+      {/* Tactical Corner Reticles */}
+      <div className="pointer-events-none absolute top-3 left-3 size-3 border-t border-l border-line-strong" aria-hidden="true" />
+      <div className="pointer-events-none absolute top-3 right-3 size-3 border-t border-r border-line-strong" aria-hidden="true" />
+      <div className="pointer-events-none absolute bottom-3 left-3 size-3 border-b border-l border-line-strong" aria-hidden="true" />
+      <div className="pointer-events-none absolute bottom-3 right-3 size-3 border-b border-r border-line-strong" aria-hidden="true" />
+
+      {/* Floating Reflectivity Calibration Scale */}
+      <div className="pointer-events-none absolute top-3 left-6 flex items-center gap-2.5 rounded border border-line bg-rail/90 px-3 py-1 text-[10px] font-mono text-fg-3 shadow-md z-10">
+        <span className="text-fg-2 font-medium">RADAR REFLECTIVITY</span>
+        <div className="flex h-1.5 w-24 overflow-hidden rounded-sm bg-raised">
+          <div className="w-1/3 bg-observed/50" />
+          <div className="w-1/3 bg-observed" />
+          <div className="w-1/3 bg-risk" />
+        </div>
+        <span className="num text-fg-2">20–55+ dBZ</span>
+      </div>
+
+      {/* Coordinate & Projection HUD */}
+      <div className="pointer-events-none absolute bottom-3 left-6 flex items-center gap-2 text-[11px] font-mono text-fg-3 z-10">
+        <span className="rounded bg-rail/85 px-1.5 py-0.5 border border-line text-[10px]">WGS84</span>
+        <output ref={coordinateRef} aria-live="off" className="num text-fg-2 font-medium" />
+      </div>
       
       {/* Floating map camera controls */}
-      <div className="absolute bottom-3 right-3 flex flex-col gap-1 rounded-md border border-line bg-rail/85 p-1 backdrop-blur-md shadow-md z-10">
+      <div className="absolute bottom-3 right-6 flex flex-col gap-1 rounded border border-line bg-rail/90 p-1 shadow-md z-10">
         <button
           type="button"
           onClick={() => engineRef.current?.zoomBy(1.25)}

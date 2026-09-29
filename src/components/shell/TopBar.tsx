@@ -94,25 +94,32 @@ export function TopBar({ onToggleLeft, onToggleRight, onGuidedDemo, leftOpen, ri
         </div>
       </div>
 
-      <div className="flex items-center gap-4 sm:gap-6">
+      <div className="flex items-center gap-3 sm:gap-5">
+        {/* Dual Tactical Clocks: IST and UTC */}
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger>
-              <div className="text-sm font-mono num text-fg flex items-center gap-1">
-                IST {scenarioTime.ist}
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-2 rounded border border-line bg-raised/50 px-2.5 py-1 text-xs font-mono cursor-help">
+                <span className="text-fg font-medium num">{scenarioTime.ist} <span className="text-[10px] text-fg-3">IST</span></span>
+                <span className="text-line-strong">/</span>
+                <span className="text-fg-2 num">{scenarioTime.utc} <span className="text-[10px] text-fg-3">UTC</span></span>
               </div>
             </TooltipTrigger>
-            <TooltipContent>
-              <p>UTC {scenarioTime.utc}</p>
+            <TooltipContent className="text-xs font-mono">
+              <p>Simulated timeline · Indian Standard Time &amp; UTC</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
 
+        {/* Live Sensor Health Cluster */}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button type="button" className="flex items-center gap-2 hidden md:flex focus-visible:outline-none" aria-label="Open sensor health">
-                {(Object.keys(frame.sensorHealth) as SensorId[]).map((sensor) => <StatusDot key={sensor} status={sensorMask[sensor] ? "offline" : frame.sensorHealth[sensor].status} />)}
+              <button type="button" className="flex items-center gap-2 rounded border border-line bg-raised/30 px-2.5 py-1 text-xs hidden md:flex hover:bg-raised transition-colors focus-visible:outline-none" aria-label="Open sensor health">
+                <span className="text-[10px] font-mono text-fg-3 uppercase tracking-wider">FEEDS</span>
+                <div className="flex items-center gap-1.5">
+                  {(Object.keys(frame.sensorHealth) as SensorId[]).map((sensor) => <StatusDot key={sensor} status={sensorMask[sensor] ? "offline" : frame.sensorHealth[sensor].status} />)}
+                </div>
               </button>
             </TooltipTrigger>
             <TooltipContent><SensorHealth frame={frame} sensorOff={sensorOff} /></TooltipContent>

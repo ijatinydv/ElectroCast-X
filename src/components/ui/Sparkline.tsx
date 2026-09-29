@@ -27,6 +27,8 @@ export function Sparkline({ values, color = "var(--color-observed)", width = 100
     markerY = Number(height) - ((values[markerIndex]! - min) / range) * Number(height);
   }
 
+  const areaPoints = `${points} ${Number(width)},${Number(height)} 0,${Number(height)}`;
+
   return (
     <svg
       width={width}
@@ -35,6 +37,19 @@ export function Sparkline({ values, color = "var(--color-observed)", width = 100
       className={cn("overflow-visible", className)}
       {...props}
     >
+      <polygon
+        points={areaPoints}
+        fill={color}
+        fillOpacity={0.12}
+      />
+      <line
+        x1={0}
+        y1={Number(height) - 1}
+        x2={width}
+        y2={Number(height) - 1}
+        stroke="var(--color-line)"
+        strokeWidth={1}
+      />
       <polyline
         fill="none"
         stroke={color}
@@ -44,7 +59,10 @@ export function Sparkline({ values, color = "var(--color-observed)", width = 100
         points={points}
       />
       {markerIndex !== undefined && (
-        <circle cx={markerX} cy={markerY} r="3" fill={color} />
+        <>
+          <circle cx={markerX} cy={markerY} r="5" fill="none" stroke={color} strokeWidth="1" opacity={0.4} />
+          <circle cx={markerX} cy={markerY} r="2.5" fill={color} />
+        </>
       )}
     </svg>
   );

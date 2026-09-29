@@ -49,14 +49,38 @@ export function Dial({ probability, rising, windowStart, windowEnd, horizon = 30
           strokeLinecap="round"
         />
         
-        {[15, 30, 60].map(min => {
-          const angle = min * 6 - 90; // -90 because we start at top
+        {/* Outer reference ring */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius + 8}
+          fill="none"
+          stroke="var(--color-line)"
+          strokeWidth={1}
+          strokeDasharray="2 4"
+        />
+
+        {/* 5-minute ticks around the perimeter */}
+        {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60].map(min => {
+          const isMajor = min === 15 || min === 30 || min === 60;
+          const angle = min * 6 - 90;
           const rad = (angle * Math.PI) / 180;
-          const x1 = size / 2 + (radius - strokeWidth) * Math.cos(rad);
-          const y1 = size / 2 + (radius - strokeWidth) * Math.sin(rad);
-          const x2 = size / 2 + (radius + strokeWidth) * Math.cos(rad);
-          const y2 = size / 2 + (radius + strokeWidth) * Math.sin(rad);
-          return <line key={min} x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--color-line-strong)" strokeWidth={2} />;
+          const tickLen = isMajor ? strokeWidth : strokeWidth / 2;
+          const x1 = size / 2 + (radius - tickLen) * Math.cos(rad);
+          const y1 = size / 2 + (radius - tickLen) * Math.sin(rad);
+          const x2 = size / 2 + (radius + tickLen) * Math.cos(rad);
+          const y2 = size / 2 + (radius + tickLen) * Math.sin(rad);
+          return (
+            <line
+              key={min}
+              x1={x1}
+              y1={y1}
+              x2={x2}
+              y2={y2}
+              stroke={isMajor ? "var(--color-line-strong)" : "var(--color-line)"}
+              strokeWidth={isMajor ? 2 : 1}
+            />
+          );
         })}
 
         {windowStart !== undefined && windowEnd !== undefined && (
