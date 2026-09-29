@@ -8,7 +8,7 @@ import { CountdownPanel } from "@/components/panels/CountdownPanel";
 import { EvidencePanel } from "@/components/panels/EvidencePanel";
 import { ExposurePanel } from "@/components/panels/ExposurePanel";
 import { AlertComposer } from "@/components/alerts/AlertComposer";
-import { effectiveSensorMask, outcomeSummaryFor } from "@/lib/derive";
+import { corridorSummaryFor, effectiveSensorMask, outcomeSummaryFor } from "@/lib/derive";
 import { frameAt } from "@/lib/map/interpolate";
 import { useStore } from "@/store/useStore";
 import type { Scenario } from "@/types/scenario";
@@ -29,6 +29,7 @@ export function RightRail() {
   const timeMin = useStore((state) => state.timeMin);
   const selectedCellId = useStore((state) => state.selectedCellId);
   const sensorOff = useStore((state) => state.sensorOff);
+  const horizon = useStore((state) => state.horizon);
   const setPanel = useStore((state) => state.setPanel);
   const compareOn = useStore((state) => state.compare.on);
   const scenario = scenarios[scenarioId];
@@ -36,15 +37,21 @@ export function RightRail() {
   const cell = selectedCellId ? frame.cells.find((candidate) => candidate.id === selectedCellId) : undefined;
   const effectiveMask = effectiveSensorMask(sensorOff, frame.sensorHealth);
   const outcomeSummary = outcomeSummaryFor(scenario);
+  const corridorSummary = cell ? corridorSummaryFor(cell, horizon, effectiveMask, frame.sensorHealth) : null;
 
   return (
     <ScrollArea className="h-full bg-rail border-l border-line">
       <div className="flex flex-col">
-        {cell ? <CellHeader cell={cell} /> : <div className="p-4 text-sm text-fg-2">Select a storm cell on the map.</div>}
+        {cell ? <CellHeader cell={cell} /> : <div className="flex flex-col gap-2 border-b border-line p-4 text-sm text-fg-2"><p>{scenario.story}</p><p>Select a storm cell on the map, or use the available storm cells control.</p></div>}
         {compareOn && outcomeSummary && <div className="border-b border-line px-4 py-3 text-sm text-fg-2">First flash observed at <span className="num">+{outcomeSummary.firstFlashMin} min</span>, {outcomeSummary.insidePrediction ? "inside" : "outside"} the <span className="num">{outcomeSummary.windowMin[0]}–{outcomeSummary.windowMin[1]} min</span> window</div>}
         {cell && <Panel title={cell.mode === "active" ? "Active storm" : "When"} defaultOpen={true}><CountdownPanel scenario={scenario} cell={cell} timeMin={timeMin} sensorOff={effectiveMask} /></Panel>}
         <Panel title="Where" defaultOpen={true}>
-          <div className="text-sm text-fg-2">Corridor summary available when a storm cell is selected.</div>
+          {corridorSummary ? <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+            <div><div className="text-xs text-fg-2">Arrival estimate</div><div className="num text-fg">+{corridorSummary.arrivalMin} min</div></div>
+            <div><div className="text-xs text-fg-2">Movement</div><div className="num text-fg">{corridorSummary.speedKmh} km/h</div></div>
+            <div><div className="text-xs text-fg-2">Direction</div><div className="num text-fg">{corridorSummary.directionDeg}°</div></div>
+            <div><div className="text-xs text-fg-2">Corridor width</div><div className="num text-fg">{corridorSummary.widthKm} km</div></div>
+          </div> : <div className="text-sm text-fg-2">Select a storm cell on the map to inspect its forecast corridor.</div>}
         </Panel>
         <Panel title="How sure, and why" defaultOpen={true}>
           {cell ? <EvidencePanel scenario={scenario} cell={cell} timeMin={timeMin} sensorOff={sensorOff} /> : <div className="text-sm text-fg-2">Select a storm cell on the map.</div>}
