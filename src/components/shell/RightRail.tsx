@@ -76,7 +76,7 @@ export function RightRail() {
           {cell ? <EvidencePanel scenario={scenario} cell={cell} timeMin={timeMin} sensorOff={sensorOff} /> : <div className="text-sm text-fg-2">Select a storm cell on the map.</div>}
         </Panel>
         <Panel title="Exposure" defaultOpen={true}>
-          {cell ? <ExposurePanel cell={cell} /> : <div className="text-sm text-fg-2">Select a storm cell to assess affected places.</div>}
+          {cell ? <ExposurePanel cell={cell} sensorMask={effectiveMask} sensorHealth={frame.sensorHealth} /> : <div className="text-sm text-fg-2">Select a storm cell to assess affected places.</div>}
         </Panel>
         <Panel title="Actions" defaultOpen={true} collapsible={false}>
           <div className="flex flex-col gap-2">

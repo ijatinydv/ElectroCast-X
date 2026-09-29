@@ -3,7 +3,7 @@ import A from "@/data/scenarios/a-first-flash.json";
 import B from "@/data/scenarios/b-severe-storm.json";
 import C from "@/data/scenarios/c-sensor-loss.json";
 import { getSyntheticAssets } from "@/lib/geo/load";
-import { countdownFor, corridorFor, effectiveSensorMask, exposureFor, maskBits, riskFor, widthScale } from "@/lib/derive";
+import { countdownFor, corridorFor, effectiveSensorMask, exposureFor, exposureForCell, maskBits, riskFor, widthScale } from "@/lib/derive";
 import { useStore } from "@/store/useStore";
 import { frameAt } from "@/lib/map/interpolate";
 import type { Scenario, SensorId } from "@/types/scenario";
@@ -140,6 +140,20 @@ describe("derive functions", () => {
       expect(counts[0][type]).toBeLessThanOrEqual(counts[1][type]);
       expect(counts[1][type]).toBeLessThanOrEqual(counts[2][type]);
     }
+  });
+
+  it("uses the widened sensor-aware corridor for exposure", () => {
+    const frame = sensorLoss.frames.find((candidate) => candidate.t === 0);
+    const cell = frame?.cells[0];
+    if (!frame || !cell) throw new Error("Scenario C requires a t=0 cell");
+    const clearHealth = { ...frame.sensorHealth, radar: { status: "online" as const, dataAgeMin: 1 } };
+    const clear = exposureForCell(cell, 30, { radar: false, insat: false, lightning: false, nwp: false }, clearHealth, getSyntheticAssets());
+    const degradedMask = effectiveSensorMask({ radar: false, insat: false, lightning: false, nwp: false }, frame.sensorHealth);
+    const degraded = exposureForCell(cell, 30, degradedMask, frame.sensorHealth, getSyntheticAssets());
+    expect(degraded.assets.length).toBeGreaterThanOrEqual(clear.assets.length);
+    expect(degraded.villages).toBeGreaterThanOrEqual(clear.villages);
+    expect(degraded.schools).toBeGreaterThanOrEqual(clear.schools);
+    expect(degraded.transmission).toBeGreaterThanOrEqual(clear.transmission);
   });
 });
 

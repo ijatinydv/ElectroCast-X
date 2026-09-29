@@ -2,17 +2,16 @@
 
 import { Building2, GraduationCap, RadioTower } from "lucide-react";
 import { Chip } from "@/components/ui/Chip";
-import { exposureFor, type ExposureAsset } from "@/lib/derive";
-import { corridorFor } from "@/lib/derive/corridor";
+import { exposureForCell, type ExposureAsset, type SensorMask } from "@/lib/derive";
 import { getSyntheticAssets } from "@/lib/geo/load";
 import { useStore } from "@/store/useStore";
-import type { Cell } from "@/types/scenario";
+import type { Cell, Frame } from "@/types/scenario";
 
 // presents all corridor exposure types while keeping map emphasis tied to enabled layers
-export function ExposurePanel({ cell }: { cell: Cell }) {
+export function ExposurePanel({ cell, sensorMask, sensorHealth }: { cell: Cell; sensorMask: SensorMask; sensorHealth: Frame["sensorHealth"] }) {
   const horizon = useStore((state) => state.horizon);
   const highlightAsset = useStore((state) => state.highlightAsset);
-  const exposure = exposureFor(corridorFor(cell, horizon, 1), getSyntheticAssets(), cell);
+  const exposure = exposureForCell(cell, horizon, sensorMask, sensorHealth, getSyntheticAssets());
   const groups = [
     { label: "Villages", count: exposure.villages, type: "village" as const, icon: Building2 },
     { label: "Schools", count: exposure.schools, type: "school" as const, icon: GraduationCap },

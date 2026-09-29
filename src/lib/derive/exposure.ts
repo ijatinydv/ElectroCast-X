@@ -1,6 +1,7 @@
 import type { SyntheticAssets } from "@/types/assets";
-import type { Cell } from "@/types/scenario";
-import type { Corridor, Polygon } from "./corridor";
+import type { Cell, Frame } from "@/types/scenario";
+import { corridorFor, type Corridor, type CorridorHorizon, type Polygon } from "./corridor";
+import { type SensorMask, widthScale } from "./mask";
 
 // identifies a prepared asset listed in the exposure panel
 export type ExposureAsset = { id: string; name: string; type: "village" | "school" | "hospital" | "transmission" };
@@ -50,4 +51,9 @@ export function exposureFor(corridor: Corridor, assets: SyntheticAssets, cell: P
       ...assets.polylines.filter((line) => line.path.some(inside)).map((line) => ({ id: line.id, name: line.name, type: line.type })),
     ],
   };
+}
+
+// derives exposure from the same sensor-aware uncertainty corridor rendered on the map
+export function exposureForCell(cell: Cell, horizon: CorridorHorizon | 15 | 30 | 60, sensorMask: SensorMask, sensorHealth: Frame["sensorHealth"], assets: SyntheticAssets): Exposure {
+  return exposureFor(corridorFor(cell, horizon, widthScale(sensorMask, sensorHealth)), assets, cell);
 }
