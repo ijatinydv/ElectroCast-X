@@ -15,16 +15,21 @@ export function Panel({ title, defaultOpen = true, collapsible = true, className
 
   return (
     <div className={cn("bg-rail border-line border rounded-none flex flex-col", className)} {...props}>
-      <header
-        className={cn("flex items-center justify-between px-4 py-2 border-b border-line", collapsible && "cursor-pointer hover:bg-raised transition-colors")}
-        onClick={() => collapsible && setIsOpen(!isOpen)}
-      >
+      <header className="border-b border-line">
+        <button
+          aria-expanded={collapsible ? isOpen : undefined}
+          className={cn("flex w-full items-center justify-between px-4 py-2 text-left", collapsible && "cursor-pointer hover:bg-raised focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-line-strong")}
+          disabled={!collapsible}
+          onClick={() => setIsOpen(!isOpen)}
+          type="button"
+        >
         <h3 className="text-xs font-medium text-fg-2">{title}</h3>
         {collapsible && (
           <div className="text-fg-3">
             {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           </div>
         )}
+        </button>
       </header>
       <AnimatePresence initial={false}>
         {isOpen && (
