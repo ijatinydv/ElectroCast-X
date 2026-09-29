@@ -296,7 +296,7 @@ Read docs/02-ui-spec.md (Left rail: Sensors; Sensor failure behaviour), docs/04-
 Read docs/02-ui-spec.md (Right rail: How sure and why) and docs/07-content-and-copy.md (Evidence rows). Build src/components/panels/EvidencePanel.tsx using cell.evidence and evidence.ts derive helpers. Sparkline marker follows timeMin. Rows dependent on radar (ZDR column, KDP core, mixed-phase growth, echo top) grey out with an inline "Radar unavailable" note when radar is effectively off; satellite rows (cloud-top cooling) grey when INSAT is off; flash rate when lightning network is off; CAPE when NWP is off. Include the confidence chip and the corridor width in km beside the panel header.
 ```
 
-### [ ] 3.5 Exposure panel
+### [x] 3.5 Exposure panel
 **Does:** "Potentially affected region" summary for the selected corridor with estimated arrival.
 **Depends on:** 3.2, 2.6.
 **Verify:**
