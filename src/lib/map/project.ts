@@ -76,6 +76,35 @@ export function panProjection(projection: MapProjection, lonLat: ScreenPoint, wi
   };
 }
 
+// zooms an existing projection around a focal screen point while capping extreme scales
+export function zoomProjection(projection: MapProjection, factor: number, center: ScreenPoint): MapProjection {
+  const nextScale = Math.max(100, Math.min(250000, projection.scale * factor));
+  const ratio = nextScale / projection.scale;
+  const nextTranslate: ScreenPoint = [
+    center[0] - (center[0] - projection.translate[0]) * ratio,
+    center[1] - (center[1] - projection.translate[1]) * ratio,
+  ];
+
+  return {
+    scale: nextScale,
+    translate: nextTranslate,
+    project: (lonLat) => {
+      const point = projection.project(lonLat);
+      return [
+        center[0] + (point[0] - center[0]) * ratio,
+        center[1] + (point[1] - center[1]) * ratio,
+      ];
+    },
+    unproject: (point) => {
+      const unscaledPoint: ScreenPoint = [
+        center[0] + (point[0] - center[0]) / ratio,
+        center[1] + (point[1] - center[1]) / ratio,
+      ];
+      return projection.unproject(unscaledPoint);
+    },
+  };
+}
+
 // preserves the requested 400ms data-change motion while avoiding a second render system
 export function startProjectionTween(from: MapProjection, to: MapProjection, startedAt: number, duration = 400): ProjectionTween {
   return { from, to, startedAt, duration };

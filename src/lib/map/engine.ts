@@ -14,7 +14,7 @@ import { radarLayer } from "./layers/radar";
 import { prepareSatelliteLayer, satelliteLayer } from "./layers/satellite";
 import { scaleBarLayer } from "./layers/scalebar";
 import { compareLayer } from "./layers/compare";
-import { fitProjection, hitTestCells, panProjection, projectTweenAt, startProjectionTween, type MapProjection, type ProjectionTween } from "./project";
+import { fitProjection, hitTestCells, panProjection, projectTweenAt, startProjectionTween, zoomProjection, type MapProjection, type ProjectionTween } from "./project";
 import { frameAt } from "./interpolate";
 import { readMapTheme, type MapTheme } from "./theme";
 import { getSpriteSet } from "./sprites";
@@ -64,6 +64,8 @@ export interface MapEngine {
   setActive: (active: boolean) => void;
   coordinateAt: (point: readonly [number, number]) => readonly [number, number] | null;
   assetAt: (point: readonly [number, number]) => AssetTooltip | null;
+  zoomBy: (factor: number) => void;
+  resetView: () => void;
 }
 
 // fixes canvas composition order as later geographic layers are introduced in subsequent chunks
@@ -132,7 +134,10 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
     if (projectionTween) {
       const result = projectTweenAt(projectionTween, now);
       projection = result.projection;
-      if (result.complete) projectionTween = null;
+      if (result.complete) {
+        projectionTween = null;
+        redrawStatic();
+      }
     }
     if (corridorScaleStartedAt !== null) {
       const progress = Math.min(1, Math.max(0, (now - corridorScaleStartedAt) / 400));
@@ -351,6 +356,16 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
     },
     coordinateAt: (point) => projection.unproject(point),
     assetAt: (point) => hitTestAsset({ ...frameState, projection, width, height, corridorScale }, point),
+    zoomBy: (factor: number) => {
+      const target = zoomProjection(projection, factor, [width / 2, height / 2]);
+      projectionTween = startProjectionTween(projection, target, performance.now(), 250);
+      requestFrame();
+    },
+    resetView: () => {
+      const target = fitProjection(frameState.scenario.region, width, height);
+      projectionTween = startProjectionTween(projection, target, performance.now(), 350);
+      requestFrame();
+    },
   };
 }
 
@@ -381,44 +396,157 @@ function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenari
   };
 }
 
-// paints the one-pixel boundary, grab handle, and corner labels for comparison orientation
+// paints the boundary, tactile grab handle, and refined orientation badges for comparison
 function drawCompareDivider(context: CanvasRenderingContext2D, state: MapFrameState): void {
   const splitX = state.width * state.compareSplit;
+  const centerY = state.height / 2;
+
   context.save();
-  context.strokeStyle = state.theme.foreground;
+
+  // Subtle separator line
+  context.strokeStyle = "rgba(255, 255, 255, 0.4)";
   context.lineWidth = 1;
   context.beginPath();
-  context.moveTo(splitX + 0.5, 0);
-  context.lineTo(splitX + 0.5, state.height);
+  context.moveTo(splitX, 0);
+  context.lineTo(splitX, state.height);
   context.stroke();
-  context.fillStyle = state.theme.background;
-  context.strokeStyle = state.theme.foreground;
+
+  // Tactile Apple-style pill thumb
+  const thumbWidth = 26;
+  const thumbHeight = 44;
+  const thumbRadius = 13;
+  context.fillStyle = state.theme.raised;
+  context.strokeStyle = state.theme.lineStrong;
+  context.lineWidth = 1.5;
+
   context.beginPath();
-  context.arc(splitX, state.height / 2, 11, 0, Math.PI * 2);
+  context.roundRect(splitX - thumbWidth / 2, centerY - thumbHeight / 2, thumbWidth, thumbHeight, thumbRadius);
   context.fill();
   context.stroke();
+
+  // 3 vertical tactile grip ridges
   context.fillStyle = state.theme.foreground;
-  context.fillRect(splitX - 3, state.height / 2 - 4, 1, 8);
-  context.fillRect(splitX + 2, state.height / 2 - 4, 1, 8);
-  context.font = `12px ${state.theme.fontSans}`;
-  context.textBaseline = "top";
-  context.textAlign = "left";
-  context.fillText("Prediction", 12, 12);
-  context.textAlign = "right";
-  context.fillText("Actual", state.width - 12, 12);
+  context.fillRect(splitX - 4, centerY - 6, 1.5, 12);
+  context.fillRect(splitX, centerY - 8, 1.5, 16);
+  context.fillRect(splitX + 4, centerY - 6, 1.5, 12);
+
+  // Directional affordance arrows
+  context.font = "8px sans-serif";
+  context.fillStyle = state.theme.foregroundSecondary;
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.fillText("◀", splitX - thumbWidth / 2 - 8, centerY);
+  context.fillText("▶", splitX + thumbWidth / 2 + 8, centerY);
+
+  // Floating "Drag to compare" pill above handle
+  const splitPercent = Math.round(state.compareSplit * 100);
+  const percentText = `${splitPercent}%`;
+  context.font = `10px ${state.theme.fontMono}`;
+  const textWidth = context.measureText(percentText).width;
+  context.fillStyle = state.theme.background;
+  context.strokeStyle = state.theme.line;
+  context.lineWidth = 1;
+  context.beginPath();
+  context.roundRect(splitX - (textWidth + 12) / 2, centerY - thumbHeight / 2 - 22, textWidth + 12, 18, 9);
+  context.fill();
+  context.stroke();
+
+  context.fillStyle = state.theme.foreground;
+  context.fillText(percentText, splitX, centerY - thumbHeight / 2 - 13);
+
+  // Top Left Prediction Badge
+  drawCompareBadge(context, state.theme, 16, 16, "Prediction", state.theme.forecast, "left");
+
+  // Top Right Actual Badge
+  drawCompareBadge(context, state.theme, state.width - 16, 16, "Actual", state.theme.observed, "right");
+
   context.restore();
 }
 
-// draws a brief attention ring after a named exposure item is selected
-function drawHighlightPulse(context: CanvasRenderingContext2D, point: readonly [number, number], elapsedMs: number): void {
-  const progress = elapsedMs / 800;
+// renders a sleek corner badge showing the comparison mode partition
+function drawCompareBadge(
+  context: CanvasRenderingContext2D,
+  theme: MapTheme,
+  x: number,
+  y: number,
+  title: string,
+  accentColor: string,
+  align: "left" | "right"
+): void {
   context.save();
-  context.strokeStyle = "rgba(255, 183, 77, 0.9)";
-  context.lineWidth = 2;
-  context.globalAlpha = 1 - progress;
+  context.font = `11px ${theme.fontSans}`;
+  const textWidth = context.measureText(title).width;
+  const badgeWidth = textWidth + 28;
+  const badgeHeight = 26;
+  const badgeX = align === "left" ? x : x - badgeWidth;
+
+  context.fillStyle = "rgba(16, 23, 33, 0.85)";
+  context.strokeStyle = "rgba(58, 74, 92, 0.7)";
+  context.lineWidth = 1;
   context.beginPath();
-  context.arc(point[0], point[1], 8 + progress * 28, 0, Math.PI * 2);
+  context.roundRect(badgeX, y, badgeWidth, badgeHeight, 13);
+  context.fill();
   context.stroke();
+
+  // Status indicator dot
+  context.fillStyle = accentColor;
+  context.beginPath();
+  context.arc(badgeX + 11, y + badgeHeight / 2, 3.5, 0, Math.PI * 2);
+  context.fill();
+
+  // Label text
+  context.fillStyle = theme.foreground;
+  context.textAlign = "left";
+  context.textBaseline = "middle";
+  context.fillText(title, badgeX + 20, y + badgeHeight / 2);
+  context.restore();
+}
+
+// draws a high-precision dual radar reticle and crosshair when an exposure item is selected
+function drawHighlightPulse(context: CanvasRenderingContext2D, point: readonly [number, number], elapsedMs: number): void {
+  const progress = Math.min(1, elapsedMs / 800);
+  const px = point[0];
+  const py = point[1];
+
+  context.save();
+
+  // Central target dot
+  context.fillStyle = "rgba(255, 176, 32, 0.95)";
+  context.beginPath();
+  context.arc(px, py, 3, 0, Math.PI * 2);
+  context.fill();
+
+  // 4-axis crosshair target lines
+  context.strokeStyle = `rgba(255, 176, 32, ${(1 - progress) * 0.8})`;
+  context.lineWidth = 1;
+  context.beginPath();
+  context.moveTo(px - 14, py);
+  context.lineTo(px - 5, py);
+  context.moveTo(px + 5, py);
+  context.lineTo(px + 14, py);
+  context.moveTo(px, py - 14);
+  context.lineTo(px, py - 5);
+  context.moveTo(px, py + 5);
+  context.lineTo(px, py + 14);
+  context.stroke();
+
+  // Inner primary pulse ring
+  context.strokeStyle = `rgba(255, 176, 32, ${(1 - progress) * 0.9})`;
+  context.lineWidth = 1.5;
+  context.beginPath();
+  context.arc(px, py, 6 + progress * 24, 0, Math.PI * 2);
+  context.stroke();
+
+  // Outer secondary radar ripple
+  if (progress > 0.2) {
+    const secondaryProgress = (progress - 0.2) / 0.8;
+    context.strokeStyle = `rgba(255, 176, 32, ${(1 - secondaryProgress) * 0.5})`;
+    context.lineWidth = 1;
+    context.beginPath();
+    context.arc(px, py, 6 + secondaryProgress * 36, 0, Math.PI * 2);
+    context.stroke();
+  }
+
   context.restore();
 }
 

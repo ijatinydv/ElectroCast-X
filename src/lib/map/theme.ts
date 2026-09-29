@@ -1,6 +1,7 @@
 // captures canvas styling once from the shared css token system
 export interface MapTheme {
   background: string;
+  raised: string;
   foreground: string;
   line: string;
   lineStrong: string;
@@ -18,6 +19,7 @@ export function readMapTheme(element: Element): MapTheme {
   const styles = getComputedStyle(element);
   return {
     background: styles.getPropertyValue("--color-bg").trim(),
+    raised: styles.getPropertyValue("--color-raised").trim(),
     foreground: styles.getPropertyValue("--color-fg").trim(),
     line: styles.getPropertyValue("--color-line").trim(),
     lineStrong: styles.getPropertyValue("--color-line-strong").trim(),

@@ -27,13 +27,32 @@ export default function ValidationPage() {
   return (
     <main className="min-h-svh bg-bg px-5 py-8 text-fg sm:px-8 lg:px-12 lg:py-12">
       <div className="mx-auto max-w-6xl">
+        <div className="mb-6 flex items-center justify-between">
+          <Link
+            href="/mission-control"
+            className="group inline-flex items-center gap-2 rounded-full border border-line bg-raised/50 px-3.5 py-1.5 text-xs font-medium text-fg-2 hover:border-line-strong hover:text-fg hover:bg-raised transition-all"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:-translate-x-0.5">
+              <path d="m12 19-7-7 7-7"/>
+              <path d="M19 12H5"/>
+            </svg>
+            <span>Back to Mission Control</span>
+          </Link>
+          <div className="flex items-center gap-3 text-xs">
+            <Link href="/" className="text-fg-3 hover:text-fg transition-colors">
+              Home
+            </Link>
+            <span className="text-line-strong">/</span>
+            <span className="text-fg font-medium">Validation</span>
+          </div>
+        </div>
+
         <header className="flex flex-wrap items-start justify-between gap-6 border-b border-line pb-8">
           <div className="max-w-2xl">
             <p className="text-xs font-medium tracking-wide text-fg-2">ElectroCast-X <span className="ml-2 rounded-full bg-rail px-2 py-0.5 text-[11px] text-fg-2 ring-1 ring-line">Simulated demo scenario</span></p>
             <h1 className="mt-4 text-3xl font-medium tracking-tight sm:text-4xl">Illustrative validation</h1>
             <p className="mt-3 text-base leading-7 text-fg-2">These values are not results. They show the intended validation views for calibrated first-flash forecasts.</p>
           </div>
-          <Link href="/mission-control" className="text-sm text-fg-2 underline decoration-line-strong underline-offset-4 hover:text-fg">Open Mission Control</Link>
         </header>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
