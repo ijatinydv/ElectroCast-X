@@ -454,7 +454,7 @@ Read docs/01-design-system.md (Landing page) and docs/07-content-and-copy.md. Bu
 Read docs/07-content-and-copy.md (Pipeline page copy) and docs/08-ps-traceability.md. Build src/app/how-it-works/page.tsx and src/components/pipeline/PipelineDiagram.tsx as SVG laid out left to right with Magic UI animated-beam adapted to our tokens. Content in src/data/content/pipeline.json (stage id, title, one-line explanation, linked Mission Control feature). Colour: sources cyan, model stages purple, outputs amber. Hover/focus shows the explanation and a "See it in Mission Control" link. Add a compact variant used in a sheet from the Mission Control top bar highlighting a stage passed as a prop.
 ```
 
-### [ ] 6.3 Validation page (illustrative)
+### [x] 6.3 Validation page (illustrative)
 **Does:** Reliability diagram and POD/FAR/CSI/Brier vs lead time, clearly placeholder.
 **Depends on:** 0.2.
 **Verify:**

@@ -1,5 +1,4 @@
 # 09 — Decision log
-
 Add a row whenever you make a choice that another person might question.
 
 | # | Decision | Why | Alternatives rejected |
@@ -38,3 +37,4 @@ Add a row whenever you make a choice that another person might question.
 | D28 | The X-ray has two dynamic boundaries: the sheet and its Three scene | Keeps `three`, R3F, and Drei out of the initial Mission Control payload while loading the operational shell promptly on demand | Importing the rendering stack from the Mission Control route |
 | D29 | Slice readout samples the generated reflectivity field and smooth cell-derived ZDR/KDP vertical profiles | Keeps X-ray slice values physically responsive while preserving the single prepared cell record as their source | Independent display-only values or a second volume data source |
 | D30 | X-ray physical layers are local display toggles over the shared current frame | Operators can isolate prepared volume signals without duplicating forecast values in component state | Global layer state or separate feature datasets |
+| D31 | Validation charts dynamically import only their ECharts core modules from client components | Keeps ECharts isolated to the dedicated validation route and out of the landing and Mission Control bundles | Static chart imports in a shared route dependency |
