@@ -9,6 +9,9 @@ export type LayerId = "districts" | "radar" | "satellite" | "flashDensity" | "co
 // records an operator action against its time cell and horizon
 export type Warning = { tMin: number; cellId: string; horizon: 15 | 30 | 60 };
 
+// records the asset that should receive one map-centred attention pulse
+export type AssetHighlight = { assetId: string; sequence: number };
+
 // describes the single state surface consumed by future mission-control views
 export interface AppState {
   scenarioId: ScenarioId;
@@ -17,6 +20,8 @@ export interface AppState {
   speed: 1 | 2 | 4;
   sensorOff: Record<SensorId, boolean>;
   selectedCellId: string | null;
+  horizon: 15 | 30 | 60;
+  highlight: AssetHighlight | null;
   mapMode: "radar" | "satellite";
   layers: Record<LayerId, boolean>;
   decomposition: boolean;
@@ -30,6 +35,8 @@ export interface AppState {
   setSpeed: (speed: 1 | 2 | 4) => void;
   toggleSensor: (sensorId: SensorId) => void;
   selectCell: (cellId: string | null) => void;
+  setHorizon: (horizon: AppState["horizon"]) => void;
+  highlightAsset: (assetId: string) => void;
   setMapMode: (mapMode: "radar" | "satellite") => void;
   toggleLayer: (layerId: LayerId) => void;
   setDecomposition: (decomposition: boolean) => void;

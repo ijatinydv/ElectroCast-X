@@ -57,6 +57,16 @@ function rectangle(center: [number, number], halfWidth: number, halfHeight: numb
   ];
 }
 
+// expands later forecast polygons around earlier paths so horizon exposures remain cumulative
+function encompassingPolygon(primary: [number, number][], prior: [number, number][]): [number, number][] {
+  const points = [...primary, ...prior];
+  const centerLon = points.reduce((total, [lon]) => total + lon, 0) / points.length;
+  const centerLat = points.reduce((total, [, lat]) => total + lat, 0) / points.length;
+  const halfWidth = Math.max(...points.map(([lon]) => Math.abs(lon - centerLon)));
+  const halfHeight = Math.max(...points.map(([, lat]) => Math.abs(lat - centerLat)));
+  return rectangle([round(centerLon), round(centerLat)], halfWidth, halfHeight);
+}
+
 // projects a synthetic storm centroid along its prescribed trajectory
 function centroidAt(definition: ScenarioDefinition, timeMin: number, random: () => number): [number, number] {
   const elapsed = timeMin + 60;
@@ -85,7 +95,18 @@ function corridorsFor(
       outer: rectangle(futureCenter, width, height),
     };
   };
-  return { "15": horizon(15), "30": horizon(30), "60": horizon(60) };
+  const fifteen = horizon(15);
+  const thirty = horizon(30);
+  const sixty = horizon(60);
+  return {
+    "15": fifteen,
+    "30": thirty,
+    "60": {
+      ...sixty,
+      inner: encompassingPolygon(sixty.inner, thirty.inner),
+      outer: encompassingPolygon(sixty.outer, thirty.outer),
+    },
+  };
 }
 
 // records the allowed physical evidence variables for every generated cell

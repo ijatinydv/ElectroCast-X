@@ -8,10 +8,9 @@ import { NumberTicker } from "@/components/ui/NumberTicker";
 import { countdownFor } from "@/lib/derive";
 import { getOdishaDistricts } from "@/lib/geo/load";
 import { frameAt } from "@/lib/map/interpolate";
+import { useStore } from "@/store/useStore";
 import type { SensorMask } from "@/lib/derive";
 import type { Cell, Scenario } from "@/types/scenario";
-
-type Horizon = 15 | 30 | 60;
 
 interface CountdownPanelProps {
   scenario: Scenario;
@@ -73,7 +72,8 @@ function ActiveStorm({ cell, scenario, timeMin }: Pick<CountdownPanelProps, "cel
 
 // combines the first-flash countdown and active-storm presentations in the When section
 export function CountdownPanel({ scenario, cell, timeMin, sensorOff }: CountdownPanelProps) {
-  const [horizon, setHorizon] = React.useState<Horizon>(30);
+  const horizon = useStore((state) => state.horizon);
+  const setHorizon = useStore((state) => state.setHorizon);
   const countdown = cell.mode === "first-flash" ? countdownFor(scenario, cell.id, sensorOff) : null;
   const probability = countdown ? countdown[`p${horizon}`] : cell.headlineRisk;
   const mixedPhaseGrowth = cell.evidence.find((evidence) => evidence.variable === "mixedPhaseGrowth");
@@ -93,7 +93,7 @@ export function CountdownPanel({ scenario, cell, timeMin, sensorOff }: Countdown
         />
       </div>
       <div className="grid grid-cols-3 rounded-md border border-line p-1" aria-label="Forecast horizon">
-        {([15, 30, 60] as Horizon[]).map((value) => (
+        {([15, 30, 60] as const).map((value) => (
           <button
             key={value}
             type="button"
@@ -106,7 +106,7 @@ export function CountdownPanel({ scenario, cell, timeMin, sensorOff }: Countdown
         ))}
       </div>
       <div className="grid grid-cols-3 gap-2 border-y border-line py-3 text-center">
-        {([15, 30, 60] as Horizon[]).map((value) => (
+        {([15, 30, 60] as const).map((value) => (
           <div key={value}>
             <div className="text-xs text-fg-2"><span className="num">{value}</span> min</div>
             <div className="mt-1 text-lg font-medium text-fg"><NumberTicker value={countdown[`p${value}`]} />%</div>

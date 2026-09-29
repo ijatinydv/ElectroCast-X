@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CellHeader } from "@/components/panels/CellHeader";
 import { CountdownPanel } from "@/components/panels/CountdownPanel";
 import { EvidencePanel } from "@/components/panels/EvidencePanel";
+import { ExposurePanel } from "@/components/panels/ExposurePanel";
 import { frameAt } from "@/lib/map/interpolate";
 import { useStore } from "@/store/useStore";
 import type { Scenario } from "@/types/scenario";
@@ -41,7 +42,7 @@ export function RightRail() {
           {cell ? <EvidencePanel scenario={scenario} cell={cell} timeMin={timeMin} sensorOff={sensorOff} /> : <div className="text-sm text-fg-2">Select a storm cell on the map.</div>}
         </Panel>
         <Panel title="Exposure" defaultOpen={true}>
-          <div className="text-sm text-fg-2">Affected region will appear here.</div>
+          {cell ? <ExposurePanel cell={cell} /> : <div className="text-sm text-fg-2">Select a storm cell to assess affected places.</div>}
         </Panel>
         <Panel title="Actions" defaultOpen={true} collapsible={false}>
           <div className="flex flex-col gap-3">

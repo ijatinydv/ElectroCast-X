@@ -19,8 +19,8 @@ const initialLayers: Record<LayerId, boolean> = {
 };
 
 // restores state that must never leak when an operator switches demo scenarios
-function scenarioReset(scenarioId: ScenarioId): Pick<AppState, "scenarioId" | "timeMin" | "selectedCellId" | "sensorOff" | "issuedWarnings"> {
-  return { scenarioId, timeMin: 0, selectedCellId: null, sensorOff: { ...initialSensorOff }, issuedWarnings: [] };
+function scenarioReset(scenarioId: ScenarioId): Pick<AppState, "scenarioId" | "timeMin" | "selectedCellId" | "horizon" | "highlight" | "sensorOff" | "issuedWarnings"> {
+  return { scenarioId, timeMin: 0, selectedCellId: null, horizon: 30, highlight: null, sensorOff: { ...initialSensorOff }, issuedWarnings: [] };
 }
 
 // makes the selected atmospheric source visible while keeping radar and satellite mutually exclusive
@@ -45,6 +45,8 @@ export const useStore = create<AppState>()((set) => ({
   setSpeed: (speed) => set({ speed }),
   toggleSensor: (sensorId) => set((state) => ({ sensorOff: { ...state.sensorOff, [sensorId]: !state.sensorOff[sensorId] } })),
   selectCell: (selectedCellId) => set({ selectedCellId }),
+  setHorizon: (horizon) => set({ horizon }),
+  highlightAsset: (assetId) => set((state) => ({ highlight: { assetId, sequence: (state.highlight?.sequence ?? 0) + 1 } })),
   setMapMode: (mapMode) => set((state) => ({ mapMode, layers: layersForMapMode(state.layers, mapMode) })),
   toggleLayer: (layerId) => set((state) => ({ layers: { ...state.layers, [layerId]: !state.layers[layerId] } })),
   setDecomposition: (decomposition) => set({ decomposition }),
