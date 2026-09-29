@@ -23,6 +23,15 @@ export interface SliceReadout {
   kdpDegKm: number;
 }
 
+// defines the smallest atmospheric changes that justify rebuilding voxel instance data
+const volumeRebuildThreshold = {
+  echoTopKm: 0.5,
+  reflectivityDbz: 2,
+  updraftMs: 1.5,
+  freezingLevelKm: 0.25,
+  kdpCore: 0.2,
+} as const;
+
 // bounds scalar values before they contribute to the generated reflectivity field
 function clamp(value: number, minimum: number, maximum: number): number {
   return Math.min(maximum, Math.max(minimum, value));
@@ -103,6 +112,17 @@ export function buildVolume(cell: Pick<Cell, "id" | "echoTopKm" | "reflectivityD
   }
 
   return volume;
+}
+
+// distinguishes meaningful storm-volume evolution from uniform-only interpolated changes
+export function volumeNeedsRebuild(previous: Pick<Cell, "id" | "echoTopKm" | "reflectivityDbz" | "updraftMs" | "freezingLevelKm" | "zdrColumnLevel" | "kdpCore">, next: Pick<Cell, "id" | "echoTopKm" | "reflectivityDbz" | "updraftMs" | "freezingLevelKm" | "zdrColumnLevel" | "kdpCore">): boolean {
+  return previous.id !== next.id
+    || previous.zdrColumnLevel !== next.zdrColumnLevel
+    || Math.abs(previous.echoTopKm - next.echoTopKm) >= volumeRebuildThreshold.echoTopKm
+    || Math.abs(previous.reflectivityDbz - next.reflectivityDbz) >= volumeRebuildThreshold.reflectivityDbz
+    || Math.abs(previous.updraftMs - next.updraftMs) >= volumeRebuildThreshold.updraftMs
+    || Math.abs(previous.freezingLevelKm - next.freezingLevelKm) >= volumeRebuildThreshold.freezingLevelKm
+    || Math.abs(previous.kdpCore - next.kdpCore) >= volumeRebuildThreshold.kdpCore;
 }
 
 // samples the generated storm volume and smooth physical profiles at an operator-selected altitude
