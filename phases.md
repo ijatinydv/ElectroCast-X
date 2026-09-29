@@ -225,7 +225,7 @@ Read docs/01-design-system.md (Map look: Corridors, Selection) and docs/04-data-
 Read docs/01-design-system.md and docs/04-data-contract.md (Geo and assets). Implement layers/assets.ts drawing glyphs (draw simple vector glyphs on canvas: school, hospital, airplane, pylon, pick, ticket) pre-rendered into sprites; a population density field layer from village populations (gaussian splat into a low-res offscreen grid); transmission polylines. Highlight inside-corridor assets by point-in-polygon against the outer 30-min corridor. Add hover tooltips (name, type, population if relevant, `synthetic` chip) with pointer hit-testing on assets. Implement the Layers group UI in the left rail bound to the store.
 ```
 
-### [ ] 2.7 Forecast decomposition
+### [x] 2.7 Forecast decomposition
 **Does:** "Forecast decomposition" toggle animating Motion, Growth or decay, and New initiation as three coloured layers.
 **Depends on:** 2.5.
 **Verify:**

@@ -15,6 +15,16 @@ export function enabledSensors(): SensorMask {
   return { radar: false, insat: false, lightning: false, nwp: false };
 }
 
+// treats unavailable prepared feeds as disabled alongside an operator's explicit sensor mask
+export function effectiveSensorMask(mask: SensorMask, sensorHealth: Frame["sensorHealth"]): SensorMask {
+  return {
+    radar: mask.radar || sensorHealth.radar.status === "offline",
+    insat: mask.insat || sensorHealth.insat.status === "offline",
+    lightning: mask.lightning || sensorHealth.lightning.status === "offline",
+    nwp: mask.nwp || sensorHealth.nwp.status === "offline",
+  };
+}
+
 // converts disabled sensors and stale available observations into corridor uncertainty
 export function widthScale(mask: SensorMask, sensorHealth: Frame["sensorHealth"]): number {
   const disabledWeight = Number(mask.radar) * 0.35 + Number(mask.insat) * 0.15 + Number(mask.nwp) * 0.1 + Number(mask.lightning) * 0.2;
