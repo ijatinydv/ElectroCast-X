@@ -5,6 +5,7 @@ import { m } from "motion/react";
 import { MapCanvas } from "@/components/map/MapCanvas";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { TopBar, LeftRail, RightRail, BottomDock } from "@/components/shell";
+import { SensorBanner } from "@/components/shell/SensorBanner";
 
 // keeps the X-ray and its Three runtime outside the initial Mission Control payload
 const XRaySheet = dynamic(() => import("@/components/xray/XRaySheet").then((module) => module.XRaySheet), { ssr: false });
@@ -62,6 +63,7 @@ export default function MissionControlPage() {
 
         <div id="map-slot" className="flex-1 bg-bg relative overflow-hidden h-full">
           <MapCanvas />
+          <SensorBanner />
           <XRaySheet />
         </div>
 

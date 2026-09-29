@@ -16,7 +16,7 @@ export function enabledSensors(): SensorMask {
 }
 
 // treats unavailable prepared feeds as disabled alongside an operator's explicit sensor mask
-export function effectiveSensorMask(mask: SensorMask, sensorHealth: Frame["sensorHealth"]): SensorMask {
+export function effectiveSensorMask(mask: Partial<SensorMask>, sensorHealth: Frame["sensorHealth"]): SensorMask {
   return {
     radar: mask.radar || sensorHealth.radar.status === "offline",
     insat: mask.insat || sensorHealth.insat.status === "offline",
