@@ -1,0 +1,90 @@
+{
+  "sources": [
+    {
+      "id": "radar",
+      "title": "Doppler radar",
+      "explanation": "Reflectivity, ZDR column and KDP core observations provide the storm structure.",
+      "feature": "Sensor health and evidence",
+      "href": "/mission-control#sensor-health"
+    },
+    {
+      "id": "insat",
+      "title": "INSAT",
+      "explanation": "Cloud-top cooling provides an independent satellite view of convective growth.",
+      "feature": "Satellite layer and evidence",
+      "href": "/mission-control#map-slot"
+    },
+    {
+      "id": "lightning-network",
+      "title": "Lightning network",
+      "explanation": "Observed flashes anchor active-storm density and first-lightning timing.",
+      "feature": "Flash density layer",
+      "href": "/mission-control#map-slot"
+    },
+    {
+      "id": "nwp",
+      "title": "NWP",
+      "explanation": "CAPE, shear and freezing level describe the storm environment.",
+      "feature": "Physical evidence panel",
+      "href": "/mission-control#physical-evidence"
+    }
+  ],
+  "stages": [
+    {
+      "id": "quality-control",
+      "title": "Quality control and time alignment",
+      "explanation": "Observations are checked and aligned to the same analysis time before fusion.",
+      "feature": "Sensor health",
+      "href": "/mission-control#sensor-health",
+      "kind": "model"
+    },
+    {
+      "id": "masks",
+      "title": "Common grid with missing-sensor and data-age masks",
+      "explanation": "A shared grid preserves data-age and unavailable-sensor uncertainty for every cell.",
+      "feature": "Sensor health and corridor uncertainty",
+      "href": "/mission-control#sensor-health",
+      "kind": "model"
+    },
+    {
+      "id": "temperature-features",
+      "title": "Temperature-coordinate electrification features",
+      "explanation": "Features at the 0, −10 and −20 °C levels capture electrification structure.",
+      "feature": "X-ray and physical evidence",
+      "href": "/mission-control#physical-evidence",
+      "kind": "model"
+    },
+    {
+      "id": "forecast-model",
+      "title": "Multimodal temporal transformer with neural advection",
+      "explanation": "Temporal fusion carries storm structure forward while neural advection estimates movement.",
+      "feature": "Storm map and forecast decomposition",
+      "href": "/mission-control#map-slot",
+      "kind": "model"
+    },
+    {
+      "id": "forecast-heads",
+      "title": "First-lightning survival head and Active-storm density head",
+      "explanation": "Separate heads estimate time to first flash and the density of an active storm.",
+      "feature": "Countdown dial and flash density",
+      "href": "/mission-control#countdown",
+      "kind": "model"
+    },
+    {
+      "id": "calibration",
+      "title": "Conformal calibration and uncertainty",
+      "explanation": "Calibrated uncertainty widens the forecast region when the evidence is less complete.",
+      "feature": "Risk corridors",
+      "href": "/mission-control#map-slot",
+      "kind": "model"
+    },
+    {
+      "id": "outputs",
+      "title": "Risk corridors, evidence and alerts",
+      "explanation": "Calibrated forecasts become operational corridors, meteorological evidence and warnings.",
+      "feature": "Risk corridors, evidence and alert composer",
+      "href": "/mission-control#map-slot",
+      "kind": "output"
+    }
+  ]
+}

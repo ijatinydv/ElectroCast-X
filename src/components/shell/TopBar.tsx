@@ -12,6 +12,7 @@ import scenarioA from "@/data/scenarios/a-first-flash.json";
 import scenarioB from "@/data/scenarios/b-severe-storm.json";
 import scenarioC from "@/data/scenarios/c-sensor-loss.json";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { PipelineSheet } from "@/components/pipeline/PipelineDiagram";
 import { Menu, PanelRightClose } from "lucide-react";
 
 // keeps prepared scenarios available to the health readout without remote data access
@@ -24,7 +25,7 @@ interface TopBarProps {
   rightOpen: boolean;
 }
 
-// keeps the shell status display synchronized with the active scenario time and sensor mask
+// keeps scenario health, operational controls, and pipeline context accessible from Mission Control
 export function TopBar({ onToggleLeft, onToggleRight, leftOpen, rightOpen }: TopBarProps) {
   const [time, setTime] = React.useState(new Date());
   const scenarioId = useStore((state) => state.scenarioId);
@@ -90,6 +91,8 @@ export function TopBar({ onToggleLeft, onToggleRight, leftOpen, rightOpen }: Top
         <Button variant="outline" size="sm" className="h-7 text-xs" disabled>
           Guided demo
         </Button>
+
+        <PipelineSheet activeStageId={leftOpen ? "masks" : undefined} />
 
         <Button variant="ghost" size="icon" className="xl:hidden h-8 w-8" onClick={onToggleRight}>
           <PanelRightClose size={16} />
