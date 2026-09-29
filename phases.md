@@ -340,7 +340,7 @@ Read docs/02-ui-spec.md (Left rail: Scenarios). Build src/components/panels/Scen
 Read docs/02-ui-spec.md (Alert composer) and docs/07-content-and-copy.md. Build src/components/alerts/AlertComposer.tsx using shadcn Sheet, src/lib/i18n/alertTemplates.ts (pure functions filling templates from {place,start,end}) and src/data/content/alerts.json holding the three templates. Load @fontsource/noto-sans-devanagari and @fontsource/noto-sans-oriya via dynamic import when the sheet first opens (add those two packages and note it in docs/09-decisions.md). Times formatted from scenario t0 plus window minutes (IST, 12-hour, mono). Highlight the selected polygon on the map with a warning-amber outline while the sheet is open. Issue action appends to store.issuedWarnings.
 ```
 
-### [ ] 4.2 SMS and mobile notification previews
+### [x] 4.2 SMS and mobile notification previews
 **Does:** SMS bubble with segment counter and lock-screen notification preview.
 **Depends on:** 4.1.
 **Verify:**

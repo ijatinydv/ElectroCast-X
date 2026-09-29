@@ -5,6 +5,8 @@ import { geoCentroid, geoContains } from "d3-geo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PhonePreview } from "@/components/alerts/PhonePreview";
+import { SmsPreview } from "@/components/alerts/SmsPreview";
 import { getOdishaDistricts } from "@/lib/geo/load";
 import { composeAlert, type AlertLanguage, type AlertTemplateFields } from "@/lib/i18n/alertTemplates";
 import { frameAt } from "@/lib/map/interpolate";
@@ -73,6 +75,7 @@ export function AlertComposer() {
   const setPanel = useStore((state) => state.setPanel);
   const issueWarning = useStore((state) => state.issueWarning);
   const [language, setLanguage] = useState<AlertLanguage>("en");
+  const [preview, setPreview] = useState<"sms" | "notification">("sms");
   const [fields, setFields] = useState<AlertTemplateFields>({ place: "", start: "", end: "" });
   const [toast, setToast] = useState<string | null>(null);
   const scenario = scenarios[scenarioId];
@@ -83,7 +86,7 @@ export function AlertComposer() {
     void import("@fontsource/noto-sans-devanagari/400.css");
     void import("@fontsource/noto-sans-oriya/400.css");
     if (cell) setFields(alertFields(scenario, cell));
-  }, [alertOpen, cell, scenario]);
+  }, [alertOpen, scenarioId, selectedCellId]);
 
   useEffect(() => {
     if (!toast) return;
@@ -129,6 +132,14 @@ export function AlertComposer() {
                 {languages.map(({ id, label }) => <TabsTrigger key={id} value={id}>{label}</TabsTrigger>)}
               </TabsList>
               {languages.map(({ id }) => <TabsContent key={id} value={id} className="mt-4 border border-line bg-bg p-4 text-sm leading-6 text-fg"><p lang={id === "en" ? "en" : id === "hi" ? "hi" : "or"} className={id === "hi" ? "font-[Noto_Sans_Devanagari]" : id === "od" ? "font-[Noto_Sans_Oriya]" : undefined}>{text}</p></TabsContent>)}
+            </Tabs>
+            <Tabs value={preview} onValueChange={(value) => setPreview(value as "sms" | "notification")}>
+              <TabsList className="grid w-full grid-cols-2 bg-raised">
+                <TabsTrigger value="sms">SMS preview</TabsTrigger>
+                <TabsTrigger value="notification">Mobile notification</TabsTrigger>
+              </TabsList>
+              <TabsContent value="sms" className="mt-4"><SmsPreview text={text} language={language} /></TabsContent>
+              <TabsContent value="notification" className="mt-4"><PhonePreview text={text} language={language} isActive={preview === "notification"} /></TabsContent>
             </Tabs>
           </div> : <div className="p-5 text-sm text-fg-2">Select a storm cell on the map.</div>}
           <SheetFooter className="border-t border-line p-5">

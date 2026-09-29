@@ -52,6 +52,12 @@ Add a row whenever you make a choice that another person might question.
 | D32 | A single requestAnimationFrame moves the pipeline beam along an SVG route every six seconds | Keeps the adapted animated beam coordinated, token-based and idle while the document is hidden | Independent CSS animations for each connection; continuous animation while hidden |
 | D33 | Scenario selection resets to −60 minutes and cross-fades map layers for 300ms while the projection refits over 400ms | Preserves each prepared observed-to-forecast narrative and makes the −10-minute sensor-loss boundary directly inspectable | Retaining active playback state; snapping the map or beginning at t0 |
 
+# Phase 4.2 — Alert delivery previews
+
+| Decision | Choice | Why | Rejected |
+|---|---|---|---|
+| D35 | SMS previews use documented GSM-7 or UCS-2 limits, while the notification body uses the same composed alert text | Keeps both delivery previews derived from the one verified, language-specific alert string | Separate abbreviated notification copy or a sender that could imply an official warning service |
+
 # Phase 5.4 — X-ray synchronization
 
 | Decision | Choice | Why | Rejected |
