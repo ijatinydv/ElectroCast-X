@@ -11,6 +11,7 @@ import { CapPreview } from "@/components/alerts/CapPreview";
 import { getOdishaDistricts } from "@/lib/geo/load";
 import { composeAlert, type AlertLanguage, type AlertTemplateFields } from "@/lib/i18n/alertTemplates";
 import { buildCap } from "@/lib/i18n/cap";
+import { effectiveSensorMask } from "@/lib/derive";
 import { frameAt } from "@/lib/map/interpolate";
 import { useStore } from "@/store/useStore";
 import type { Cell, Scenario } from "@/types/scenario";
@@ -72,6 +73,7 @@ export function AlertComposer() {
   const scenarioId = useStore((state) => state.scenarioId);
   const timeMin = useStore((state) => state.timeMin);
   const selectedCellId = useStore((state) => state.selectedCellId);
+  const sensorOff = useStore((state) => state.sensorOff);
   const horizon = useStore((state) => state.horizon);
   const setHorizon = useStore((state) => state.setHorizon);
   const setPanel = useStore((state) => state.setPanel);
@@ -81,7 +83,9 @@ export function AlertComposer() {
   const [fields, setFields] = useState<AlertTemplateFields>({ place: "", start: "", end: "" });
   const [toast, setToast] = useState<string | null>(null);
   const scenario = scenarios[scenarioId];
-  const cell = selectedCellId ? frameAt(scenario, timeMin).cells.find((candidate) => candidate.id === selectedCellId) : undefined;
+  const frame = frameAt(scenario, timeMin);
+  const cell = selectedCellId ? frame.cells.find((candidate) => candidate.id === selectedCellId) : undefined;
+  const effectiveMask = effectiveSensorMask(sensorOff, frame.sensorHealth);
 
   useEffect(() => {
     if (!alertOpen) return;
@@ -97,7 +101,10 @@ export function AlertComposer() {
   }, [toast]);
 
   const text = useMemo(() => composeAlert(language, fields), [fields, language]);
-  const cap = useMemo(() => cell ? buildCap(scenario, cell, horizon, fields.place, timeMin) : null, [cell, fields.place, horizon, scenario, timeMin]);
+  const cap = useMemo(() => cell ? buildCap(scenario, cell, horizon, fields.place, timeMin, {
+    sensorMask: effectiveMask,
+    sensorHealth: frame.sensorHealth,
+  }) : null, [cell, effectiveMask, fields.place, frame.sensorHealth, horizon, scenario, timeMin]);
 
   // commits a timeline marker only after the prepared alert has a selected forecast cell
   const issue = () => {

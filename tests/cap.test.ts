@@ -1,9 +1,23 @@
 import { describe, expect, it } from "vitest";
+import { effectiveSensorMask } from "@/lib/derive";
 import { buildCap } from "@/lib/i18n/cap";
 import { frameAt } from "@/lib/map/interpolate";
 import type { Scenario } from "@/types/scenario";
 import scenarioA from "@/data/scenarios/a-first-flash.json";
 import scenarioB from "@/data/scenarios/b-severe-storm.json";
+import scenarioC from "@/data/scenarios/c-sensor-loss.json";
+
+// compares CAP polygon coverage without introducing a geospatial test dependency
+function polygonArea(polygon: string): number {
+  const points = polygon.split(" ").map((point) => {
+    const [latitude, longitude] = point.split(",").map(Number);
+    return [longitude!, latitude!] as const;
+  });
+  return Math.abs(points.slice(0, -1).reduce((area, [x1, y1], index) => {
+    const [x2, y2] = points[index + 1]!;
+    return area + x1 * y2 - x2 * y1;
+  }, 0) / 2);
+}
 
 // builds a CAP alert from a selected prepared scenario cell
 function capFor(scenarioFixture: unknown, place: string) {
@@ -52,5 +66,27 @@ describe("buildCap", () => {
     expect(info.certainty).toBe("Likely");
     expect(info.effective).toBe(cap.alert.sent);
     expect(info.expires).not.toBe(info.effective);
+  });
+
+  it("widens the exported warning polygon when prepared sensor loss raises uncertainty", () => {
+    const scenario = scenarioC as unknown as Scenario;
+    const frame = frameAt(scenario, 0);
+    const cell = frame.cells[0]!;
+    const healthySensorState = {
+      radar: { status: "online" as const, dataAgeMin: 2 },
+      insat: { status: "online" as const, dataAgeMin: 2 },
+      lightning: { status: "online" as const, dataAgeMin: 2 },
+      nwp: { status: "online" as const, dataAgeMin: 2 },
+    };
+    const clear = buildCap(scenario, cell, 30, "Balasore", 0, {
+      sensorMask: effectiveSensorMask({}, healthySensorState),
+      sensorHealth: healthySensorState,
+    });
+    const degraded = buildCap(scenario, cell, 30, "Balasore", 0, {
+      sensorMask: effectiveSensorMask({}, frame.sensorHealth),
+      sensorHealth: frame.sensorHealth,
+    });
+
+    expect(polygonArea(degraded.alert.info[0]!.area.polygon)).toBeGreaterThan(polygonArea(clear.alert.info[0]!.area.polygon));
   });
 });

@@ -1,4 +1,6 @@
-import type { Cell, Scenario } from "@/types/scenario";
+import { corridorFor } from "@/lib/derive/corridor";
+import { widthScale, type SensorMask } from "@/lib/derive/mask";
+import type { Cell, Frame, Scenario } from "@/types/scenario";
 
 // limits CAP generation to the three prepared forecast corridors
 type Horizon = 15 | 30 | 60;
@@ -32,6 +34,12 @@ export interface CapAlert {
   };
 }
 
+// carries the same sensor state used to widen the map and exposure corridor
+export interface CapUncertaintyContext {
+  sensorMask: SensorMask;
+  sensorHealth: Frame["sensorHealth"];
+}
+
 // formats generated timestamps in the scenario's fixed IST operating timezone
 function formatIst(date: Date): string {
   const parts = new Intl.DateTimeFormat("en-IN", {
@@ -62,8 +70,9 @@ function capIdentifier(scenario: Scenario, cell: Cell, sent: Date): string {
 }
 
 // converts GeoJSON longitude-latitude coordinates into the CAP latitude-longitude polygon string
-function capPolygon(cell: Cell, horizon: Horizon): string {
-  const corridor = cell.corridors[String(horizon) as keyof Cell["corridors"]].inner;
+function capPolygon(cell: Cell, horizon: Horizon, uncertainty?: CapUncertaintyContext): string {
+  const scale = uncertainty ? widthScale(uncertainty.sensorMask, uncertainty.sensorHealth) : 1;
+  const corridor = corridorFor(cell, horizon, scale).inner;
   const closed = corridor.at(0)?.[0] === corridor.at(-1)?.[0] && corridor.at(0)?.[1] === corridor.at(-1)?.[1]
     ? corridor
     : [...corridor, corridor[0]!];
@@ -82,7 +91,7 @@ function capWindow(cell: Cell, horizon: Horizon): readonly [number, number] {
 }
 
 // builds the complete simulated CAP 1.2 alert without introducing operational sender claims
-export function buildCap(scenario: Scenario, cell: Cell, horizon: Horizon, place: string, issuedAtMin: number): CapAlert {
+export function buildCap(scenario: Scenario, cell: Cell, horizon: Horizon, place: string, issuedAtMin: number, uncertainty?: CapUncertaintyContext): CapAlert {
   const sent = new Date(new Date(scenario.t0IsoIst).getTime() + issuedAtMin * 60_000);
   const [startMinute, endMinute] = capWindow(cell, horizon);
   const effective = new Date(sent.getTime() + startMinute * 60_000);
@@ -113,7 +122,7 @@ export function buildCap(scenario: Scenario, cell: Cell, horizon: Horizon, place
         headline: `High lightning risk near ${place}`,
         description,
         instruction: "Avoid open fields, rooftops, trees and metal structures.",
-        area: { areaDesc: place, polygon: capPolygon(cell, horizon) },
+        area: { areaDesc: place, polygon: capPolygon(cell, horizon, uncertainty) },
       }],
     },
   };
