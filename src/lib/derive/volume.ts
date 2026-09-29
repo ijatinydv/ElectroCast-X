@@ -16,6 +16,13 @@ export interface VolumeCore {
   z: number;
 }
 
+// represents the physical fields sampled from one horizontal X-ray slice
+export interface SliceReadout {
+  reflectivityDbz: number;
+  zdrDb: number;
+  kdpDegKm: number;
+}
+
 // bounds scalar values before they contribute to the generated reflectivity field
 function clamp(value: number, minimum: number, maximum: number): number {
   return Math.min(maximum, Math.max(minimum, value));
@@ -96,4 +103,34 @@ export function buildVolume(cell: Pick<Cell, "id" | "echoTopKm" | "reflectivityD
   }
 
   return volume;
+}
+
+// samples the generated storm volume and smooth physical profiles at an operator-selected altitude
+export function sliceReadoutFor(cell: Pick<Cell, "id" | "echoTopKm" | "reflectivityDbz" | "updraftMs" | "freezingLevelKm" | "zdrColumnLevel" | "kdpCore">, altitudeKm: number): SliceReadout {
+  const volume = buildVolume(cell);
+  const heightFraction = clamp(altitudeKm / Math.max(cell.echoTopKm, 0.1), 0, 1);
+  const sliceIndex = Math.round(heightFraction * (VOLUME_HEIGHT - 1));
+  let totalReflectivity = 0;
+  let samples = 0;
+
+  for (let y = 0; y < VOLUME_DEPTH; y += 1) {
+    for (let x = 0; x < VOLUME_WIDTH; x += 1) {
+      totalReflectivity += volume[sliceIndex * VOLUME_WIDTH * VOLUME_DEPTH + y * VOLUME_WIDTH + x] ?? 0;
+      samples += 1;
+    }
+  }
+
+  const zdrLevelKm = cell.zdrColumnLevel === "0C" ? cell.freezingLevelKm
+    : cell.zdrColumnLevel === "-10C" ? cell.freezingLevelKm + 10 / 6.5
+      : cell.zdrColumnLevel === "-20C" ? cell.freezingLevelKm + 20 / 6.5
+        : 0;
+  const zdrEnvelope = cell.zdrColumnLevel === "none" ? 0 : Math.exp(-((altitudeKm - zdrLevelKm * 0.7) ** 2) / (2 * Math.max(zdrLevelKm * 0.36, 0.7) ** 2));
+  const mixedPhaseKm = cell.freezingLevelKm + 10 / 6.5;
+  const kdpEnvelope = Math.exp(-((altitudeKm - mixedPhaseKm) ** 2) / (2 * 0.85 ** 2));
+
+  return {
+    reflectivityDbz: totalReflectivity / samples,
+    zdrDb: 0.15 + 2.05 * zdrEnvelope,
+    kdpDegKm: 0.04 + cell.kdpCore * 0.22 * kdpEnvelope,
+  };
 }

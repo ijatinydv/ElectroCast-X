@@ -384,7 +384,7 @@ Read docs/07-content-and-copy.md (CAP 1.2 preview). Implement src/lib/i18n/cap.t
 Read docs/02-ui-spec.md (X-ray) and docs/04-data-contract.md (procedural volume) and docs/03-motion-and-performance.md (bundle budgets). Implement src/lib/derive/volume.ts (buildVolume: sum of seeded gaussians shaped by echoTopKm/reflectivity/updraft, 24×24×16, Float32Array; tests). Build src/components/xray/XRaySheet.tsx (lazy via next/dynamic ssr:false) and StormScene.tsx using @react-three/fiber and drei OrbitControls (limit polar angle and distance). Render volume as an InstancedMesh of small cubes coloured by reflectivity on a cyan opacity ramp (observed) — thresholded to keep under ~3000 instances. frameloop="demand" with invalidate on control changes and a slow idle auto-rotate that stops on interaction. Dispose geometries/materials on unmount.
 ```
 
-### [ ] 5.2 Temperature layers and altitude slider
+### [x] 5.2 Temperature layers and altitude slider
 **Does:** 0 °C, −10 °C, −20 °C planes, vertical altitude slider with labelled bands, slice readout.
 **Depends on:** 5.1.
 **Verify:**
