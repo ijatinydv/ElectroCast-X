@@ -7,8 +7,7 @@ import { heatmapLayer, prepareHeatmapLayer } from "./layers/heatmap";
 import { lightningLayer } from "./layers/lightning";
 import { corridorsLayer } from "./layers/corridors";
 import { decompositionLayer } from "./layers/decomposition";
-import { labelsLayer } from "./layers/labels";
-import { motionLayer } from "./layers/motion";
+import { stationGlyphLayer } from "./layers/stationGlyph";
 import { assetLocation, assetsLayer, hitTestAsset, type AssetTooltip } from "./layers/assets";
 import { radarLayer } from "./layers/radar";
 import { prepareSatelliteLayer, satelliteLayer } from "./layers/satellite";
@@ -25,6 +24,7 @@ export interface MapFrameState {
   timeMin: number;
   frame: Frame;
   selectedCellId: string | null;
+  hoveredCellId: string | null;
   alertOpen: boolean;
   alertHorizon: AppState["horizon"];
   highlight: AppState["highlight"];
@@ -72,7 +72,7 @@ export interface MapEngine {
 const staticLayers: readonly Layer[] = [graticuleLayer, baseLayer, scaleBarLayer];
 
 // fixes dynamic composition order so decomposition explains forecast cells before paths and exposure assets
-const dynamicLayers: readonly Layer[] = [satelliteLayer, radarLayer, heatmapLayer, lightningLayer, decompositionLayer, corridorsLayer, motionLayer, assetsLayer, labelsLayer];
+const dynamicLayers: readonly Layer[] = [satelliteLayer, radarLayer, heatmapLayer, lightningLayer, decompositionLayer, corridorsLayer, assetsLayer, stationGlyphLayer];
 
 // creates a device-pixel-ratio-aware canvas renderer driven entirely from mutable store state
 export function createMapEngine(options: MapEngineOptions): MapEngine {
@@ -112,6 +112,8 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
   let decompositionStartedAt: number | null = null;
   let draggingDivider = false;
   let suppressClick = false;
+  // retains hover-only detail without introducing another global store field
+  let hoveredCellId: string | null = null;
 
   // renders a static layer once per resize rather than repeating its work in the animation loop
   const redrawStatic = () => {
@@ -175,7 +177,7 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
     }
     context.save();
     context.globalAlpha = fadeProgress;
-    const dynamicState = { ...frameState, projection, width, height, corridorScale, decompositionOpacity };
+    const dynamicState = { ...frameState, projection, width, height, corridorScale, decompositionOpacity, hoveredCellId };
     if (dynamicState.compareOn) {
       context.beginPath();
       context.rect(0, 0, width * dynamicState.compareSplit, height);
@@ -259,10 +261,22 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
     updateDividerFromPointer(event);
   };
 
-  // continues a canvas-native divider drag without mounting another map or DOM overlay
+  // updates station glyph hover state while preserving the comparison-divider drag interaction
   const onPointerMove = (event: PointerEvent) => {
-    if (!draggingDivider) return;
-    updateDividerFromPointer(event);
+    if (draggingDivider) {
+      updateDividerFromPointer(event);
+      return;
+    }
+    const bounds = options.canvas.getBoundingClientRect();
+    const nextHoveredCellId = hitTestCells(
+      frameState.frame.cells,
+      projection,
+      [event.clientX - bounds.left, event.clientY - bounds.top],
+    );
+    options.canvas.style.cursor = nextHoveredCellId ? "pointer" : "";
+    if (nextHoveredCellId === hoveredCellId) return;
+    hoveredCellId = nextHoveredCellId;
+    requestFrame();
   };
 
   // releases a completed divider drag and restores ordinary map pointer behavior
@@ -270,6 +284,14 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
     if (!draggingDivider) return;
     draggingDivider = false;
     options.canvas.releasePointerCapture(event.pointerId);
+  };
+
+  // clears the transient canvas hover state after the pointer leaves the map
+  const onPointerLeave = () => {
+    options.canvas.style.cursor = "";
+    if (hoveredCellId === null) return;
+    hoveredCellId = null;
+    requestFrame();
   };
 
   // exposes the divider's split to keyboard users when compare mode is enabled
@@ -332,6 +354,7 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
   options.canvas.addEventListener("pointerdown", onPointerDown);
   options.canvas.addEventListener("pointermove", onPointerMove);
   options.canvas.addEventListener("pointerup", onPointerUp);
+  options.canvas.addEventListener("pointerleave", onPointerLeave);
   options.canvas.addEventListener("keydown", onKeyDown);
 
   return {
@@ -343,6 +366,7 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
       options.canvas.removeEventListener("pointerdown", onPointerDown);
       options.canvas.removeEventListener("pointermove", onPointerMove);
       options.canvas.removeEventListener("pointerup", onPointerUp);
+      options.canvas.removeEventListener("pointerleave", onPointerLeave);
       options.canvas.removeEventListener("keydown", onKeyDown);
       if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
     },
@@ -378,6 +402,7 @@ function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenari
     timeMin: state.timeMin,
     frame,
     selectedCellId: state.selectedCellId,
+    hoveredCellId: null,
     alertOpen: state.panels.alert,
     alertHorizon: state.horizon,
     highlight: state.highlight,

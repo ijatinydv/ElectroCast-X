@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { cellRadiusPx, fitProjection, hitTestCells, panProjection, projectTweenAt, startProjectionTween } from "@/lib/map/project";
+import { fitProjection, hitTestCells, panProjection, projectTweenAt, startProjectionTween } from "@/lib/map/project";
+import { STATION_GLYPH_SELECTION_RADIUS_PX } from "@/lib/map/stationGlyph";
 import type { Cell, Scenario } from "@/types/scenario";
 
 const region: Scenario["region"] = { bbox: [84, 19, 88, 23], center: [86, 21], zoom: 7 };
@@ -67,13 +68,12 @@ describe("map projection", () => {
     expect(focused.project(region.center)).toEqual([480, 300]);
   });
 
-  // accepts an eight-pixel extension beyond the projected cell radius and rejects farther clicks
-  it("hit-tests the nearest cell using the documented touch allowance", () => {
+  // limits selection to the station glyph's fixed outer-ring radius at every map zoom level
+  it("hit-tests the nearest cell using the station glyph outer ring", () => {
     const projection = fitProjection(region, 800, 500);
     const center = projection.project(cell.centroid);
-    const radius = cellRadiusPx(cell, projection);
 
-    expect(hitTestCells([cell], projection, [center[0] + radius + 8, center[1]])).toBe(cell.id);
-    expect(hitTestCells([cell], projection, [center[0] + radius + 9, center[1]])).toBeNull();
+    expect(hitTestCells([cell], projection, [center[0] + STATION_GLYPH_SELECTION_RADIUS_PX, center[1]])).toBe(cell.id);
+    expect(hitTestCells([cell], projection, [center[0] + STATION_GLYPH_SELECTION_RADIUS_PX + 1, center[1]])).toBeNull();
   });
 });

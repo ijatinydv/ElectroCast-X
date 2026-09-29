@@ -1,4 +1,5 @@
 import { geoMercator, type GeoProjection } from "d3-geo";
+import { STATION_GLYPH_SELECTION_RADIUS_PX } from "./stationGlyph";
 import type { Cell, Scenario } from "@/types/scenario";
 
 // names geographic and canvas coordinate pairs shared by map calculations
@@ -145,7 +146,7 @@ export function frameCellsAt(scenario: Scenario, timeMin: number): readonly Cell
   )).cells;
 }
 
-// estimates a cell's projected radius from its geographic radius for screen-space pointer selection
+// estimates a cell's projected radius for geographic layers that scale with storm extent
 export function cellRadiusPx(cell: Cell, projection: MapProjection): number {
   const latitudeRadians = cell.centroid[1] * Math.PI / 180;
   const longitudeOffset = cell.radiusKm / (111.32 * Math.max(Math.cos(latitudeRadians), 0.01));
@@ -154,17 +155,16 @@ export function cellRadiusPx(cell: Cell, projection: MapProjection): number {
   return Math.hypot(edge[0] - center[0], edge[1] - center[1]);
 }
 
-// returns the nearest selectable cell when the pointer is inside its radius plus the touch allowance
-export function hitTestCells(cells: readonly Cell[], projection: MapProjection, point: ScreenPoint, allowance = 8): string | null {
-  let nearest: { id: string; distance: number; limit: number } | null = null;
+// returns the nearest cell inside the station glyph's fixed outer-ring pointer target
+export function hitTestCells(cells: readonly Cell[], projection: MapProjection, point: ScreenPoint): string | null {
+  let nearest: { id: string; distance: number } | null = null;
 
   for (const cell of cells) {
     const center = projection.project(cell.centroid);
     const distance = Math.hypot(point[0] - center[0], point[1] - center[1]);
-    const limit = cellRadiusPx(cell, projection) + allowance;
 
-    if (distance <= limit && (!nearest || distance < nearest.distance)) {
-      nearest = { id: cell.id, distance, limit };
+    if (distance <= STATION_GLYPH_SELECTION_RADIUS_PX && (!nearest || distance < nearest.distance)) {
+      nearest = { id: cell.id, distance };
     }
   }
 
