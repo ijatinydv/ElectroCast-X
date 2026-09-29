@@ -24,6 +24,8 @@ export interface MapFrameState {
   timeMin: number;
   frame: Frame;
   selectedCellId: string | null;
+  alertOpen: boolean;
+  alertHorizon: AppState["horizon"];
   highlight: AppState["highlight"];
   decomposition: boolean;
   decompositionOpacity: number;
@@ -289,6 +291,8 @@ function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenari
     timeMin: state.timeMin,
     frame,
     selectedCellId: state.selectedCellId,
+    alertOpen: state.panels.alert,
+    alertHorizon: state.horizon,
     highlight: state.highlight,
     decomposition: state.decomposition,
     decompositionOpacity: state.decomposition ? 1 : 0,
