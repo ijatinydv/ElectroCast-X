@@ -283,7 +283,7 @@ Read docs/02-ui-spec.md (Right rail) and docs/01-design-system.md (Dial). Build 
 Read docs/02-ui-spec.md (Left rail: Sensors; Sensor failure behaviour), docs/04-data-contract.md (sensor table, widthScale, contribution sentence) and docs/07-content-and-copy.md. Build src/components/panels/SensorLab.tsx and SensorHealth.tsx, plus SensorBanner in the shell. Effective sensor state = user toggle OR scenario-scripted outage at the current time. Everything derives from that one effective mask: riskFor, widthScale, countdownFor, contributionFor, top-bar StatusDots, banner text, corridor tween, dial arc. Show data age chips in mono. Remove the dev toggle. Add tests that cover all 16 masks for scenario A and B.
 ```
 
-### [ ] 3.4 Physical evidence panel
+### [x] 3.4 Physical evidence panel
 **Does:** "Why did risk increase?" list with small trend charts per variable.
 **Depends on:** 3.2.
 **Verify:**
