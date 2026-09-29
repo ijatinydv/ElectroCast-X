@@ -1,4 +1,6 @@
 "use client";
+import * as React from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/Chip";
 import { StatusDot } from "@/components/ui/StatusDot";
@@ -41,7 +43,7 @@ export function TopBar({ onToggleLeft, onToggleRight, onGuidedDemo, leftOpen, ri
         <Button aria-expanded={leftOpen} aria-label={`${leftOpen ? "Close" : "Open"} mission controls`} variant="ghost" size="icon" className="xl:hidden h-8 w-8" onClick={onToggleLeft}>
           <Menu size={16} />
         </Button>
-        <div className="font-semibold text-fg tracking-wide">ElectroCast-X</div>
+        <Link href="/" className="font-semibold text-fg tracking-wide hover:text-fg-2 transition-colors">ElectroCast-X</Link>
         
         <TooltipProvider>
           <Tooltip>
