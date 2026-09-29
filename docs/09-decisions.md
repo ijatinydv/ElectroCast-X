@@ -31,3 +31,7 @@ Add a row whenever you make a choice that another person might question.
 # Phase 2.6 — Exposure asset rendering
 
 - Exposure assets are split into seven independent layer switches. Village records feed a cached low-resolution density field rather than map markers; all point and transmission asset hover tooltips retain the required `synthetic` label.
+
+# Phase 3.3 — Sensor Health Centre and Counterfactual Sensor Lab
+
+- Effective sensor state merges an operator-disabled source with a scenario feed marked offline. This single mask feeds risk, countdown, corridor width, status dots and the sensor banner so a scripted outage cannot leave any forecast surface inconsistent.

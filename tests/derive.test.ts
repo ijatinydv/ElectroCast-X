@@ -1,14 +1,16 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import A from "@/data/scenarios/a-first-flash.json";
 import B from "@/data/scenarios/b-severe-storm.json";
+import C from "@/data/scenarios/c-sensor-loss.json";
 import { getSyntheticAssets } from "@/lib/geo/load";
-import { countdownFor, corridorFor, exposureFor, maskBits, riskFor, widthScale } from "@/lib/derive";
+import { countdownFor, corridorFor, effectiveSensorMask, exposureFor, maskBits, riskFor, widthScale } from "@/lib/derive";
 import { useStore } from "@/store/useStore";
 import { frameAt } from "@/lib/map/interpolate";
 import type { Scenario, SensorId } from "@/types/scenario";
 
 const firstFlash = A as unknown as Scenario;
 const severeStorm = B as unknown as Scenario;
+const sensorLoss = C as unknown as Scenario;
 const allSensors: SensorId[] = ["radar", "insat", "lightning", "nwp"];
 
 // retrieves the contract's T0 cell so derive tests share one source of fixture truth
@@ -53,6 +55,26 @@ describe("derive functions", () => {
         }
       }
     }
+  });
+
+  it("keeps every Scenario A and B sensor mask between the climatology floor and baseline", () => {
+    for (const scenario of [firstFlash, severeStorm]) {
+      const cell = t0Cell(scenario);
+      const baseline = riskFor(scenario, cell.id, {});
+      for (let mask = 0; mask < 16; mask += 1) {
+        const sensors = Object.fromEntries(allSensors.map((sensor) => [sensor, Boolean(mask & maskBits({ [sensor]: true }))]));
+        const risk = riskFor(scenario, cell.id, sensors);
+        expect(risk).toBeGreaterThanOrEqual(12);
+        expect(risk).toBeLessThanOrEqual(baseline);
+        expect(Number.isFinite(risk)).toBe(true);
+      }
+    }
+  });
+
+  it("adds scripted feed outages to the effective operator sensor mask", () => {
+    const frame = sensorLoss.frames[5];
+    if (!frame) throw new Error("Scenario C requires a sixth frame");
+    expect(effectiveSensorMask({}, frame.sensorHealth)).toMatchObject({ radar: true, insat: false, lightning: false, nwp: false });
   });
 
   it("rescales countdown horizons while preserving the authoritative masked p30 risk", () => {

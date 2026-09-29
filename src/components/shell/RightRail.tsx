@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { CellHeader } from "@/components/panels/CellHeader";
 import { CountdownPanel } from "@/components/panels/CountdownPanel";
+import { effectiveSensorMask } from "@/lib/derive";
 import { frameAt } from "@/lib/map/interpolate";
 import { useStore } from "@/store/useStore";
 import type { Scenario } from "@/types/scenario";
@@ -26,13 +27,15 @@ export function RightRail() {
   const selectedCellId = useStore((state) => state.selectedCellId);
   const sensorOff = useStore((state) => state.sensorOff);
   const scenario = scenarios[scenarioId];
-  const cell = selectedCellId ? frameAt(scenario, timeMin).cells.find((candidate) => candidate.id === selectedCellId) : undefined;
+  const frame = frameAt(scenario, timeMin);
+  const cell = selectedCellId ? frame.cells.find((candidate) => candidate.id === selectedCellId) : undefined;
+  const effectiveMask = effectiveSensorMask(sensorOff, frame.sensorHealth);
 
   return (
     <ScrollArea className="h-full bg-rail border-l border-line">
       <div className="flex flex-col">
         {cell ? <CellHeader cell={cell} /> : <div className="p-4 text-sm text-fg-2">Select a storm cell on the map.</div>}
-        {cell && <Panel title={cell.mode === "active" ? "Active storm" : "When"} defaultOpen={true}><CountdownPanel scenario={scenario} cell={cell} timeMin={timeMin} sensorOff={sensorOff} /></Panel>}
+        {cell && <Panel title={cell.mode === "active" ? "Active storm" : "When"} defaultOpen={true}><CountdownPanel scenario={scenario} cell={cell} timeMin={timeMin} sensorOff={effectiveMask} /></Panel>}
         <Panel title="Where" defaultOpen={true}>
           <div className="text-sm text-fg-2">Corridor summary available when a storm cell is selected.</div>
         </Panel>

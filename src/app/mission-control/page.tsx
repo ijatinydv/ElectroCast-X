@@ -4,6 +4,7 @@ import { m } from "motion/react";
 import { MapCanvas } from "@/components/map/MapCanvas";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { TopBar, LeftRail, RightRail, BottomDock } from "@/components/shell";
+import { SensorBanner } from "@/components/shell/SensorBanner";
 
 export default function MissionControlPage() {
   const [leftOpen, setLeftOpen] = React.useState(true);
@@ -58,6 +59,7 @@ export default function MissionControlPage() {
 
         <div id="map-slot" className="flex-1 bg-bg relative overflow-hidden h-full">
           <MapCanvas />
+          <SensorBanner />
         </div>
 
         {isDesktop ? (

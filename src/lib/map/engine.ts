@@ -1,6 +1,6 @@
 import type { Frame, Scenario } from "@/types/scenario";
 import type { AppState } from "@/types/store";
-import { widthScale } from "@/lib/derive";
+import { effectiveSensorMask, widthScale } from "@/lib/derive";
 import { baseLayer } from "./layers/base";
 import { graticuleLayer } from "./layers/graticule";
 import { heatmapLayer, prepareHeatmapLayer } from "./layers/heatmap";
@@ -228,7 +228,7 @@ function toFrameState(state: AppState, scenarios: Record<Scenario["id"], Scenari
     projection,
     width,
     height,
-    corridorScale: widthScale(state.sensorOff, frame.sensorHealth),
+    corridorScale: widthScale(effectiveSensorMask(state.sensorOff, frame.sensorHealth), frame.sensorHealth),
   };
 }
 

@@ -5,7 +5,7 @@ import { geoCentroid, geoContains } from "d3-geo";
 import { Dial } from "@/components/ui/Dial";
 import { Chip } from "@/components/ui/Chip";
 import { NumberTicker } from "@/components/ui/NumberTicker";
-import { countdownFor } from "@/lib/derive";
+import { countdownFor, effectiveSensorMask } from "@/lib/derive";
 import { getOdishaDistricts } from "@/lib/geo/load";
 import { frameAt } from "@/lib/map/interpolate";
 import type { SensorMask } from "@/lib/derive";
@@ -74,7 +74,8 @@ function ActiveStorm({ cell, scenario, timeMin }: Pick<CountdownPanelProps, "cel
 // combines the first-flash countdown and active-storm presentations in the When section
 export function CountdownPanel({ scenario, cell, timeMin, sensorOff }: CountdownPanelProps) {
   const [horizon, setHorizon] = React.useState<Horizon>(30);
-  const countdown = cell.mode === "first-flash" ? countdownFor(scenario, cell.id, sensorOff) : null;
+  const sensorMask = effectiveSensorMask(sensorOff, frameAt(scenario, timeMin).sensorHealth);
+  const countdown = cell.mode === "first-flash" ? countdownFor(scenario, cell.id, sensorMask) : null;
   const probability = countdown ? countdown[`p${horizon}`] : cell.headlineRisk;
   const mixedPhaseGrowth = cell.evidence.find((evidence) => evidence.variable === "mixedPhaseGrowth");
 

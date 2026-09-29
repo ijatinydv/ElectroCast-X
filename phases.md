@@ -269,7 +269,7 @@ Read docs/02-ui-spec.md (Bottom dock). Build src/components/shell/BottomDock.tsx
 Read docs/02-ui-spec.md (Right rail) and docs/01-design-system.md (Dial). Build src/components/panels/CellHeader.tsx and CountdownPanel.tsx using countdownFor(cell, mask) and frameAt for the selected cell. Compose the right rail sections in the fixed order When / Where / How sure / Exposure / Actions (Where, How sure and Exposure are stubs until 3.4 and 3.5). Add a horizon segmented control (15/30/60) driving the Dial. Rising = p30 higher than three keyframes earlier. Implement the Active storm variant for mode === "active". Use NumberTicker for percentages. Empty state per docs/07-content-and-copy.md.
 ```
 
-### [ ] 3.3 Sensor Health Centre and Counterfactual Sensor Lab
+### [x] 3.3 Sensor Health Centre and Counterfactual Sensor Lab
 **Does:** Sensor switches with live risk table, contribution sentence, health popover and banners; wires the mask through corridor, dial and dots.
 **Depends on:** 3.2, 2.5.
 **Verify:**

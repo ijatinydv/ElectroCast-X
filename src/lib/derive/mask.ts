@@ -15,6 +15,14 @@ export function enabledSensors(): SensorMask {
   return { radar: false, insat: false, lightning: false, nwp: false };
 }
 
+// merges operator choices with unavailable scenario feeds for every forecast consumer
+export function effectiveSensorMask(sensorOff: Partial<SensorMask>, sensorHealth: Frame["sensorHealth"]): SensorMask {
+  return (Object.keys(sensorHealth) as SensorId[]).reduce<SensorMask>((mask, sensor) => ({
+    ...mask,
+    [sensor]: Boolean(sensorOff[sensor]) || sensorHealth[sensor].status === "offline",
+  }), enabledSensors());
+}
+
 // converts disabled sensors and stale available observations into corridor uncertainty
 export function widthScale(mask: SensorMask, sensorHealth: Frame["sensorHealth"]): number {
   const disabledWeight = Number(mask.radar) * 0.35 + Number(mask.insat) * 0.15 + Number(mask.nwp) * 0.1 + Number(mask.lightning) * 0.2;
