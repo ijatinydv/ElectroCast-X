@@ -1,9 +1,13 @@
 "use client";
 import * as React from "react";
+import dynamic from "next/dynamic";
 import { m } from "motion/react";
 import { MapCanvas } from "@/components/map/MapCanvas";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { TopBar, LeftRail, RightRail, BottomDock } from "@/components/shell";
+
+// keeps the X-ray and its Three runtime outside the initial Mission Control payload
+const XRaySheet = dynamic(() => import("@/components/xray/XRaySheet").then((module) => module.XRaySheet), { ssr: false });
 
 export default function MissionControlPage() {
   const [leftOpen, setLeftOpen] = React.useState(true);
@@ -58,6 +62,7 @@ export default function MissionControlPage() {
 
         <div id="map-slot" className="flex-1 bg-bg relative overflow-hidden h-full">
           <MapCanvas />
+          <XRaySheet />
         </div>
 
         {isDesktop ? (
