@@ -56,6 +56,7 @@ export interface MapEngineOptions {
 // exposes the lifecycle cleanup required when the React wrapper unmounts the canvas
 export interface MapEngine {
   destroy: () => void;
+  setActive: (active: boolean) => void;
   coordinateAt: (point: readonly [number, number]) => readonly [number, number] | null;
   assetAt: (point: readonly [number, number]) => AssetTooltip | null;
 }
@@ -87,6 +88,7 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
   let highlightPulse: { point: [number, number]; startedAt: number } | null = null;
   let animationFrame: number | null = null;
   let visible = document.visibilityState === "visible";
+  let active = true;
   let width = 1;
   let height = 1;
   let dpr = 1;
@@ -110,7 +112,7 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
 
   // schedules work only when a resize, store update, or active projection tween requires a frame
   const requestFrame = () => {
-    if (visible && animationFrame === null) animationFrame = window.requestAnimationFrame(render);
+    if (active && visible && animationFrame === null) animationFrame = window.requestAnimationFrame(render);
   };
 
   // composites cached static content and keeps the loop alive only during map-owned animation
@@ -234,6 +236,14 @@ export function createMapEngine(options: MapEngineOptions): MapEngine {
       document.removeEventListener("visibilitychange", onVisibilityChange);
       options.canvas.removeEventListener("click", onClick);
       if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
+    },
+    setActive: (nextActive) => {
+      active = nextActive;
+      if (!active && animationFrame !== null) {
+        window.cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+      }
+      if (active) requestFrame();
     },
     coordinateAt: (point) => projection.unproject(point),
     assetAt: (point) => hitTestAsset({ ...frameState, projection, width, height, corridorScale }, point),

@@ -16,6 +16,7 @@ Add a row whenever you make a choice that another person might question.
 | D8 | Palette base is blue-tinted slate, not neutral black | Radar-room feel; avoids the near-black + single accent default | `#0b0d10` graphite |
 | D9 | Sentence-case labels; no ALL-CAPS eyebrows | Avoids template chrome | Tracked uppercase labels |
 | D10 | Landing has a live map hero, no stats row | Shows the product instead of describing it | Big-number stat row |
+| D14 | Landing hero uses a fixed scenario A replay | Keeps the live map display non-interactive and independent of Mission Control state | A second map renderer or shared operator controls |
 | D11 | Magic UI copy-paste for 5 components; no Aceternity | Restraint and weight | Aceternity effects |
 | D12 | CAP `status` is `Exercise` | Never imply an operational warning | `Actual` |
 | D13 | `motion/react` with LazyMotion | ~4.6 KB vs ~34 KB | Full `motion` |
