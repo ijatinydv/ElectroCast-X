@@ -353,7 +353,7 @@ Read docs/02-ui-spec.md (Alert composer) and docs/07-content-and-copy.md. Build 
 Read docs/07-content-and-copy.md (SMS preview, Notification preview). Build src/components/alerts/SmsPreview.tsx and PhonePreview.tsx as pure presentational components fed by the composed alert text. Phone frame is a simple flat outline (no device mockup images). Compute SMS segments: GSM-7 160 for English (single segment), UCS-2 70 per segment for Devanagari/Oriya; show "n characters · m segment(s)" as a mono line. Animate the notification sliding in from the top of the phone frame once when the preview tab opens (250ms).
 ```
 
-### [ ] 4.3 CAP 1.2 JSON preview
+### [x] 4.3 CAP 1.2 JSON preview
 **Does:** Valid-shaped CAP 1.2 alert preview with syntax highlighting and copy.
 **Depends on:** 4.1.
 **Verify:**

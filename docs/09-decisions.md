@@ -58,6 +58,12 @@ Add a row whenever you make a choice that another person might question.
 |---|---|---|---|
 | D35 | SMS previews use documented GSM-7 or UCS-2 limits, while the notification body uses the same composed alert text | Keeps both delivery previews derived from the one verified, language-specific alert string | Separate abbreviated notification copy or a sender that could imply an official warning service |
 
+# Phase 4.3 — CAP 1.2 preview
+
+| Decision | Choice | Why | Rejected |
+|---|---|---|---|
+| D36 | CAP preview is generated from selected scenario state and uses a local JSON tokenizer | Preserves a deterministic exercise-only CAP payload without a parser dependency or separate alert-state copy | Hand-authored JSON, a syntax-highlighting dependency, or an official sender identity |
+
 # Phase 5.4 — X-ray synchronization
 
 | Decision | Choice | Why | Rejected |
