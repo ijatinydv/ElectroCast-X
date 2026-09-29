@@ -428,7 +428,7 @@ Read docs/04-data-contract.md and docs/02-ui-spec.md (X-ray). Subscribe the X-ra
 
 # Phase 6 — Product surface
 
-### [ ] 6.1 Landing page with live hero
+### [x] 6.1 Landing page with live hero
 **Does:** The front door: live map loop hero and three question sections.
 **Depends on:** 2.7, 3.2 (for the mini dial), 0.2.
 **Verify:**
