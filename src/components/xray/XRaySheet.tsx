@@ -45,16 +45,17 @@ export function XRaySheet() {
   const timeMin = useStore((state) => state.timeMin);
   const selectedCellId = useStore((state) => state.selectedCellId);
   const sensorOff = useStore((state) => state.sensorOff);
+  const sliceAltitudeKm = useStore((state) => state.xraySliceAltitudeKm);
+  const setSliceAltitudeKm = useStore((state) => state.setXraySliceAltitude);
   const frame = frameAt(scenarios[scenarioId], timeMin);
   const cell = selectedCellId ? frame.cells.find((candidate) => candidate.id === selectedCellId) : undefined;
   const effectiveMask = effectiveSensorMask(sensorOff, frame.sensorHealth);
-  const [sliceAltitudeKm, setSliceAltitudeKm] = React.useState(0);
   const [features, setFeatures] = React.useState<XRayFeatureVisibility>(initialFeatures);
   const triggerRef = React.useRef<HTMLElement | null>(null);
 
   React.useEffect(() => {
     if (cell) setSliceAltitudeKm(cell.freezingLevelKm);
-  }, [cell?.id, cell?.freezingLevelKm]);
+  }, [cell?.id, cell?.freezingLevelKm, setSliceAltitudeKm]);
 
   React.useEffect(() => {
     if (!open) return;
@@ -83,7 +84,7 @@ export function XRaySheet() {
 }
 
 // keeps the sheet mounted through its closing transition so Three can dispose cleanly
-function XRaySheetContents({ cell, close, effectiveRadarUnavailable, features, frame, setFeatures, setSliceAltitudeKm, sliceAltitudeKm }: { cell: Cell; close: () => void; effectiveRadarUnavailable: boolean; features: XRayFeatureVisibility; frame: Frame; setFeatures: React.Dispatch<React.SetStateAction<XRayFeatureVisibility>>; setSliceAltitudeKm: React.Dispatch<React.SetStateAction<number>>; sliceAltitudeKm: number }) {
+function XRaySheetContents({ cell, close, effectiveRadarUnavailable, features, frame, setFeatures, setSliceAltitudeKm, sliceAltitudeKm }: { cell: Cell; close: () => void; effectiveRadarUnavailable: boolean; features: XRayFeatureVisibility; frame: Frame; setFeatures: React.Dispatch<React.SetStateAction<XRayFeatureVisibility>>; setSliceAltitudeKm: (altitudeKm: number) => void; sliceAltitudeKm: number }) {
   const readout = sliceReadoutFor(cell, sliceAltitudeKm);
 
   return (

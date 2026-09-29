@@ -18,6 +18,21 @@ const initialLayers: Record<LayerId, boolean> = {
   lightning: true,
 };
 
+// restores every control touched by the guide so the next run starts from the same operator baseline
+function guidedDemoReset(): Pick<AppState, "scenarioId" | "timeMin" | "playing" | "speed" | "sensorOff" | "selectedCellId" | "horizon" | "highlight" | "mapMode" | "layers" | "decomposition" | "compare" | "panels" | "xraySliceAltitudeKm" | "issuedWarnings" | "guided"> {
+  return {
+    ...scenarioReset("A"),
+    speed: 1,
+    mapMode: "radar",
+    layers: { ...initialLayers },
+    decomposition: false,
+    compare: { on: false, split: 0.5 },
+    panels: { xray: false, alert: false, left: true, right: true },
+    xraySliceAltitudeKm: 0,
+    guided: { on: false, step: 0 },
+  };
+}
+
 // restores scenario-bound controls at the first prepared frame for a clean operator handoff
 function scenarioReset(scenarioId: ScenarioId): Pick<AppState, "scenarioId" | "timeMin" | "playing" | "selectedCellId" | "horizon" | "highlight" | "sensorOff" | "issuedWarnings"> {
   return { scenarioId, timeMin: -60, playing: false, selectedCellId: null, horizon: 30, highlight: null, sensorOff: { ...initialSensorOff }, issuedWarnings: [] };
@@ -38,6 +53,7 @@ export const useStore = create<AppState>()((set) => ({
   decomposition: false,
   compare: { on: false, split: 0.5 },
   panels: { xray: false, alert: false, left: true, right: true },
+  xraySliceAltitudeKm: 0,
   guided: { on: false, step: 0 },
   selectScenario: (scenarioId) => set(scenarioReset(scenarioId)),
   setTime: (timeMin) => set({ timeMin: Math.min(60, Math.max(-60, timeMin)) }),
@@ -52,6 +68,8 @@ export const useStore = create<AppState>()((set) => ({
   setDecomposition: (decomposition) => set({ decomposition }),
   setCompare: (compare) => set((state) => ({ compare: { ...state.compare, ...compare } })),
   setPanel: (panel, open) => set((state) => ({ panels: { ...state.panels, [panel]: open } })),
+  setXraySliceAltitude: (xraySliceAltitudeKm) => set({ xraySliceAltitudeKm }),
   issueWarning: (warning) => set((state) => ({ issuedWarnings: [...state.issuedWarnings, warning] })),
   setGuided: (guided) => set((state) => ({ guided: { ...state.guided, ...guided } })),
+  resetGuidedDemo: () => set(guidedDemoReset()),
 }));

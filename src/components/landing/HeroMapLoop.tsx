@@ -29,6 +29,7 @@ function createHeroState(timeMin: number): AppState {
     decomposition: false,
     compare: { on: false, split: 0.5 },
     panels: { xray: false, alert: false, left: false, right: false },
+    xraySliceAltitudeKm: 0,
     issuedWarnings: [],
     guided: { on: false, step: 0 },
     selectScenario: noOp,
@@ -44,8 +45,10 @@ function createHeroState(timeMin: number): AppState {
     setDecomposition: noOp,
     setCompare: noOp,
     setPanel: noOp,
+    setXraySliceAltitude: noOp,
     issueWarning: noOp,
     setGuided: noOp,
+    resetGuidedDemo: noOp,
   };
 }
 

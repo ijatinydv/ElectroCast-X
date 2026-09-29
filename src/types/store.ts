@@ -27,6 +27,7 @@ export interface AppState {
   decomposition: boolean;
   compare: { on: boolean; split: number };
   panels: { xray: boolean; alert: boolean; left: boolean; right: boolean };
+  xraySliceAltitudeKm: number;
   issuedWarnings: Warning[];
   guided: { on: boolean; step: number };
   selectScenario: (scenarioId: ScenarioId) => void;
@@ -42,6 +43,8 @@ export interface AppState {
   setDecomposition: (decomposition: boolean) => void;
   setCompare: (compare: Partial<AppState["compare"]>) => void;
   setPanel: (panel: keyof AppState["panels"], open: boolean) => void;
+  setXraySliceAltitude: (altitudeKm: number) => void;
   issueWarning: (warning: Warning) => void;
   setGuided: (guided: Partial<AppState["guided"]>) => void;
+  resetGuidedDemo: () => void;
 }

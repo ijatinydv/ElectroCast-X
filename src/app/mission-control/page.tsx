@@ -6,6 +6,9 @@ import { MapCanvas } from "@/components/map/MapCanvas";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { TopBar, LeftRail, RightRail, BottomDock } from "@/components/shell";
 import { SensorBanner } from "@/components/shell/SensorBanner";
+import { GuideCaption } from "@/components/shell/GuideCaption";
+import { GuideRunner } from "@/lib/guide";
+import { useStore } from "@/store/useStore";
 
 // keeps the X-ray and its Three runtime outside the initial Mission Control payload
 const XRaySheet = dynamic(() => import("@/components/xray/XRaySheet").then((module) => module.XRaySheet), { ssr: false });
@@ -14,6 +17,25 @@ export default function MissionControlPage() {
   const [leftOpen, setLeftOpen] = React.useState(true);
   const [rightOpen, setRightOpen] = React.useState(true);
   const [isMounted, setIsMounted] = React.useState(false);
+  const guideRunnerRef = React.useRef<GuideRunner | null>(null);
+
+  // keeps one cancellable guide runner alive across top-bar and caption controls
+  const guideRunner = React.useMemo(() => {
+    guideRunnerRef.current ??= new GuideRunner(useStore);
+    return guideRunnerRef.current;
+  }, []);
+
+  // lets Escape halt the guide even when focus is inside an overlay sheet
+  React.useEffect(() => {
+    const stopGuideOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") guideRunner.stop();
+    };
+    window.addEventListener("keydown", stopGuideOnEscape);
+    return () => {
+      window.removeEventListener("keydown", stopGuideOnEscape);
+      guideRunner.stop();
+    };
+  }, [guideRunner]);
 
   React.useEffect(() => {
     setIsMounted(true);
@@ -34,6 +56,7 @@ export default function MissionControlPage() {
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col bg-bg text-fg">
       <TopBar 
+        onGuidedDemo={() => void guideRunner.run()}
         onToggleLeft={() => setLeftOpen(!leftOpen)} 
         onToggleRight={() => setRightOpen(!rightOpen)} 
         leftOpen={leftOpen} 
@@ -65,6 +88,7 @@ export default function MissionControlPage() {
           <MapCanvas />
           <SensorBanner />
           <XRaySheet />
+          <GuideCaption onStop={() => guideRunner.stop()} />
         </div>
 
         {isDesktop ? (

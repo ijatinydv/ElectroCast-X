@@ -1,0 +1,47 @@
+[
+  {
+    "caption": "Scenario A follows a developing Mayurbhanj cloud from observed conditions into its forecast.",
+    "durationMs": 2600,
+    "action": "scenarioA"
+  },
+  {
+    "caption": "Cyan shows prepared observations while purple carries the forecast forward in time.",
+    "durationMs": 3600,
+    "action": "play"
+  },
+  {
+    "caption": "This mixed-phase growth cell has an estimated first-flash window of 18 to 27 minutes.",
+    "durationMs": 3200,
+    "action": "selectCell"
+  },
+  {
+    "caption": "The forecast separates motion, growth, and new initiation instead of blurring the next frame.",
+    "durationMs": 3200,
+    "action": "decomposition"
+  },
+  {
+    "caption": "At the −10 °C level, the ZDR column marks the mixed-phase signal needed for electrification.",
+    "durationMs": 3600,
+    "action": "xray"
+  },
+  {
+    "caption": "With radar unavailable, the forecast is less certain because mixed-phase growth is no longer observed.",
+    "durationMs": 3600,
+    "action": "radarOff"
+  },
+  {
+    "caption": "The warning composer fills every prepared forecast field into English, Hindi, Odia, SMS, phone, and CAP previews.",
+    "durationMs": 3800,
+    "action": "alertComposer"
+  },
+  {
+    "caption": "Issuing the exercise warning records the selected cell, forecast time, and horizon on the shared timeline.",
+    "durationMs": 3000,
+    "action": "issueWarning"
+  },
+  {
+    "caption": "At +25 minutes, the observed first flash falls inside the predicted window.",
+    "durationMs": 4200,
+    "action": "compare"
+  }
+]
